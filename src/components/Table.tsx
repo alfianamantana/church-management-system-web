@@ -12,10 +12,10 @@ interface TableProps {
   className?: string;
   currentPage?: number;
   pageSize?: number;
+  showIndex?: boolean;
 }
 
-const Table: React.FC<TableProps> = ({ heads, data, currentPage = 1, pageSize = 10 }) => {
-  const showIndex = currentPage > 0 && pageSize > 0;
+const Table: React.FC<TableProps> = ({ heads, data, currentPage = 1, pageSize = 10, showIndex = true }) => {
   return (
     <div className={`overflow-x-auto`}>
       <table className="min-w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg">
@@ -55,7 +55,7 @@ const Table: React.FC<TableProps> = ({ heads, data, currentPage = 1, pageSize = 
                 )}
                 {heads.map((head, j) => (
                   <td key={j} className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
-                    {row[head.key]}
+                    {row[head.key] ? row[head.key] : 'No data'}
                   </td>
                 ))}
               </tr>

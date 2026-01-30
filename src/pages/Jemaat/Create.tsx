@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import InputText from '../../components/InputText';
 import Card from '../../components/Card';
 import api from '../../services/api';
@@ -6,7 +6,13 @@ import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { IBasicResponse } from '../../constant';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setPageTitle } from '../../store/themeConfigSlice';
 const CreateJemaat: React.FC = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setPageTitle('Tambah Jemaat'));
+  });
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [form, setForm] = useState({

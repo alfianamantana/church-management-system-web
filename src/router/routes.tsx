@@ -4,11 +4,11 @@ const Login = lazy(() => import('../pages/auth/login'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const Jemaat = lazy(() => import('../pages/Jemaat/List'));
 const JemaatCreate = lazy(() => import('../pages/Jemaat/Create'));
-
+const Calendar = lazy(() => import('../pages/Calendar'));
 const ErrorElement = () => (
     <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
-        <h1 className="text-3xl font-bold mb-2">404 Not Found</h1>
-        <p className="text-gray-500">Halaman tidak ditemukan.</p>
+        <h1 className="text-3xl font-bold mb-2 dark:text-white">404 Not Found</h1>
+        <p className="text-gray-500 dark:text-white">Halaman tidak ditemukan.</p>
     </div>
 );
 
@@ -53,6 +53,13 @@ const routes = [
                     },
                 ],
             },
+            {
+                path: 'calendar',
+                element: <Calendar />,
+                name: 'Calendar',
+                breadcrumb: 'Calendar',
+                description: 'Halaman kalender acara',
+            }
         ],
     },
     {

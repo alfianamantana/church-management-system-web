@@ -22,3 +22,29 @@ export interface IPagination {
     total: number;
     page: number;
 }
+
+export interface IEvent {
+    id: number;
+    title: string;
+    start: string;
+    end: string;
+    description: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface IJemaat {
+    id: number;
+    name: string;
+    birth_date: string | Date;
+    born_place: string;
+    is_married: boolean;
+    createdAt: string | Date;
+    updatedAt: string | Date;
+
+    // Field yang bisa bernilai null
+    mom_id: number | null;
+    dad_id: number | null;
+    phone_number: string | null;
+    baptism_date: string | Date | null;
+}
