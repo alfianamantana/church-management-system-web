@@ -110,6 +110,55 @@ const Sidebar = () => {
                                     </div>
                                 </NavLink>
                             </li>
+
+                            <li className="menu nav-item">
+                                <button type="button" className={`${currentMenu === 'dashboard' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('dashboard')}>
+                                    <div className="flex items-center">
+                                        <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M12 22C10.8954 22 10 21.1046 10 20V18C10 16.8954 10.8954 16 12 16C13.1046 16 14 16.8954 14 18V20C14 21.1046 13.1046 22 12 22Z"
+                                                fill="currentColor"
+                                            />
+                                            <path
+                                                opacity="0.5"
+                                                d="M19 11H17C15.8954 11 15 10.1046 15 9V7C15 5.89543 15.8954 5 17 5H19C20.1046 5 21 5.89543 21 7V9C21 10.1046 20.1046 11 19 11Z"
+                                                fill
+                                                ="currentColor"
+                                            />
+                                            <path
+                                                opacity="0.5"
+                                                d="M7 11H5C3.89543 11 3 10.1046 3 9V7C3 5.89543 3.89543 5 5 5H7C8.10457 5 9 5.89543 9 7V9C9 10.1046 8.10457 11 7 11Z"
+                                                fill="currentColor"
+                                            />
+                                            <path
+                                                opacity="0.5"
+                                                d="M19 22H17C15.8954 22 15 21.1046 15 20V18C15 16.8954 15.8954 16 17 16H19C20.1046 16 21 16.8954 21 18V20C21 21.1046 20.1046 22 19 22Z"
+                                                fill="currentColor"
+                                            />
+                                            <path
+                                                opacity="0.5"
+                                                d="M7 22H5C3.89543 22 3 21.1046 3 20V18C3 16.8954 3.89543 16 5 16H7C8.10457 16 9 16.8954 9 18V20C9 21.1046 8.10457 22 7 22Z"
+                                                fill="currentColor"
+                                            />
+                                        </svg>
+                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Worship Service</span>
+                                    </div>
+
+                                    <div className={currentMenu !== 'dashboard' ? 'rtl:rotate-90 -rotate-90' : ''}>
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 m-auto">
+                                            <path d="M8.12 9.29L12 13.17L15.88 9.29C16.27 8.9 16.9 8.9 17.29 9.29C17.68 9.68 17.68 10.31 17.29 10.7L12.7 15.29C12.31 15.68 11.68 15.68 11.29 15.29L6.7 10.7C6.31 10.31 6.31 9.68 6.7 9.29C7.09 8.9 7.72 8.9 8.12 9.29Z" fill="currentColor" />
+                                        </svg>
+                                    </div>
+                                </button>
+
+                                <AnimateHeight duration={300} height={currentMenu === 'dashboard' ? 'auto' : 0}>
+                                    <ul className="sub-menu text-gray-500">
+                                        <li>
+                                            <NavLink to="/member">Member</NavLink>
+                                        </li>
+                                    </ul>
+                                </AnimateHeight>
+                            </li>
                         </ul>
                     </PerfectScrollbar>
                 </div>

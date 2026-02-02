@@ -221,7 +221,7 @@ const Calendar: React.FC = () => {
             <FullCalendar
               datesSet={(arg) => {
                 const newRange = { start: arg.start, end: arg.end };
-                if (!currentRange || currentRange.start.getTime() !== newRange.start.getTime() || currentRange.end.getTime() !== newRange.end.getTime()) {
+                if (!currentRange || currentRange?.start?.getTime() !== newRange?.start?.getTime() || currentRange?.end?.getTime() !== newRange?.end?.getTime()) {
                   setDataSetStart(arg.start);
                   setDataSetEnd(arg.end);
                   setCurrentRange(newRange);
@@ -230,9 +230,7 @@ const Calendar: React.FC = () => {
               plugins={[dayGridPlugin, interactionPlugin]}
               initialView="dayGridMonth"
               headerToolbar={{
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth',
+                right: 'prev,next',
               }}
               editable={true}
               dayMaxEvents={true}
@@ -245,6 +243,7 @@ const Calendar: React.FC = () => {
               }}
               select={(event: any) => editDate(event)}
               events={events}
+              lazyFetching={true}
             />
           )}
         </div>

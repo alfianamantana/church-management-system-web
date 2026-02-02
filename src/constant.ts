@@ -6,6 +6,14 @@ export interface IBasicResponse {
 
 export type UserRole = 'superadmin' | 'user';
 
+export interface IMember {
+    id: number;
+    name: string;
+    phone: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface IUser {
     id: number;
     name: string;
@@ -24,7 +32,7 @@ export interface IPagination {
 }
 
 export interface IEvent {
-    id: number;
+    id: number | string;
     title: string;
     start: string;
     end: string;
