@@ -14,6 +14,21 @@ export interface IMember {
     updatedAt: string;
 }
 
+export interface ISchedule {
+    id: number;
+    service_name: string;
+    scheduled_at: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface IRole {
+    id: number;
+    role_name: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface IUser {
     id: number;
     name: string;

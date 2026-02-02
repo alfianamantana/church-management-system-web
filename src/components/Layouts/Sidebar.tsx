@@ -156,6 +156,12 @@ const Sidebar = () => {
                                         <li>
                                             <NavLink to="/member">Member</NavLink>
                                         </li>
+                                        <li>
+                                            <NavLink to="/role">Role</NavLink>
+                                        </li>
+                                        <li>
+                                            <NavLink to="/schedule">Schedule</NavLink>
+                                        </li>
                                     </ul>
                                 </AnimateHeight>
                             </li>

@@ -37,7 +37,7 @@ const Modal: React.FC<ModalProps> = ({
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200"
             >
               &times;
             </button>

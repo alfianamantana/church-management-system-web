@@ -14,8 +14,16 @@ import TextArea from '../components/TextArea';
 import api from '../services/api';
 import SkeletonCalendar from '../components/Skeletons/Calendar';
 
-interface event extends IEvent {
+interface event {
+  id: string;
+  title: string;
+  start: string;
+  end: string;
+  description: string | null;
+  createdAt: string;
+  updatedAt: string;
   className: string;
+  extendedProps?: { type: string; description: string | null };
 }
 
 interface eventResponse extends IBasicResponse {
@@ -92,7 +100,13 @@ const Calendar: React.FC = () => {
 
       if (response.code === 200) {
         const formattedEvents = response.data.map((event) => ({
-          ...event,
+          id: event.id.toString(),
+          title: event.title,
+          start: event.start,
+          end: event.end,
+          description: event.description,
+          createdAt: event.createdAt,
+          updatedAt: event.updatedAt,
           className: 'bg-primary',
           extendedProps: { type: 'event', description: event.description },
         }));
@@ -115,7 +129,7 @@ const Calendar: React.FC = () => {
       const response: birthdayEventResponse = data;
       if (response.code === 200) {
         const birthdayEvents = response.data.map((jemaat) => ({
-          id: jemaat.id,
+          id: jemaat.id.toString(),
           title: `Birthday: ${jemaat.name}`,
           start: new Date(new Date(jemaat.birth_date).setFullYear(new Date().getFullYear())).toISOString(),
           end: new Date(new Date(jemaat.birth_date).setFullYear(new Date().getFullYear())).toISOString(),
@@ -123,7 +137,7 @@ const Calendar: React.FC = () => {
           createdAt: '',
           updatedAt: '',
           className: 'bg-success',
-          extendedProps: { type: 'birthday' },
+          extendedProps: { type: 'birthday', description: null },
         }));
         setEvents((prevEvents) => [...prevEvents, ...birthdayEvents]);
       } else {

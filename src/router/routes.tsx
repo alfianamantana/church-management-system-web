@@ -6,6 +6,8 @@ const Jemaat = lazy(() => import('../pages/Jemaat/List'));
 const JemaatCreate = lazy(() => import('../pages/Jemaat/Create'));
 const Calendar = lazy(() => import('../pages/Calendar'));
 const MemberList = lazy(() => import('../pages/Member/list'));
+const RoleList = lazy(() => import('../pages/Role/List'));
+const ScheduleList = lazy(() => import('../pages/Schedulle/List'));
 const ErrorElement = () => (
     <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
         <h1 className="text-3xl font-bold mb-2 dark:text-white">404 Not Found</h1>
@@ -66,6 +68,36 @@ const routes = [
                         name: 'Member List',
                         breadcrumb: 'Member',
                         description: 'Daftar member',
+                    },
+                ],
+            },
+            {
+                path: 'role',
+                name: 'Role',
+                breadcrumb: 'Role',
+                description: 'Halaman manajemen data role',
+                children: [
+                    {
+                        index: true,
+                        element: <RoleList />,
+                        name: 'Role List',
+                        breadcrumb: 'Role',
+                        description: 'Daftar role',
+                    },
+                ],
+            },
+            {
+                path: 'schedule',
+                name: 'Schedule',
+                breadcrumb: 'Schedule',
+                description: 'Halaman manajemen data schedule',
+                children: [
+                    {
+                        index: true,
+                        element: <ScheduleList />,
+                        name: 'Schedule List',
+                        breadcrumb: 'Schedule',
+                        description: 'Daftar schedule',
                     },
                 ],
             },
