@@ -10,6 +10,7 @@ import Dropdown from '../../components/Dropdowns';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import { DayPicker } from "react-day-picker";
+import dayjs from 'dayjs';
 // import "react-day-picker/style.css";
 
 const CreateJemaat: React.FC = () => {
@@ -26,7 +27,7 @@ const CreateJemaat: React.FC = () => {
     if (selectedBaptism) {
       setForm((prev) => ({
         ...prev,
-        baptism_date: selectedBaptism.toISOString().split('T')[0], // YYYY-MM-DD
+        baptism_date: dayjs(selectedBaptism).format('YYYY-MM-DD'),
       }));
     }
   }, [selectedBaptism]);
@@ -35,7 +36,7 @@ const CreateJemaat: React.FC = () => {
     if (selectedBirth) {
       setForm((prev) => ({
         ...prev,
-        birth_date: selectedBirth.toISOString().split('T')[0], // YYYY-MM-DD
+        birth_date: dayjs(selectedBirth).format('YYYY-MM-DD'),
       }));
     }
   }, [selectedBirth]);
@@ -54,10 +55,20 @@ const CreateJemaat: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+
+    if (name === 'phone_number') {
+      // Allow only numbers
+      const numericValue = value.replace(/[^\d]/g, '');
+      setForm((prev) => ({
+        ...prev,
+        [name]: numericValue,
+      }));
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value,
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,7 +123,7 @@ const CreateJemaat: React.FC = () => {
             label="Tanggal Lahir"
             trigger={
               <button className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left">
-                {form.birth_date ? form.birth_date : 'Pilih Tanggal Lahir'}
+                {form.birth_date ? dayjs(form.birth_date).format('DD-MM-YYYY') : 'Pilih Tanggal Lahir'}
               </button>
             }
           >
@@ -146,7 +157,7 @@ const CreateJemaat: React.FC = () => {
             label="Tanggal Baptis (opsional)"
             trigger={
               <button className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left">
-                {form.baptism_date ? form.baptism_date : 'Pilih Tanggal Baptis'}
+                {form.baptism_date ? dayjs(form.baptism_date).format('DD-MM-YYYY') : 'Pilih Tanggal Baptis'}
               </button>
             }
           >
@@ -190,6 +201,7 @@ const CreateJemaat: React.FC = () => {
           />
         </div>
         <button
+          onClick={handleSubmit}
           type="submit"
           className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition disabled:opacity-60"
           disabled={loading}

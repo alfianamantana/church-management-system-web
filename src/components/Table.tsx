@@ -4,6 +4,7 @@ interface TableHead {
   label: string;
   key: string;
   thClass?: string;
+  tdClass?: string;
   render?: (value: any, row: Record<string, any>, index: number) => React.ReactNode;
 }
 

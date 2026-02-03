@@ -2,13 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import Card from '../../components/Card';
 import Table from '../../components/Table';
 import Pagination from '../../components/Pagination';
-import SkeletonTable from '../../components/Skeletons/Table'
-import SkeletonPagination from '../../components/Skeletons/Pagination';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import InputText from '../../components/InputText';
 import { IBasicResponse, IJemaat, IPagination } from '../../constant';
 import dayjs from 'dayjs';
 
@@ -41,10 +38,10 @@ const Jemaat: React.FC = () => {
   };
 
   const heads = [
-    { label: 'Nama', key: 'name' },
-    { label: 'Tanggal Lahir', key: 'birth_date' },
-    { label: 'Umur', key: 'age' },
-    { label: 'Phone', key: 'phone_number' },
+    { label: t('name'), key: 'name' },
+    { label: t('birth_date'), key: 'birth_date' },
+    { label: t('age'), key: 'age' },
+    { label: t('phone_number'), key: 'phone_number' },
   ];
 
   const fetchJemaat = async (page: number = 1) => {
@@ -100,28 +97,51 @@ const Jemaat: React.FC = () => {
   };
 
   return (
-    <div className='flex flex-col gap-y-5'>
-      <NavLink to="/jemaat/create" className="self-end">
-        <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
-          {t("create_jemaat")}
-        </button>
-      </NavLink>
-      <InputText
-        placeholder="Search by name..."
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-      />
+    <div>
       <Card title={t("list_jemaat")}>
-        {loading ? <SkeletonTable /> : <Table heads={heads} data={jemaatData} currentPage={currentPage} pageSize={PAGE_SIZE} showIndex={true} />}
-        {loading ? <SkeletonPagination /> : !loading && jemaatData.length > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            totalItems={totalItems}
-            pageSize={PAGE_SIZE}
-            className="mt-4"
-          />
+        <div className="mb-4">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder={t("search_by_name")}
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={() => {
+                setDebouncedQ(q);
+                setCurrentPage(1);
+              }}
+              type="button"
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200"
+            >
+              {t('search')}
+            </button>
+            <NavLink to="/jemaat/create">
+              <button className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200'>
+                {t("create_jemaat")}
+              </button>
+            </NavLink>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="text-center py-4">{t('loading')}...</div>
+        ) : (
+          <>
+            <Table heads={heads} data={jemaatData} currentPage={currentPage} pageSize={PAGE_SIZE} showIndex={true} />
+            {!loading && jemaatData.length > 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                totalItems={totalItems}
+                pageSize={PAGE_SIZE}
+                className="mt-4"
+              />
+            )}
+          </>
         )}
       </Card>
     </div>

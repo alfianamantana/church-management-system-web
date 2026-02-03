@@ -1,3 +1,4 @@
+import path from 'path';
 import { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 const Login = lazy(() => import('../pages/auth/login'));
@@ -8,6 +9,9 @@ const Calendar = lazy(() => import('../pages/Calendar'));
 const MemberList = lazy(() => import('../pages/Member/list'));
 const RoleList = lazy(() => import('../pages/Role/List'));
 const ScheduleList = lazy(() => import('../pages/Schedulle/List'));
+const KeuanganList = lazy(() => import('../pages/Keuangan/List'));
+const FamilyList = lazy(() => import('../pages/Family/List'));
+
 const ErrorElement = () => (
     <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
         <h1 className="text-3xl font-bold mb-2 dark:text-white">404 Not Found</h1>
@@ -98,6 +102,36 @@ const routes = [
                         name: 'Schedule List',
                         breadcrumb: 'Schedule',
                         description: 'Daftar schedule',
+                    },
+                ],
+            },
+            {
+                path: 'keuangan',
+                name: 'Keuangan',
+                breadcrumb: 'Keuangan',
+                description: 'Halaman manajemen data keuangan',
+                children: [
+                    {
+                        index: true,
+                        element: <KeuanganList />,
+                        name: 'Keuangan List',
+                        breadcrumb: 'Keuangan',
+                        description: 'Daftar transaksi keuangan',
+                    },
+                ],
+            },
+            {
+                path: 'family',
+                name: 'Family',
+                breadcrumb: 'Family',
+                description: 'Halaman manajemen data family',
+                children: [
+                    {
+                        index: true,
+                        element: <FamilyList />,
+                        name: 'Family List',
+                        breadcrumb: 'Family',
+                        description: 'Daftar family',
                     },
                 ],
             },

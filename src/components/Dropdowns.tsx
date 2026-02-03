@@ -6,6 +6,7 @@ interface DropdownProps {
   className?: string;
   label?: string;
   position?: 'bottom' | 'top' | 'left' | 'right';
+  required?: boolean;
 }
 
 const Dropdown: React.FC<DropdownProps> = ({
@@ -14,6 +15,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   className = '',
   label,
   position = 'bottom',
+  required = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -51,7 +53,7 @@ const Dropdown: React.FC<DropdownProps> = ({
 
   return (
     <div className={`w-full flex flex-col gap-1 ${className}`}>
-      {label && <label className="block font-semibold text-gray-700 dark:text-gray-200">{label}</label>}
+      {label && <label className="block font-semibold text-gray-700 dark:text-gray-200">{label}{required && <span className="text-red-500">*</span>}</label>}
       <div className="relative" ref={dropdownRef}>
         <div onClick={handleTriggerClick} className="cursor-pointer">
           {trigger}

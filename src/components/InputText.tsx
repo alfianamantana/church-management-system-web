@@ -4,18 +4,20 @@ interface InputTextProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   className?: string;
+  required?: boolean;
 }
 
 const InputText: React.FC<InputTextProps> = ({
   label,
   error,
+  required = false,
   className = '',
   ...props
 }) => {
   const wrapperClassName = `w-full flex flex-col gap-1 ${className}`.trim();
   return (
     <div className={wrapperClassName}>
-      {label && <label className="block font-semibold text-gray-700 dark:text-gray-200">{label}</label>}
+      {label && <label className="block font-semibold text-gray-700 dark:text-gray-200">{label}{required && <span className="text-red-600"> *</span>}</label>}
       <input
         className={
           `w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 ` +

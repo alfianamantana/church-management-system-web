@@ -71,3 +71,30 @@ export interface IJemaat {
     phone_number: string | null;
     baptism_date: string | Date | null;
 }
+
+export interface ICategory {
+    id: number;
+    name: string;
+    type: 'income' | 'expense';
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface IFamily {
+    id: number;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+    jemaats?: IJemaat[];
+}
+
+export interface ITransaction {
+    id: number;
+    date: string;
+    category_id: number;
+    amount: number | string;
+    note: string | null;
+    createdAt: string;
+    updatedAt: string;
+    category?: ICategory;
+}

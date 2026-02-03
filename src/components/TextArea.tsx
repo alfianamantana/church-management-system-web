@@ -4,18 +4,20 @@ interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
   label?: string;
   error?: string;
   className?: string;
+  required?: boolean;
 }
 
 const TextArea: React.FC<TextAreaProps> = ({
   label,
   error,
   className = '',
+  required = false,
   ...props
 }) => {
   const wrapperClassName = `w-full flex flex-col gap-1 ${className}`.trim();
   return (
     <div className={wrapperClassName}>
-      {label && <label className="block font-semibold text-gray-700 dark:text-gray-200">{label}</label>}
+      {label && <label className="block font-semibold text-gray-700 dark:text-gray-200">{label} {required && <span className="text-red-500">*</span>} </label>}
       <textarea
         className={
           `w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 ` +
