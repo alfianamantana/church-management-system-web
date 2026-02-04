@@ -1,24 +1,34 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+
+interface DropdownRef {
+  close: () => void;
+}
 
 interface DropdownProps {
   trigger: React.ReactNode;
   children: React.ReactNode;
   className?: string;
   label?: string;
-  position?: 'bottom' | 'top' | 'left' | 'right';
+  position?: 'bottom' | 'top' | 'left' | 'right' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   required?: boolean;
+  fullWidth?: boolean;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({
+const Dropdown = forwardRef<DropdownRef, DropdownProps>(({
   trigger,
   children,
   className = '',
   label,
   position = 'bottom',
   required = false,
-}) => {
+  fullWidth = false,
+}, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    close: () => setIsOpen(false),
+  }));
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -45,6 +55,14 @@ const Dropdown: React.FC<DropdownProps> = ({
         return 'right-full mr-1';
       case 'right':
         return 'left-full ml-1';
+      case 'top-left':
+        return 'bottom-full left-0 mb-1';
+      case 'top-right':
+        return 'bottom-full right-0 mb-1';
+      case 'bottom-left':
+        return 'top-full left-0 mt-1';
+      case 'bottom-right':
+        return 'top-full right-0 mt-1';
       case 'bottom':
       default:
         return 'top-full mt-1';
@@ -59,13 +77,13 @@ const Dropdown: React.FC<DropdownProps> = ({
           {trigger}
         </div>
         {isOpen && (
-          <div className={`absolute z-10 ${getPositionClasses()} bg-white border border-gray-300 rounded shadow-lg dark:bg-gray-900 dark:border-gray-700`}>
+          <div className={`absolute mt-2 z-10 ${fullWidth ? 'w-full' : ''} ${getPositionClasses()} bg-white border border-gray-300 rounded shadow-lg dark:bg-gray-900 dark:border-gray-700`}>
             {children}
           </div>
         )}
       </div>
     </div>
   );
-};
+});
 
 export default Dropdown;

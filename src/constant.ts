@@ -62,6 +62,7 @@ export interface IJemaat {
     birth_date: string | Date;
     born_place: string;
     is_married: boolean;
+    gender: 'male' | 'female';
     createdAt: string | Date;
     updatedAt: string | Date;
 
@@ -70,6 +71,9 @@ export interface IJemaat {
     dad_id: number | null;
     phone_number: string | null;
     baptism_date: string | Date | null;
+    family_id: number | null;
+    dad: IJemaat | null;
+    mom: IJemaat | null;
 }
 
 export interface ICategory {

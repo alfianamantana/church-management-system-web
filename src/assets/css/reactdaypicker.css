@@ -4,7 +4,7 @@
   --rdp-accent-background-color: #f0f0ff; /* The accent background color used for selected days and UI elements. */
 
   --rdp-day-height: 44px; /* The height of the day cells. */
-  --rdp-day-width: 44px; /* The width of the day cells. */
+  --rdp-day-width: 100%; /* The width of the day cells. */
 
   --rdp-day_button-border-radius: 100%; /* The border radius of the day cells. */
   --rdp-day_button-border: 2px solid transparent; /* The border of the day cells. */
@@ -199,7 +199,7 @@
 }
 
 .rdp-month_caption {
-  display: flex;
+  display: flex; 
   align-content: center;
   height: var(--rdp-nav-height);
   font-weight: bold;
@@ -236,15 +236,17 @@
 }
 
 .rdp-months {
-  position: relative;
+  /* position: relative; */
   display: flex;
   flex-wrap: wrap;
   gap: var(--rdp-months-gap);
-  max-width: fit-content;
+  justify-content: center;
+  width: 100%;
 }
 
 .rdp-month_grid {
-  border-collapse: collapse;
+  /* border-collapse: collapse; */
+  width: 100%;
 }
 
 .rdp-nav {
@@ -252,7 +254,7 @@
   inset-block-start: 0;
   inset-inline-end: 0;
 
-  display: flex;
+  display: none;
   align-items: center;
 
   height: var(--rdp-nav-height);

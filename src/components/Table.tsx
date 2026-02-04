@@ -21,9 +21,11 @@ interface TableProps {
   callbackEdit?: (row: any) => void;
   edit?: boolean;
   action?: boolean;
+  canView?: boolean;
+  callbackView?: (row: any) => void;
 }
 
-const Table: React.FC<TableProps> = ({ heads, data, currentPage = 1, pageSize = 10, showIndex = true, canDelete = false, callbackDelete, canEdit = false, callbackEdit, action = false }) => {
+const Table: React.FC<TableProps> = ({ heads, data, currentPage = 1, pageSize = 10, showIndex = true, canDelete = false, callbackDelete, canEdit = false, callbackEdit, canView = false, callbackView, action = false }) => {
   return (
     <div className={`overflow-x-auto`}>
       <table className="min-w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg">
@@ -45,7 +47,7 @@ const Table: React.FC<TableProps> = ({ heads, data, currentPage = 1, pageSize = 
               </th>
             ))}
             {
-              action && (canEdit || canDelete) && (
+              action && (canEdit || canDelete || canView) && (
                 <th className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 text-left bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold">
                   Action
                 </th>
@@ -56,13 +58,13 @@ const Table: React.FC<TableProps> = ({ heads, data, currentPage = 1, pageSize = 
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan={heads.length + (showIndex ? 1 : 0) + ((canEdit || canDelete) ? 1 : 0)} className="px-4 py-3 text-center text-gray-400 dark:text-gray-500">
+              <td colSpan={heads.length + (showIndex ? 1 : 0) + ((canEdit || canDelete || canView) ? 1 : 0)} className="px-4 py-3 text-center text-gray-400 dark:text-gray-500">
                 No data available
               </td>
             </tr>
           ) : (
             data.map((row, i) => (
-              <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200">
+              <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-500 transition-all duration-200">
                 {showIndex && (
                   <td className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
                     {(currentPage - 1) * pageSize + i + 1}
@@ -74,7 +76,7 @@ const Table: React.FC<TableProps> = ({ heads, data, currentPage = 1, pageSize = 
                   </td>
                 ))}
                 {
-                  (canEdit || canDelete) && (
+                  (canEdit || canDelete || canView) && (
                     <td className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
                       <div className="flex gap-1">
                         {canEdit && callbackEdit && (
@@ -94,6 +96,18 @@ const Table: React.FC<TableProps> = ({ heads, data, currentPage = 1, pageSize = 
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-4 h-4">
                               <path strokeLinecap='round' strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                            </svg>
+                          </button>
+                        )}
+                        {canView && callbackView && (
+                          <button
+                            onClick={() => callbackView(row)}
+                            className="px-3 py-2 text-green-500 rounded-md flex items-center gap-1 hover:bg-green-50 dark:hover:bg-green-900"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-4 h-4">
+                              <path strokeLinecap='round' strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963
+  7.178a1.012 1.012 0 0 1 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                              <path strokeLinecap='round' strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
                             </svg>
                           </button>
                         )}

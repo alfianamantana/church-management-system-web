@@ -11,6 +11,7 @@ const RoleList = lazy(() => import('../pages/Role/List'));
 const ScheduleList = lazy(() => import('../pages/Schedulle/List'));
 const KeuanganList = lazy(() => import('../pages/Keuangan/List'));
 const FamilyList = lazy(() => import('../pages/Family/List'));
+const JemaatEdit = lazy(() => import('../pages/Jemaat/Edit'));
 
 const ErrorElement = () => (
     <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
@@ -58,6 +59,13 @@ const routes = [
                         breadcrumb: 'Create',
                         description: 'Tambah data jemaat',
                     },
+                    {
+                        path: 'edit/:id',
+                        element: <JemaatEdit />,
+                        name: 'Edit Jemaat',
+                        breadcrumb: 'Edit',
+                        description: 'Edit data jemaat',
+                    }
                 ],
             },
             {
