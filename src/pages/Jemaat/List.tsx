@@ -33,17 +33,6 @@ const Jemaat: React.FC = () => {
   const [deletingJemaat, setDeletingJemaat] = useState<IJemaat | null>(null);
   const [deleting, setDeleting] = useState<boolean>(false);
 
-  const calculateAge = (birthDate: string | Date) => {
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-    return age;
-  };
-
   const heads = [
     { label: t('name'), key: 'name' },
     { label: t('gender'), key: 'gender' },
@@ -61,7 +50,6 @@ const Jemaat: React.FC = () => {
       if (response.code === 200) {
         setJemaatData(response.data.map(jemaat => ({
           ...jemaat,
-          age: calculateAge(jemaat.birth_date),
           birth_date: dayjs(jemaat.birth_date).format('DD-MM-YYYY'),
         })));
         setTotalItems(response.pagination.total);

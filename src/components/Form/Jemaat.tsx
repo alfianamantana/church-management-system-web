@@ -237,6 +237,7 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
                 </Dropdown>
               </div>
               <DayPicker
+                disabled={{ after: new Date() }}
                 animate
                 mode="single"
                 selected={selectedBirth}
@@ -351,6 +352,7 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
                 </Dropdown>
               </div>
               <DayPicker
+                disabled={{ after: new Date() }}
                 animate
                 pagedNavigation
                 mode="single"

@@ -9,6 +9,7 @@ const Calendar = lazy(() => import('../pages/Calendar'));
 const MemberList = lazy(() => import('../pages/Member/list'));
 const RoleList = lazy(() => import('../pages/Role/List'));
 const ScheduleList = lazy(() => import('../pages/Schedulle/List'));
+const ScheduleCreate = lazy(() => import('../pages/Schedulle/Create'));
 const KeuanganList = lazy(() => import('../pages/Keuangan/List'));
 const FamilyList = lazy(() => import('../pages/Family/List'));
 const JemaatEdit = lazy(() => import('../pages/Jemaat/Edit'));
@@ -111,6 +112,13 @@ const routes = [
                         breadcrumb: 'Schedule',
                         description: 'Daftar schedule',
                     },
+                    {
+                        path: 'create',
+                        element: <ScheduleCreate />,
+                        name: 'Create Schedule',
+                        breadcrumb: 'Create',
+                        description: 'Tambah data schedule',
+                    }
                 ],
             },
             {

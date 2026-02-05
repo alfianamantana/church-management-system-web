@@ -11,6 +11,8 @@ import { useDispatch } from 'react-redux';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import { ISchedule, IBasicResponse, IPagination } from '@/constant';
 import dayjs from 'dayjs';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface IScheduleResponse extends IBasicResponse {
   data: ISchedule[];
@@ -18,6 +20,8 @@ interface IScheduleResponse extends IBasicResponse {
 }
 
 const ScheduleList: React.FC = () => {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
   const [schedules, setSchedules] = useState<ISchedule[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<string>('');
@@ -26,6 +30,11 @@ const ScheduleList: React.FC = () => {
   const [total, setTotal] = useState<number>(0);
   const pageSize = 10;
   const dispatch = useDispatch();
+
+  // View modal states
+  const [isViewModalOpen, setIsViewModalOpen] = useState<boolean>(false);
+  const [viewSchedule, setViewSchedule] = useState<ISchedule | null>(null);
+  const [viewLoading, setViewLoading] = useState<boolean>(false);
 
   // Modal and form states
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -57,7 +66,7 @@ const ScheduleList: React.FC = () => {
   const fetchSchedules = async (page: number = 1, q: string = '') => {
     setLoading(true);
     try {
-      const { data } = await api.get(`/music/schedules?page=${page}&limit=${pageSize}&q=${q}`);
+      const { data } = await api({ url: `/music/schedules`, params: { page, limit: pageSize, q, musician: true } });
       const response: IScheduleResponse = data;
 
       if (response.code === 200) {
@@ -83,6 +92,19 @@ const ScheduleList: React.FC = () => {
     fetchSchedules(currentPage, search);
   }, [currentPage]);
 
+  const handleViewSchedule = async (schedule: ISchedule) => {
+    setViewLoading(true);
+    try {
+      // We already have assignments in payload (musician=true), just set state
+      setViewSchedule(schedule);
+      setIsViewModalOpen(true);
+    } catch (err) {
+      toast.error('Failed to load schedule details.');
+    } finally {
+      setViewLoading(false);
+    }
+  };
+
   const handleSearch = () => {
     setCurrentPage(1);
     fetchSchedules(1, search);
@@ -90,14 +112,6 @@ const ScheduleList: React.FC = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-  };
-
-  const handleAddSchedule = () => {
-    setFormData({ service_name: '', scheduled_at: '' });
-    setEditingSchedule(null);
-    setSelectedDate(undefined);
-    setSelectedTime('');
-    setIsModalOpen(true);
   };
 
   const handleEditSchedule = (schedule: ISchedule) => {
@@ -196,7 +210,7 @@ const ScheduleList: React.FC = () => {
             </button>
             <button
               className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200'
-              onClick={handleAddSchedule}
+              onClick={() => navigate('/schedule/create')}
             >
               Add Schedule
             </button>
@@ -217,8 +231,85 @@ const ScheduleList: React.FC = () => {
               callbackEdit={handleEditSchedule}
               canDelete={true}
               callbackDelete={handleDeleteSchedule}
+              canView={true}
+              callbackView={handleViewSchedule}
               action={true}
             />
+
+            {/* View Schedule Modal */}
+            <Modal
+              isOpen={isViewModalOpen}
+              onClose={() => setIsViewModalOpen(false)}
+              title={viewSchedule ? `${t('schedule')}: ${viewSchedule.service_name}` : t('schedule')}
+              size="md"
+            >
+              <div className="space-y-4">
+                {viewLoading ? (
+                  <div className="text-center py-4">Loading...</div>
+                ) : (
+                  viewSchedule && (
+                    <div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="md:col-span-2">
+                          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('details')}</h4>
+                          <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4">
+                            <div className="mb-2">
+                              <div className="text-sm text-gray-500">{t('service_name')}</div>
+                              <div className="font-medium text-gray-900 dark:text-gray-100 truncate">{viewSchedule.service_name}</div>
+                            </div>
+                            <div className="mb-2">
+                              <div className="text-sm text-gray-500">{t('scheduled_at')}</div>
+                              <div className="font-medium">{dayjs(viewSchedule.scheduled_at).format('DD-MM-YYYY HH:mm')}</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('summary')}</h4>
+                          <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4 text-center">
+                            <div className="text-xs text-gray-500">{t('members')}</div>
+                            <div className="text-2xl font-semibold">{(viewSchedule.serviceAssignments || []).length}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('musicians')}</h4>
+                        <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md">
+                          {(viewSchedule.serviceAssignments || []).length > 0 ? (
+                            <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+                              {(viewSchedule.serviceAssignments || []).map(a => (
+                                <li key={a.id} className="flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-900">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-sm text-gray-600 dark:text-white">{(a.member?.name || '').charAt(0).toUpperCase()}</div>
+                                    <div>
+                                      <div className="font-medium text-gray-900 dark:text-gray-100">{a.member?.name || '-'}</div>
+                                      <div className="text-xs text-gray-500">{a.role?.role_name || '-'}</div>
+                                    </div>
+                                  </div>
+                                  <div className="text-sm text-gray-500"></div>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <div className="p-4 text-sm text-gray-500">No musician assigned</div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end mt-4">
+                        <button
+                          onClick={() => setIsViewModalOpen(false)}
+                          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                        >
+                          {t('close')}
+                        </button>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+            </Modal>
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}

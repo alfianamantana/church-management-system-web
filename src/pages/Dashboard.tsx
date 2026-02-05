@@ -1,131 +1,158 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Card from '../components/Card';
 import ManSvg from '@/assets/svg/man.svg';
 import WomanSvg from '@/assets/svg/woman.svg';
+import { useTranslation } from 'react-i18next';
+import api from '@/services/api';
+import { toast } from 'react-toastify';
+import { IBasicResponse } from '@/constant';
+import dayjs from 'dayjs';
+interface BirthdayMember {
+  id: number;
+  name: string;
+  birth_date: string;
+  age: number;
+}
+interface ChurchEvent {
+  id: number;
+  title: string;
+  start: string;
+  end: string;
+  description: string;
+}
+interface LumenDashboardData {
+  totalMembers: number;
+  totalFamilies: number;
+  totalMale: number;
+  totalFemale: number;
+  incomeThisMonth: number;
+  expenseThisMonth: number;
+  eventsThisMonth: ChurchEvent[];
+  birthdaysThisMonth: BirthdayMember[];
+}
+
+interface LumenDashboardResponse extends IBasicResponse {
+  data: LumenDashboardData;
+}
 
 const Dashboard: React.FC = () => {
-  // Mock data
-  const members = [
-    { id: 1, name: 'John Doe', gender: 'M', age: 34, dob: '1991-02-10' },
-    { id: 2, name: 'Jane Smith', gender: 'F', age: 28, dob: '1998-02-20' },
-    { id: 3, name: 'Bob Johnson', gender: 'M', age: 45, dob: '1979-02-05' },
-    { id: 4, name: 'Alice Tan', gender: 'F', age: 52, dob: '1972-11-12' },
-    { id: 5, name: 'Maria Lee', gender: 'F', age: 22, dob: '2002-02-25' },
-  ];
+  const { t } = useTranslation();
+  const [dashboardData, setDashboardData] = useState<LumenDashboardData | null>(null);
 
-  const families = [
-    { id: 1, name: 'Family A' },
-    { id: 2, name: 'Family B' },
-    { id: 3, name: 'Family C' },
-  ];
+  const fetchDashboardData = async () => {
+    try {
+      const { data } = await api.get('/dashboard');
+      const response: LumenDashboardResponse = data;
+      if (response.code === 200) {
+        setDashboardData(response.data);
+      } else {
+        toast.error(response.message[0]);
+      }
+    } catch (error) {
+      toast.error(t('error_fetching_data') as string);
+    }
+  }
 
-  const finances = {
-    incomeThisMonth: 12500000, // in IDR
-    expenseThisMonth: 7250000,
-  };
-
-  const events = [
-    { id: 1, title: 'Sunday Service', date: '2026-02-08' },
-    { id: 2, title: 'Youth Meeting', date: '2026-02-15' },
-  ];
-
-  const thisMonth = new Date().getMonth() + 1; // 1-12
-
-  const birthdaysThisMonth = members.filter(m => {
-    const month = new Date(m.dob).getMonth() + 1;
-    return month === thisMonth;
-  });
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+  // Remove mock data and use fetched data
 
   const totals = useMemo(() => {
-    const totalMembers = members.length;
-    const male = members.filter(m => m.gender === 'M').length;
-    const female = members.filter(m => m.gender === 'F').length;
-    const familyCount = families.length;
-    const eventsThisMonth = events.filter(e => new Date(e.date).getMonth() + 1 === thisMonth).length;
-    const avgAge = Math.round(members.reduce((s, m) => s + m.age, 0) / (members.length || 1));
-    return { totalMembers, male, female, familyCount, eventsThisMonth, avgAge };
-  }, [members, families, events, thisMonth]);
+    if (!dashboardData) return { totalMembers: 0, male: 0, female: 0, familyCount: 0, eventsThisMonth: 0 };
+    const totalMembers = dashboardData.totalMembers;
+    const male = dashboardData.totalMale;
+    const female = dashboardData.totalFemale;
+    const familyCount = dashboardData.totalFamilies;
+    const eventsThisMonth = dashboardData.eventsThisMonth.length;
+    return { totalMembers, male, female, familyCount, eventsThisMonth };
+  }, [dashboardData]);
+
+  const finances = useMemo(() => {
+    if (!dashboardData) return { incomeThisMonth: 0, expenseThisMonth: 0 };
+    return {
+      incomeThisMonth: dashboardData.incomeThisMonth,
+      expenseThisMonth: dashboardData.expenseThisMonth,
+    };
+  }, [dashboardData]);
+
+  const eventsThisMonth = dashboardData?.eventsThisMonth || [];
+  const birthdaysThisMonth = dashboardData?.birthdaysThisMonth || [];
 
   const formatCurrency = (v: number) => v.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
 
   return (
     <div className="">
-      <section className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-4 gap-6">
+      <section className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-6">
         <Card>
-          <div className="text-sm text-gray-500">Total Jemaat</div>
-          <div className="mt-2 text-3xl font-bold text-blue-600">{totals.totalMembers}</div>
-        </Card>
-
-
-
-        <Card>
-          <div className="text-sm text-gray-500">Rata-rata Umur</div>
-          <div className="mt-2 text-3xl font-bold text-indigo-600">{totals.avgAge} th</div>
-        </Card>
-        <Card>
-          <div className="text-sm text-gray-500">Total Keluarga</div>
-          <div className="mt-2 text-2xl font-bold text-gray-800">{totals.familyCount}</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">{t('total_jemaat')}</div>
+          <div className="mt-2 text-3xl font-bold text-blue-600 dark:text-gray-200">{totals.totalMembers} {t('jemaat')}</div>
         </Card>
         <Card>
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <img src={ManSvg} alt="Man Icon" className="w-6 h-6 mr-2" />
               <div>
-                <div className="text-sm text-gray-500">Laki-laki</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">{t('male')}</div>
                 <div className="text-2xl font-semibold text-blue-500">{totals.male}</div>
               </div>
             </div>
             <div className="flex items-center">
               <img src={WomanSvg} alt="Woman Icon" className="w-6 h-6 mr-2" />
               <div>
-                <div className="text-sm text-gray-500">Perempuan</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">{t('female')}</div>
                 <div className="text-2xl font-semibold text-pink-500">{totals.female}</div>
               </div>
             </div>
           </div>
         </Card>
+        <Card>
+          <div className="text-sm text-gray-500 dark:text-gray-400">{t('total_families')}</div>
+          <div className="mt-2 text-2xl font-bold text-gray-800 dark:text-white">{totals.familyCount}</div>
+        </Card>
+
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
         <Card>
-          <div className="text-sm text-gray-500">Pemasukan (Bulan ini)</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">{t('income_this_month')}</div>
           <div className="mt-2 text-2xl font-semibold text-green-600">{formatCurrency(finances.incomeThisMonth)}</div>
-          <div className="text-xs text-gray-500 mt-1">Pendapatan acara & donasi</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('income_description')}</div>
         </Card>
 
         <Card>
-          <div className="text-sm text-gray-500">Pengeluaran (Bulan ini)</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">{t('expense_this_month')}</div>
           <div className="mt-2 text-2xl font-semibold text-red-600">{formatCurrency(finances.expenseThisMonth)}</div>
-          <div className="text-xs text-gray-500 mt-1">Biaya operasional & kegiatan</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('expense_description')}</div>
         </Card>
 
         <Card>
-          <div className="text-sm text-gray-500">Event (Bulan ini)</div>
-          <div className="mt-2 text-2xl font-bold text-gray-800">{totals.eventsThisMonth}</div>
-          <ul className="mt-2 text-sm text-gray-700">
-            {events.filter(e => new Date(e.date).getMonth() + 1 === thisMonth).map(ev => (
-              <li key={ev.id} className="py-1">{ev.title} — {new Date(ev.date).toLocaleDateString()}</li>
+          <div className="text-sm text-gray-500 dark:text-gray-400">{t('events_this_month')}</div>
+          <div className="mt-2 text-2xl font-bold text-gray-800 dark:text-white">{totals.eventsThisMonth}</div>
+          <ul className="mt-2 text-sm text-gray-700 dark:text-gray-300 max-h-32 overflow-y-auto">
+            {eventsThisMonth.map(ev => (
+              <li key={ev.id} className="py-1">{ev.title} — {dayjs(ev.start).format('DD-MM-YYYY')}</li>
             ))}
           </ul>
         </Card>
 
         <Card>
-          <h3 className="text-sm font-medium text-gray-700">Ulang Tahun Bulan Ini</h3>
-          <div className="mt-2">
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('birthdays_this_month')}</h3>
+          <div className="mt-2 max-h-32 overflow-y-auto">
             {birthdaysThisMonth.length ? (
-              <ul className="divide-y divide-gray-200">
+              <ul className="divide-y divide-gray-200 dark:divide-gray-700">
                 {birthdaysThisMonth.map(b => (
                   <li key={b.id} className="py-2 flex items-center justify-between">
                     <div>
-                      <div className="font-medium text-gray-800">{b.name}</div>
-                      <div className="text-xs text-gray-500">{new Date(b.dob).toLocaleDateString()}</div>
+                      <div className="font-medium text-gray-800 dark:text-white">{b.name}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{dayjs(b.birth_date).format('DD-MM-YYYY')}</div>
                     </div>
-                    <div className="text-sm text-gray-500">{b.age} th</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">{b.age} {t('years_old')}</div>
                   </li>
                 ))}
               </ul>
             ) : (
-              <div className="text-sm text-gray-500">Tidak ada ulang tahun bulan ini.</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">{t('no_birthdays_this_month')}</div>
             )}
           </div>
         </Card>

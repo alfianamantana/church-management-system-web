@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import ReactDOM from 'react-dom';
 
 interface DropdownRef {
   close: () => void;
@@ -12,77 +13,181 @@ interface DropdownProps {
   position?: 'bottom' | 'top' | 'left' | 'right' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   required?: boolean;
   fullWidth?: boolean;
+  id?: string;
 }
 
 const Dropdown = forwardRef<DropdownRef, DropdownProps>(({
+  id,
   trigger,
   children,
   className = '',
   label,
   position = 'bottom',
   required = false,
-  fullWidth = false,
 }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const dropdownContentRef = useRef<HTMLDivElement>(null);
 
   useImperativeHandle(ref, () => ({
-    close: () => setIsOpen(false),
+    close: () => closeDropdown(),
   }));
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+      if (
+        dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
+        dropdownContentRef.current && !dropdownContentRef.current.contains(event.target as Node)
+      ) {
+        closeDropdown();
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleTriggerClick = () => {
-    setIsOpen(!isOpen);
+  const closeDropdown = () => {
+    setIsAnimatingOut(true);
+    setTimeout(() => {
+      setIsOpen(false);
+      setIsAnimatingOut(false);
+    }, 200); // duration of animation
   };
 
-  const getPositionClasses = () => {
+  const getDropdownPosition = () => {
+    if (!triggerRef.current) return { top: 0, left: 0 };
+    const rect = triggerRef.current.getBoundingClientRect();
+    const scrollX = window.scrollX || window.pageXOffset;
+    const scrollY = window.scrollY || window.pageYOffset;
+    let top = rect.bottom + scrollY + 5; // gap 5px for bottom
+    let left = rect.left + scrollX;
     switch (position) {
       case 'top':
-        return 'bottom-full mb-1';
+        top = rect.top + scrollY - 5 - 200; // approximate height - gap
+        left = rect.left + scrollX;
+        break;
       case 'left':
-        return 'right-full mr-1';
+        left = rect.left + scrollX - 5 - 200; // approximate width - gap
+        top = rect.top + scrollY;
+        break;
       case 'right':
-        return 'left-full ml-1';
+        left = rect.right + scrollX + 5; // gap
+        top = rect.top + scrollY;
+        break;
       case 'top-left':
-        return 'bottom-full left-0 mb-1';
+        top = rect.top + scrollY - 5 - 200;
+        left = rect.left + scrollX;
+        break;
       case 'top-right':
-        return 'bottom-full right-0 mb-1';
+        top = rect.top + scrollY - 5 - 200;
+        left = rect.right + scrollX - 200; // approximate width
+        break;
       case 'bottom-left':
-        return 'top-full left-0 mt-1';
+        top = rect.bottom + scrollY + 5;
+        left = rect.left + scrollX;
+        break;
       case 'bottom-right':
-        return 'top-full right-0 mt-1';
+        top = rect.bottom + scrollY + 5;
+        left = rect.right + scrollX - 200;
+        break;
       case 'bottom':
       default:
-        return 'top-full mt-1';
+        break;
+    }
+    return { top, left };
+  };
+
+  const getTransformOrigin = () => {
+    switch (position) {
+      case 'top':
+        return 'origin-bottom';
+      case 'left':
+        return 'origin-right';
+      case 'right':
+        return 'origin-left';
+      case 'top-left':
+        return 'origin-bottom-left';
+      case 'top-right':
+        return 'origin-bottom-right';
+      case 'bottom-left':
+        return 'origin-top-left';
+      case 'bottom-right':
+        return 'origin-top-right';
+      case 'bottom':
+      default:
+        return 'origin-top';
     }
   };
 
   return (
-    <div className={`w-full flex flex-col gap-1 ${className}`}>
-      {label && <label className="block font-semibold text-gray-700 dark:text-gray-200">{label}{required && <span className="text-red-500">*</span>}</label>}
-      <div className="relative" ref={dropdownRef}>
-        <div onClick={handleTriggerClick} className="cursor-pointer">
-          {trigger}
-        </div>
-        {isOpen && (
-          <div className={`absolute mt-2 z-10 ${fullWidth ? 'w-full' : ''} ${getPositionClasses()} bg-white border border-gray-300 rounded shadow-lg dark:bg-gray-900 dark:border-gray-700`}>
-            {children}
+    <>
+      <style>
+        {`
+          @keyframes dropdown-enter {
+            from {
+              opacity: 0;
+              transform: scale(0.95) translateY(-8px);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1) translateY(0);
+            }
+          }
+          @keyframes dropdown-exit {
+            from {
+              opacity: 1;
+              transform: scale(1) translateY(0);
+            }
+            to {
+              opacity: 0;
+              transform: scale(0.95) translateY(-8px);
+            }
+          }
+          .dropdown-enter {
+            animation: dropdown-enter 0.2s ease-out forwards;
+          }
+          .dropdown-exit {
+            animation: dropdown-exit 0.2s ease-out forwards;
+          }
+        `}
+      </style>
+      <div id={id} className={`relative w-full flex flex-col gap-1 ${className} ${isOpen ? 'z-50' : ''}`}>
+        {label && (
+          <label className="block font-semibold text-gray-700 dark:text-gray-200 text-sm">
+            {label}{required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+        )}
+
+        <div className="relative" ref={dropdownRef}>
+          <div ref={triggerRef} onClick={() => isOpen ? closeDropdown() : setIsOpen(true)} className="cursor-pointer">
+            {trigger}
           </div>
+        </div>
+
+        {(isOpen || isAnimatingOut) && ReactDOM.createPortal(
+          <div
+            ref={dropdownContentRef}
+            className={`
+              fixed z-50
+              ${getTransformOrigin()}
+              ${isAnimatingOut ? 'dropdown-exit' : 'dropdown-enter'}
+              bg-white dark:bg-gray-900 
+              border border-gray-200 dark:border-gray-700 
+              rounded-xl shadow-xl ring-1 ring-black ring-opacity-5
+              overflow-hidden
+            `}
+            style={getDropdownPosition()}
+          >
+            <div className="py-1">
+              {children}
+            </div>
+          </div>,
+          document.body
         )}
       </div>
-    </div>
+    </>
   );
 });
 

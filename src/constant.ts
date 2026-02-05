@@ -6,6 +6,14 @@ export interface IBasicResponse {
 
 export type UserRole = 'superadmin' | 'user';
 
+export interface IMusician {
+    id: number;
+    name: string;
+    phone: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface IMember {
     id: number;
     name: string;
@@ -20,6 +28,18 @@ export interface ISchedule {
     scheduled_at: string;
     createdAt: string;
     updatedAt: string;
+    serviceAssignments: IServiceAssignment[];
+}
+
+export interface IServiceAssignment {
+    id: number;
+    schedule_id: number;
+    member_id: number;
+    role_id: number;
+    createdAt: string;
+    updatedAt: string;
+    member?: IMember;
+    role?: IRole;
 }
 
 export interface IRole {
@@ -63,6 +83,7 @@ export interface IJemaat {
     born_place: string;
     is_married: boolean;
     gender: 'male' | 'female';
+    age: number;
     createdAt: string | Date;
     updatedAt: string | Date;
 

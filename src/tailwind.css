@@ -3,7 +3,7 @@
 @import './assets/css/animate.css';
 @import './assets/css/fullcalendar.css';
 @import './assets/css/reactdaypicker.css';
-
+@import "driver.js/dist/driver.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -400,7 +400,7 @@ const FamilyList: React.FC = () => {
                     <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-300">
                       <div>
                         <div className="text-xs text-gray-500">{t('created_at')}</div>
-                        <div className="font-medium">{(viewFamily as any)?.createdAt || '-'}</div>
+                        <div className="font-medium">{dayjs(viewFamily?.createdAt).format('DD-MM-YYYY') || '-'}</div>
                       </div>
                       <div>
                         <div className="text-xs text-gray-500">{t('member_count')}</div>
@@ -410,7 +410,7 @@ const FamilyList: React.FC = () => {
                   </div>
                 </div>
 
-                <div>
+                <div >
                   <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('summary')}</h4>
                   <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4 text-center">
                     <div className="text-xs text-gray-500">{t('members')}</div>
@@ -430,6 +430,7 @@ const FamilyList: React.FC = () => {
                             <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-sm text-gray-600 dark:text-white">{(m.name || '').charAt(0).toUpperCase()}</div>
                             <div>
                               <div className="font-medium text-gray-900 dark:text-gray-100">{m.name}</div>
+                              <div className="text-xs text-gray-500">{t(m.gender)} - Age: {m.age}</div>
                               {(m as any).email && <div className="text-xs text-gray-500">{(m as any).email}</div>}
                             </div>
                           </div>
