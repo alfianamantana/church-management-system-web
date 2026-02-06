@@ -156,29 +156,31 @@ const RoleList: React.FC = () => {
 
   return (
     <div>
-      <Card title="Role List">
-        <div className="mb-4">
-          <div className="flex gap-2">
+      <Card title="Role List" id="role-list-card">
+        <div className="mb-4 px-2 md:px-0">
+          <div className="flex flex-col gap-3 md:flex-row md:gap-2">
             <input
               type="text"
               placeholder="Search by role name..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
             />
-            <button
-              onClick={handleSearch}
-              type="button"
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200"
-            >
-              Search
-            </button>
-            <button
-              className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200'
-              onClick={handleAddRole}
-            >
-              Add Role
-            </button>
+            <div className="flex flex-col gap-2 md:flex-row md:gap-2">
+              <button
+                onClick={handleSearch}
+                type="button"
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200 text-sm md:text-base"
+              >
+                Search
+              </button>
+              <button
+                className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200 text-sm md:text-base'
+                onClick={handleAddRole}
+              >
+                Add Role
+              </button>
+            </div>
           </div>
         </div>
 
@@ -186,18 +188,20 @@ const RoleList: React.FC = () => {
           <div className="text-center py-4">Loading...</div>
         ) : (
           <>
-            <Table
-              heads={tableHeads}
-              data={roles}
-              currentPage={currentPage}
-              pageSize={pageSize}
-              showIndex={true}
-              canEdit={true}
-              callbackEdit={handleEditRole}
-              canDelete={true}
-              callbackDelete={handleDeleteRole}
-              action={true}
-            />
+            <div className="overflow-x-auto">
+              <Table
+                heads={tableHeads}
+                data={roles}
+                currentPage={currentPage}
+                pageSize={pageSize}
+                showIndex={true}
+                canEdit={true}
+                callbackEdit={handleEditRole}
+                canDelete={true}
+                callbackDelete={handleDeleteRole}
+                action={true}
+              />
+            </div>
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -210,6 +214,7 @@ const RoleList: React.FC = () => {
       </Card>
 
       <Modal
+        id="role-modal"
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={editingRole ? 'Edit Role' : 'Add New Role'}
@@ -230,7 +235,7 @@ const RoleList: React.FC = () => {
               required
             />
           </div>
-          <div className="flex justify-end space-x-3">
+          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
@@ -250,6 +255,7 @@ const RoleList: React.FC = () => {
       </Modal>
 
       <Modal
+        id="delete-role-modal"
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         title="Confirm Delete"
@@ -259,7 +265,7 @@ const RoleList: React.FC = () => {
           <p className="text-gray-700 dark:text-gray-300">
             Are you sure you want to delete role <strong>{deletingRole?.role_name}</strong>? This action cannot be undone.
           </p>
-          <div className="flex justify-end space-x-3">
+          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3">
             <button
               type="button"
               onClick={() => setIsDeleteModalOpen(false)}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -7,9 +7,11 @@ interface ModalProps {
   children: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
+  id: string;
 }
 
 const Modal: React.FC<ModalProps> = ({
+  id,
   isOpen,
   onClose,
   title,
@@ -24,12 +26,38 @@ const Modal: React.FC<ModalProps> = ({
     xl: 'max-w-xl',
   };
 
-  if (!isOpen) return null;
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [isAnimatingOut, setIsAnimatingOut] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsAnimatingOut(false);
+      setIsVisible(true);
+    } else if (isVisible) {
+      setIsAnimatingOut(true);
+      const t = setTimeout(() => {
+        setIsAnimatingOut(false);
+        setIsVisible(false);
+      }, 200); // duration matches Tailwind transition
+      return () => clearTimeout(t);
+    }
+  }, [isOpen]);
+
+  if (!isVisible && !isAnimatingOut) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300" onClick={onClose}>
+    <div
+      id={id}
+      className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-200 ${isAnimatingOut ? 'opacity-0' : 'opacity-100'
+        }`}
+      style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+      onClick={onClose}
+    >
       <div
-        className={`relative w-full ${sizeClasses[size]} mx-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg transform transition-all duration-300 scale-100 opacity-100 ${className}`}
+        className={`relative w-full ${sizeClasses[size]} mx-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg transform transition-all duration-200 ${isAnimatingOut
+          ? 'opacity-0 scale-95 -translate-y-2'
+          : 'opacity-100 scale-100 translate-y-0'
+          } ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {title && (

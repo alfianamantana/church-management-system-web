@@ -23,11 +23,12 @@ interface TableProps {
   action?: boolean;
   canView?: boolean;
   callbackView?: (row: any) => void;
+  id: string;
 }
 
-const Table: React.FC<TableProps> = ({ heads, data, currentPage = 1, pageSize = 10, showIndex = true, canDelete = false, callbackDelete, canEdit = false, callbackEdit, canView = false, callbackView, action = false }) => {
+const Table: React.FC<TableProps> = ({ id, heads, data, currentPage = 1, pageSize = 10, showIndex = true, canDelete = false, callbackDelete, canEdit = false, callbackEdit, canView = false, callbackView, action = false }) => {
   return (
-    <div className={`overflow-x-auto`}>
+    <div id={id} className={`overflow-x-auto`}>
       <table className="min-w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg">
         <thead>
           <tr>

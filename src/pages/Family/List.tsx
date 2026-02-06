@@ -93,8 +93,6 @@ const FamilyList: React.FC = () => {
         toast.error(response.message[0]);
       }
     } catch (error) {
-      console.log(error, '?');
-
       toast.error(t('failed_fetch_families') as string);
     } finally {
       setLoading(false);
@@ -231,51 +229,58 @@ const FamilyList: React.FC = () => {
   ];
 
   return (
-    <div>
-      <Card title={t('family_list')}>
-        <div className="mb-4">
-          <div className="flex gap-2">
+    <div id="family-list-container">
+      <Card title={t('family_list')} id="family-list-card">
+        <div className="mb-4 px-2 md:px-0" id="search-section">
+          <div className="flex flex-col gap-3 md:flex-row md:gap-2" id="search-controls">
             <input
               type="text"
               placeholder={t('search_by_name')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+              id="search-input"
             />
-            <button
-              onClick={handleSearch}
-              type="button"
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200"
-            >
-              {t('search')}
-            </button>
-            <button
-              className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200'
-              onClick={handleAddFamily}
-            >
-              {t('add_family')}
-            </button>
+            <div className="flex flex-col gap-2 md:flex-row md:gap-2">
+              <button
+                onClick={handleSearch}
+                type="button"
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200 text-sm md:text-base"
+                id="search-button"
+              >
+                {t('search')}
+              </button>
+              <button
+                className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200 text-sm md:text-base'
+                onClick={handleAddFamily}
+                id="add-family-button"
+              >
+                {t('add_family')}
+              </button>
+            </div>
           </div>
         </div>
 
         {loading ? (
-          <div className="text-center py-4">{t('loading')}...</div>
+          <div className="text-center py-4" id="loading-indicator">{t('loading')}...</div>
         ) : (
           <>
-            <Table
-              heads={tableHeads}
-              data={families}
-              currentPage={currentPage}
-              pageSize={pageSize}
-              showIndex={true}
-              canEdit={true}
-              callbackEdit={handleEditFamily}
-              canView={true}
-              callbackView={handleViewFamily}
-              canDelete={true}
-              callbackDelete={handleDeleteFamily}
-              action={true}
-            />
+            <div className="overflow-x-auto" id="table-container">
+              <Table
+                heads={tableHeads}
+                data={families}
+                currentPage={currentPage}
+                pageSize={pageSize}
+                showIndex={true}
+                canEdit={true}
+                callbackEdit={handleEditFamily}
+                canView={true}
+                callbackView={handleViewFamily}
+                canDelete={true}
+                callbackDelete={handleDeleteFamily}
+                action={true}
+              />
+            </div>
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -292,17 +297,19 @@ const FamilyList: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         title={editingFamily ? t('edit_family') : t('add_new_family')}
         size="md"
+        id="family-form-modal"
       >
-        <form onSubmit={handleFormSubmit} className="space-y-4">
+        <form onSubmit={handleFormSubmit} className="space-y-4" id="form-content">
           <InputText
             label={t('family_name')}
             name="name"
             value={formData.name}
             onChange={handleInputChange}
             required
+            id="family-name-input"
           />
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <div id="select-members-section">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" id="select-members-label">
               {t('select_members')}
             </label>
             <DropdownSearch
@@ -331,11 +338,12 @@ const FamilyList: React.FC = () => {
               selectedValue={allJemaat.filter(j => selectedJemaatIds.includes(j.id)).map(j => ({ id: j.id, label: j.name }))}
             />
           </div>
-          <div className="flex justify-end space-x-3">
+          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="form-modal-actions">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              id="form-cancel-button"
             >
               {t('cancel')}
             </button>
@@ -343,6 +351,7 @@ const FamilyList: React.FC = () => {
               type="submit"
               disabled={submitting}
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              id="form-submit-button"
             >
               {submitting ? (editingFamily ? t('updating') : t('adding')) : (editingFamily ? t('update_family') : t('add_family'))}
             </button>
@@ -355,16 +364,18 @@ const FamilyList: React.FC = () => {
         onClose={() => setIsDeleteModalOpen(false)}
         title={t('confirm') + ' ' + t('delete')}
         size="sm"
+        id="delete-confirmation-modal"
       >
-        <div className="space-y-4">
-          <p className="text-gray-700 dark:text-gray-300">
+        <div className="space-y-4" id="delete-modal-content">
+          <p className="text-gray-700 dark:text-gray-300" id="delete-confirmation-text">
             {t('confirm_delete_family')}
           </p>
-          <div className="flex justify-end space-x-3">
+          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="delete-modal-actions">
             <button
               type="button"
               onClick={() => setIsDeleteModalOpen(false)}
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              id="delete-cancel-button"
             >
               {t('cancel')}
             </button>
@@ -372,6 +383,7 @@ const FamilyList: React.FC = () => {
               onClick={handleConfirmDelete}
               disabled={deleting}
               className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              id="delete-confirm-button"
             >
               {deleting ? t('deleting') : t('delete')}
             </button>
@@ -383,26 +395,27 @@ const FamilyList: React.FC = () => {
         onClose={() => setIsViewModalOpen(false)}
         title={t('family_detail') + (viewFamily ? `: ${viewFamily.name}` : '')}
         size="md"
+        id="view-family-modal"
       >
         <div id="family-detail-modal" className="space-y-4">
           {viewLoading ? (
-            <div className="text-center py-4">{t('loading')}...</div>
+            <div className="text-center py-4" id="view-loading">{t('loading')}...</div>
           ) : (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="md:col-span-2">
+            <div className="space-y-4" id="view-content">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4" id="view-grid">
+                <div className="md:col-span-2" id="view-details-section">
                   <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('details')}</h4>
-                  <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4">
-                    <div className="mb-2">
+                  <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4" id="view-details-card">
+                    <div className="mb-2" id="view-family-name">
                       <div className="text-sm text-gray-500">{t('family_name')}</div>
                       <div className="font-medium text-gray-900 dark:text-gray-100 truncate">{viewFamily?.name || '-'}</div>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-300">
-                      <div>
+                    <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-300" id="view-meta-grid">
+                      <div id="view-created-at">
                         <div className="text-xs text-gray-500">{t('created_at')}</div>
                         <div className="font-medium">{dayjs(viewFamily?.createdAt).format('DD-MM-YYYY') || '-'}</div>
                       </div>
-                      <div>
+                      <div id="view-member-count">
                         <div className="text-xs text-gray-500">{t('member_count')}</div>
                         <div className="font-medium">{viewMembers.length}</div>
                       </div>
@@ -410,46 +423,47 @@ const FamilyList: React.FC = () => {
                   </div>
                 </div>
 
-                <div >
+                <div id="view-summary-section">
                   <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('summary')}</h4>
-                  <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4 text-center">
+                  <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4 text-center" id="view-summary-card">
                     <div className="text-xs text-gray-500">{t('members')}</div>
                     <div className="text-2xl font-semibold">{viewMembers.length}</div>
                   </div>
                 </div>
               </div>
 
-              <div>
+              <div id="view-members-section">
                 <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('members')}</h4>
-                <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md">
+                <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md" id="view-members-list">
                   {viewMembers.length > 0 ? (
-                    <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+                    <ul className="divide-y divide-gray-100 dark:divide-gray-800" id="members-ul">
                       {viewMembers.map(m => (
-                        <li key={m.id} className="flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-900">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-sm text-gray-600 dark:text-white">{(m.name || '').charAt(0).toUpperCase()}</div>
-                            <div>
-                              <div className="font-medium text-gray-900 dark:text-gray-100">{m.name}</div>
-                              <div className="text-xs text-gray-500">{t(m.gender)} - Age: {m.age}</div>
-                              {(m as any).email && <div className="text-xs text-gray-500">{(m as any).email}</div>}
+                        <li key={m.id} className="flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-900" id={`member-item-${m.id}`}>
+                          <div className="flex items-center gap-3" id={`member-info-${m.id}`}>
+                            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-sm text-gray-600 dark:text-white" id={`member-avatar-${m.id}`}>{(m.name || '').charAt(0).toUpperCase()}</div>
+                            <div id={`member-details-${m.id}`}>
+                              <div className="font-medium text-gray-900 dark:text-gray-100" id={`member-name-${m.id}`}>{m.name}</div>
+                              <div className="text-xs text-gray-500" id={`member-meta-${m.id}`}>{t(m.gender)} - Age: {m.age}</div>
+                              {(m as any).email && <div className="text-xs text-gray-500" id={`member-email-${m.id}`}>{(m as any).email}</div>}
                             </div>
                           </div>
-                          <div className="text-sm text-gray-500">{(m as any).phone || ''}</div>
+                          <div className="text-sm text-gray-500" id={`member-phone-${m.id}`}>{(m as any).phone || ''}</div>
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <div className="p-4 text-sm text-gray-500">{t('no_members_selected')}</div>
+                    <div className="p-4 text-sm text-gray-500" id="no-members">{t('no_members_selected')}</div>
                   )}
                 </div>
               </div>
             </div>
           )}
 
-          <div className="flex justify-end">
+          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="view-modal-actions">
             <button
               onClick={() => setIsViewModalOpen(false)}
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              id="view-close-button"
             >
               {t('close')}
             </button>

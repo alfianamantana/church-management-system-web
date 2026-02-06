@@ -158,29 +158,31 @@ const MemberList: React.FC = () => {
 
   return (
     <div>
-      <Card title="Member List">
-        <div className="mb-4">
-          <div className="flex gap-2">
+      <Card title="Member List" id="member-list-card">
+        <div className="mb-4 px-2 md:px-0">
+          <div className="flex flex-col gap-3 md:flex-row md:gap-2">
             <input
               type="text"
               placeholder="Search by name..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
             />
-            <button
-              onClick={handleSearch}
-              type="button"
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200"
-            >
-              Search
-            </button>
-            <button
-              className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200'
-              onClick={handleAddMember}
-            >
-              Add Member
-            </button>
+            <div className="flex flex-col gap-2 md:flex-row md:gap-2">
+              <button
+                onClick={handleSearch}
+                type="button"
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200 text-sm md:text-base"
+              >
+                Search
+              </button>
+              <button
+                className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200 text-sm md:text-base'
+                onClick={handleAddMember}
+              >
+                Add Member
+              </button>
+            </div>
           </div>
         </div>
 
@@ -188,18 +190,20 @@ const MemberList: React.FC = () => {
           <div className="text-center py-4">Loading...</div>
         ) : (
           <>
-            <Table
-              heads={tableHeads}
-              data={members}
-              currentPage={currentPage}
-              pageSize={pageSize}
-              showIndex={true}
-              canEdit={true}
-              callbackEdit={handleEditMember}
-              canDelete={true}
-              callbackDelete={handleDeleteMember}
-              action={true}
-            />
+            <div className="overflow-x-auto">
+              <Table
+                heads={tableHeads}
+                data={members}
+                currentPage={currentPage}
+                pageSize={pageSize}
+                showIndex={true}
+                canEdit={true}
+                callbackEdit={handleEditMember}
+                canDelete={true}
+                callbackDelete={handleDeleteMember}
+                action={true}
+              />
+            </div>
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -212,6 +216,7 @@ const MemberList: React.FC = () => {
       </Card>
 
       <Modal
+        id="member-modal"
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={editingMember ? 'Edit Member' : 'Add New Member'}
@@ -245,7 +250,7 @@ const MemberList: React.FC = () => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          <div className="flex justify-end space-x-3">
+          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
@@ -265,6 +270,7 @@ const MemberList: React.FC = () => {
       </Modal>
 
       <Modal
+        id="delete-member-modal"
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         title="Confirm Delete"
@@ -274,7 +280,7 @@ const MemberList: React.FC = () => {
           <p className="text-gray-700 dark:text-gray-300">
             Are you sure you want to delete member <strong>{deletingMember?.name}</strong>? This action cannot be undone.
           </p>
-          <div className="flex justify-end space-x-3">
+          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3">
             <button
               type="button"
               onClick={() => setIsDeleteModalOpen(false)}

@@ -115,12 +115,7 @@ const ScheduleList: React.FC = () => {
   };
 
   const handleEditSchedule = (schedule: ISchedule) => {
-    setFormData({ service_name: schedule.service_name, scheduled_at: dayjs(schedule.scheduled_at).format('YYYY-MM-DDTHH:mm') });
-    setEditingSchedule(schedule);
-    const date = new Date(schedule.scheduled_at);
-    setSelectedDate(date);
-    setSelectedTime(dayjs(date).format('HH:mm'));
-    setIsModalOpen(true);
+    navigate(`/schedule/edit/${schedule.id}`);
   };
 
   const handleDeleteSchedule = (schedule: ISchedule) => {
@@ -190,35 +185,40 @@ const ScheduleList: React.FC = () => {
   ];
 
   return (
-    <div>
-      <Card title="Schedule List">
-        <div className="mb-4">
-          <div className="flex gap-2">
+    <div id="schedule-list-container">
+      <Card title="Schedule List" id="schedule-list-card">
+        <div className="mb-4 px-2 md:px-0" id="search-section">
+          <div className="flex flex-col gap-3 md:flex-row md:gap-2" id="search-controls">
             <input
               type="text"
               placeholder="Search by service name..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+              id="search-input"
             />
-            <button
-              onClick={handleSearch}
-              type="button"
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200"
-            >
-              Search
-            </button>
-            <button
-              className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200'
-              onClick={() => navigate('/schedule/create')}
-            >
-              Add Schedule
-            </button>
+            <div className="flex flex-col gap-2 md:flex-row md:gap-2">
+              <button
+                onClick={handleSearch}
+                type="button"
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200 text-sm md:text-base"
+                id="search-button"
+              >
+                Search
+              </button>
+              <button
+                className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200 text-sm md:text-base'
+                onClick={() => navigate('/schedule/create')}
+                id="add-schedule-button"
+              >
+                Add Schedule
+              </button>
+            </div>
           </div>
         </div>
 
         {loading ? (
-          <div className="text-center py-4">Loading...</div>
+          <div className="text-center py-4" id="loading-indicator">Loading...</div>
         ) : (
           <>
             <Table
@@ -242,45 +242,46 @@ const ScheduleList: React.FC = () => {
               onClose={() => setIsViewModalOpen(false)}
               title={viewSchedule ? `${t('schedule')}: ${viewSchedule.service_name}` : t('schedule')}
               size="md"
+              id="view-schedule-modal"
             >
-              <div className="space-y-4">
+              <div className="space-y-4" id="view-modal-content">
                 {viewLoading ? (
-                  <div className="text-center py-4">Loading...</div>
+                  <div className="text-center py-4" id="view-loading">Loading...</div>
                 ) : (
                   viewSchedule && (
-                    <div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="md:col-span-2">
+                    <div id="view-schedule-details">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4" id="view-grid">
+                        <div className="md:col-span-2" id="view-details-section">
                           <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('details')}</h4>
-                          <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4">
-                            <div className="mb-2">
+                          <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4" id="view-details-card">
+                            <div className="mb-2" id="view-service-name">
                               <div className="text-sm text-gray-500">{t('service_name')}</div>
                               <div className="font-medium text-gray-900 dark:text-gray-100 truncate">{viewSchedule.service_name}</div>
                             </div>
-                            <div className="mb-2">
+                            <div className="mb-2" id="view-scheduled-at">
                               <div className="text-sm text-gray-500">{t('scheduled_at')}</div>
                               <div className="font-medium">{dayjs(viewSchedule.scheduled_at).format('DD-MM-YYYY HH:mm')}</div>
                             </div>
                           </div>
                         </div>
 
-                        <div>
+                        <div id="view-summary-section">
                           <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('summary')}</h4>
-                          <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4 text-center">
+                          <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4 text-center" id="view-summary-card">
                             <div className="text-xs text-gray-500">{t('members')}</div>
                             <div className="text-2xl font-semibold">{(viewSchedule.serviceAssignments || []).length}</div>
                           </div>
                         </div>
                       </div>
 
-                      <div className="mt-4">
+                      <div className="mt-4" id="view-musicians-section">
                         <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('musicians')}</h4>
-                        <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md">
+                        <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md" id="view-musicians-list">
                           {(viewSchedule.serviceAssignments || []).length > 0 ? (
-                            <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+                            <ul className="divide-y divide-gray-100 dark:divide-gray-800" id="musicians-ul">
                               {(viewSchedule.serviceAssignments || []).map(a => (
-                                <li key={a.id} className="flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-900">
-                                  <div className="flex items-center gap-3">
+                                <li key={a.id} className="flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-900" id={`musician-item-${a.id}`}>
+                                  <div className="flex items-center gap-3" id={`musician-info-${a.id}`}>
                                     <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-sm text-gray-600 dark:text-white">{(a.member?.name || '').charAt(0).toUpperCase()}</div>
                                     <div>
                                       <div className="font-medium text-gray-900 dark:text-gray-100">{a.member?.name || '-'}</div>
@@ -292,15 +293,16 @@ const ScheduleList: React.FC = () => {
                               ))}
                             </ul>
                           ) : (
-                            <div className="p-4 text-sm text-gray-500">No musician assigned</div>
+                            <div className="p-4 text-sm text-gray-500" id="no-musicians">No musician assigned</div>
                           )}
                         </div>
                       </div>
 
-                      <div className="flex justify-end mt-4">
+                      <div className="flex justify-end mt-4" id="view-modal-actions">
                         <button
                           onClick={() => setIsViewModalOpen(false)}
                           className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                          id="view-close-button"
                         >
                           {t('close')}
                         </button>
@@ -322,13 +324,14 @@ const ScheduleList: React.FC = () => {
       </Card>
 
       <Modal
+        id="form-schedule-modal"
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={editingSchedule ? 'Edit Schedule' : 'Add New Schedule'}
         size="md"
       >
-        <div className="space-y-4">
-          <div>
+        <div className="space-y-4" id="form-modal-content">
+          <div id="service-name-field">
             <label htmlFor="service_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Service Name *
             </label>
@@ -342,38 +345,42 @@ const ScheduleList: React.FC = () => {
               required
             />
           </div>
-          <div>
+          <div id="scheduled-at-field">
             <label htmlFor="scheduled_at" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Scheduled At *
             </label>
             <Dropdown
               position="bottom"
               trigger={
-                <button className="w-full mt-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:focus:ring-blue-500 text-left">
+                <button className="w-full mt-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:focus:ring-blue-500 text-left" id="date-time-picker-button">
                   {formData.scheduled_at ? dayjs(formData.scheduled_at).format('DD-MM-YYYY HH:mm') : 'Pilih Tanggal dan Waktu'}
                 </button>
               }
+              id="date-time-dropdown"
             >
-              <div className="p-4 space-y-4">
+              <div className="p-4 space-y-4" id="date-time-picker-content">
                 <DayPicker
                   mode="single"
                   selected={selectedDate}
                   onSelect={setSelectedDate}
+                  id="day-picker"
                 />
                 <input
                   type="time"
                   value={selectedTime}
                   onChange={(e) => setSelectedTime(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  id="time-input"
                 />
               </div>
             </Dropdown>
           </div>
-          <div className="flex justify-end space-x-3">
+          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="form-modal-actions">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
+              id="form-cancel-button"
             >
               Cancel
             </button>
@@ -382,6 +389,7 @@ const ScheduleList: React.FC = () => {
               type="submit"
               disabled={submitting}
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              id="form-submit-button"
             >
               {submitting ? (editingSchedule ? 'Updating...' : 'Adding...') : (editingSchedule ? 'Update Schedule' : 'Add Schedule')}
             </button>
@@ -390,20 +398,22 @@ const ScheduleList: React.FC = () => {
       </Modal>
 
       <Modal
+        id="delete-schedule-modal"
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         title="Confirm Delete"
         size="sm"
       >
-        <div className="space-y-4">
-          <p className="text-gray-700 dark:text-gray-300">
+        <div className="space-y-4" id="delete-modal-content">
+          <p className="text-gray-700 dark:text-gray-300" id="delete-confirmation-text">
             Are you sure you want to delete schedule <strong>{deletingSchedule?.service_name}</strong>? This action cannot be undone.
           </p>
-          <div className="flex justify-end space-x-3">
+          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="delete-modal-actions">
             <button
               type="button"
               onClick={() => setIsDeleteModalOpen(false)}
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
+              id="delete-cancel-button"
             >
               Cancel
             </button>
@@ -411,6 +421,7 @@ const ScheduleList: React.FC = () => {
               onClick={handleConfirmDelete}
               disabled={deleting}
               className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              id="delete-confirm-button"
             >
               {deleting ? 'Deleting...' : 'Delete'}
             </button>

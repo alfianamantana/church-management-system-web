@@ -99,7 +99,7 @@ const KeuanganList: React.FC = () => {
       if (response.code === 200) {
         const resData = response.data.map(transaction => ({
           ...transaction,
-          amount: formatRupiah(parseFloat(transaction.amount).toString()),
+          amount: formatRupiah(typeof transaction.amount === 'string' ? transaction.amount : transaction.amount.toString()),
           date: dayjs(transaction.date).format('DD-MM-YYYY'),
           createdAt: dayjs(transaction.createdAt).format('DD-MM-YYYY HH:mm'),
         }));
@@ -146,7 +146,7 @@ const KeuanganList: React.FC = () => {
     setFormData({
       date: transaction.date,
       category_id: transaction.category_id,
-      amount: formatRupiah(parseFloat(transaction.amount).toString()),
+      amount: formatRupiah(typeof transaction.amount === 'string' ? transaction.amount : transaction.amount.toString()),
       note: transaction.note || ''
     });
     setEditingTransaction(transaction);
@@ -215,8 +215,10 @@ const KeuanganList: React.FC = () => {
   };
 
   const formatRupiah = (value: string | number) => {
+    // Convert to string if it's a number
+    const stringValue = typeof value === 'number' ? value.toString() : value;
     // Remove all non-digit characters
-    const numericValue = value.replace(/[^\d]/g, '');
+    const numericValue = stringValue.replace(/[^\d]/g, '');
     // Format with thousand separators
     return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   };
@@ -254,49 +256,56 @@ const KeuanganList: React.FC = () => {
   }));
 
   return (
-    <div>
-      <Card title="Keuangan List">
-        <div className="mb-4">
-          <div className="flex gap-2">
+    <div id="keuangan-list-container">
+      <Card title="Keuangan List" id="keuangan-list-card">
+        <div className="mb-4 px-2 md:px-0" id="search-section">
+          <div className="flex flex-col gap-3 md:flex-row md:gap-2" id="search-controls">
             <input
               type="text"
               placeholder={t('search_placeholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+              id="search-input"
             />
-            <button
-              onClick={handleSearch}
-              type="button"
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200"
-            >
-              {t('search')}
-            </button>
-            <button
-              className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200'
-              onClick={handleAddTransaction}
-            >
-              {t('add_transaction')}
-            </button>
+            <div className="flex flex-col gap-2 md:flex-row md:gap-2">
+              <button
+                onClick={handleSearch}
+                type="button"
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200 text-sm md:text-base"
+                id="search-button"
+              >
+                {t('search')}
+              </button>
+              <button
+                className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200 text-sm md:text-base'
+                onClick={handleAddTransaction}
+                id="add-transaction-button"
+              >
+                {t('add_transaction')}
+              </button>
+            </div>
           </div>
         </div>
 
         {loading ? (
-          <div className="text-center py-4">{t('loading')}...</div>
+          <div className="text-center py-4" id="loading-indicator">{t('loading')}...</div>
         ) : (
           <>
-            <Table
-              heads={tableHeads}
-              data={processedTransactions}
-              currentPage={currentPage}
-              pageSize={pageSize}
-              showIndex={true}
-              canEdit={true}
-              callbackEdit={handleEditTransaction}
-              canDelete={true}
-              callbackDelete={handleDeleteTransaction}
-              action={true}
-            />
+            <div className="overflow-x-auto" id="table-container">
+              <Table
+                heads={tableHeads}
+                data={processedTransactions}
+                currentPage={currentPage}
+                pageSize={pageSize}
+                showIndex={true}
+                canEdit={true}
+                callbackEdit={handleEditTransaction}
+                canDelete={true}
+                callbackDelete={handleDeleteTransaction}
+                action={true}
+              />
+            </div>
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -309,49 +318,52 @@ const KeuanganList: React.FC = () => {
       </Card>
 
       <Modal
+        id="transaction-form-modal"
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={editingTransaction ? t('edit_transaction') : t('add_transaction')}
         size="md"
       >
-        <div className="space-y-4">
-          <div>
+        <div className="space-y-4" id="form-modal-content">
+          <div id="date-field">
             <Dropdown
               required={true}
               position="bottom"
               label={t('date')}
               trigger={
-                <button className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left">
+                <button className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left" id="date-picker-button">
                   {formData.date ? dayjs(formData.date).format('DD/MM/YYYY') : t('select_date')}
                 </button>
               }
             >
-              <div className="p-4">
+              <div className="p-4" id="date-picker-content">
                 <DayPicker
                   mode="single"
                   selected={selectedDate}
                   onSelect={setSelectedDate}
+                  id="day-picker"
                 />
               </div>
             </Dropdown>
           </div>
-          <div>
+          <div id="category-field">
             <Dropdown
               required={true}
               position="bottom"
               label={t('category')}
               trigger={
-                <button className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left">
+                <button className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left" id="category-dropdown-button">
                   {selectedCategory ? selectedCategory.name : t('select_category')}
                 </button>
               }
             >
-              <div className="max-h-48 overflow-y-auto">
+              <div className="max-h-48 overflow-y-auto" id="category-list">
                 {categories.map(cat => (
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat)}
                     className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700"
+                    id={`category-option-${cat.id}`}
                   >
                     {cat.name}
                   </button>
@@ -359,12 +371,12 @@ const KeuanganList: React.FC = () => {
               </div>
             </Dropdown>
           </div>
-          <div>
+          <div id="amount-field">
             <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               {t('amount')} <span className="text-red-500">*</span>
             </label>
-            <div className="relative mt-1">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="relative mt-1" id="amount-input-container">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" id="currency-symbol">
                 <span className="text-gray-500 dark:text-gray-400 font-medium">Rp</span>
               </div>
               <input
@@ -387,11 +399,12 @@ const KeuanganList: React.FC = () => {
             onChange={handleInputChange}
             rows={3}
           />
-          <div className="flex justify-end space-x-3">
+          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="form-modal-actions">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
+              id="form-cancel-button"
             >
               {t('cancel')}
             </button>
@@ -400,6 +413,7 @@ const KeuanganList: React.FC = () => {
               type="submit"
               disabled={submitting}
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              id="form-submit-button"
             >
               {submitting ? (editingTransaction ? t('updating') : t('adding')) : (editingTransaction ? t('update_transaction') : t('add_transaction'))}
             </button>
@@ -408,20 +422,22 @@ const KeuanganList: React.FC = () => {
       </Modal>
 
       <Modal
+        id="delete-confirmation-modal"
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         title={t('confirm') + ' ' + t('delete')}
         size="sm"
       >
-        <div className="space-y-4">
-          <p className="text-gray-700 dark:text-gray-300">
+        <div className="space-y-4" id="delete-modal-content">
+          <p className="text-gray-700 dark:text-gray-300" id="delete-confirmation-text">
             {t('confirm_delete_transaction')}
           </p>
-          <div className="flex justify-end space-x-3">
+          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="delete-modal-actions">
             <button
               type="button"
               onClick={() => setIsDeleteModalOpen(false)}
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
+              id="delete-cancel-button"
             >
               {t('cancel')}
             </button>
@@ -429,6 +445,7 @@ const KeuanganList: React.FC = () => {
               onClick={handleConfirmDelete}
               disabled={deleting}
               className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              id="delete-confirm-button"
             >
               {deleting ? t('deleting') : t('delete')}
             </button>

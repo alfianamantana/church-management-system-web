@@ -6,9 +6,10 @@ interface PaginationProps {
   className?: string;
   pageSize?: number;
   totalItems?: number;
+  id: string;
 }
 
-const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange, pageSize = 10, totalItems = 0 }) => {
+const Pagination: React.FC<PaginationProps> = ({ id, currentPage, totalPages, onPageChange, pageSize = 10, totalItems = 0 }) => {
   if (totalPages <= 1) return null;
 
   const startPage = Math.max(1, currentPage - 1);
@@ -22,7 +23,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
   const to = Math.min(currentPage * pageSize, totalItems);
 
   return (
-    <div className={`border-gray-200 dark:border-gray-700`}>
+    <div id={id} className={`border-gray-200 dark:border-gray-700`}>
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-600 dark:text-gray-400 min-w-[140px]">
           {`Showing ${from} to ${to} of ${totalItems}`}

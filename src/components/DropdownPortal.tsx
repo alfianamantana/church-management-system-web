@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import ReactDOM from 'react-dom';
-import { usePopper } from 'react-popper';
 interface DropdownRef {
   close: () => void;
 }
@@ -17,7 +16,7 @@ interface DropdownProps {
   onOpenChange?: (isOpen: boolean) => void;
 }
 
-const Dropdown = forwardRef<DropdownRef, DropdownProps>(({
+const DropdownPortal = forwardRef<DropdownRef, DropdownProps>(({
   id,
   trigger,
   children,
@@ -225,4 +224,4 @@ const Dropdown = forwardRef<DropdownRef, DropdownProps>(({
   );
 });
 
-export default Dropdown;
+export default DropdownPortal;

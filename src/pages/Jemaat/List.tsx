@@ -10,12 +10,18 @@ import { NavLink } from 'react-router-dom';
 import { IBasicResponse, IJemaat, IPagination } from '../../constant';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
+import { setPageTitle } from '@/store/themeConfigSlice';
+import { useDispatch } from 'react-redux';
 interface IJemaatResponse extends IBasicResponse {
   data: IJemaat[];
   pagination: IPagination;
 }
 
 const Jemaat: React.FC = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setPageTitle('Jemaat'));
+  });
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
@@ -119,40 +125,45 @@ const Jemaat: React.FC = () => {
   };
 
   return (
-    <div>
-      <Card title={t("list_jemaat")}>
-        <div className="mb-4">
-          <div className="flex gap-2">
+    <div id="jemaat-list-page">
+      <Card title={t("list_jemaat")} id="jemaat-list-card">
+        <div className="mb-4 px-2 md:px-0" id="search-section">
+          <div className="flex flex-col gap-3 md:flex-row md:gap-2" id="search-controls">
             <input
+              id="search-input"
               type="text"
               placeholder={t("search_by_name")}
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
             />
-            <button
-              onClick={() => {
-                setDebouncedQ(q);
-                setCurrentPage(1);
-              }}
-              type="button"
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200"
-            >
-              {t('search')}
-            </button>
-            <NavLink to="/jemaat/create">
-              <button className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200'>
-                {t("create_jemaat")}
+            <div className="flex flex-col gap-2 md:flex-row md:gap-2">
+              <button
+                id="search-button"
+                onClick={() => {
+                  setDebouncedQ(q);
+                  setCurrentPage(1);
+                }}
+                type="button"
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200 text-sm md:text-base"
+              >
+                {t('search')}
               </button>
-            </NavLink>
+              <NavLink to="/jemaat/create">
+                <button id="create-jemaat-button" className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200 text-sm md:text-base'>
+                  {t("create_jemaat")}
+                </button>
+              </NavLink>
+            </div>
           </div>
         </div>
 
         {loading ? (
-          <div className="text-center py-4">{t('loading')}...</div>
+          <div id="loading-indicator" className="text-center py-4">{t('loading')}...</div>
         ) : (
           <>
             <Table
+              id="jemaat-table"
               heads={heads}
               data={jemaatData}
               currentPage={currentPage}
@@ -166,6 +177,7 @@ const Jemaat: React.FC = () => {
             />
             {!loading && jemaatData.length > 0 && (
               <Pagination
+                id="jemaat-pagination"
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={handlePageChange}
@@ -179,27 +191,30 @@ const Jemaat: React.FC = () => {
       </Card>
 
       <Modal
+        id="delete-modal"
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         title={t('confirm_delete') || 'Confirm Delete'}
         size="sm"
       >
-        <div className="space-y-4">
+        <div className="space-y-4" id="delete-modal-content">
           <p className="text-gray-700 dark:text-gray-300">
             {t('confirm_delete_jemaat') || 'Are you sure you want to delete jemaat'} <strong>{deletingJemaat?.name}</strong>? {t('cannot_be_undone') || 'This action cannot be undone.'}
           </p>
-          <div className="flex justify-end space-x-3">
+          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="delete-modal-actions">
             <button
+              id="cancel-delete-button"
               type="button"
               onClick={() => setIsDeleteModalOpen(false)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm md:text-base"
             >
               {t('cancel')}
             </button>
             <button
+              id="confirm-delete-button"
               onClick={handleConfirmDelete}
               disabled={deleting}
-              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
             >
               {deleting ? t('deleting') : t('delete')}
             </button>

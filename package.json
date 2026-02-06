@@ -33,6 +33,7 @@
         "crypto-js": "^4.2.0",
         "dayjs": "^1.11.19",
         "driver.js": "^1.4.0",
+        "lucide-react": "^0.563.0",
         "react": "^18.2.0",
         "react-day-picker": "^9.13.0",
         "react-dom": "^18.2.0",

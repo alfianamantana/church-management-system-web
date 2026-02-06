@@ -1,5 +1,5 @@
 import { PropsWithChildren, Suspense, useEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import App from '../../App';
@@ -24,6 +24,7 @@ type Route = RouteObject & {
 const DefaultLayout = ({ children }: PropsWithChildren) => {
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const [showLoader, setShowLoader] = useState(true);
     const [showTopButton, setShowTopButton] = useState(false);
@@ -42,6 +43,17 @@ const DefaultLayout = ({ children }: PropsWithChildren) => {
     };
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
+
+        if (!token || !user) {
+            // Hapus jika salah satu tidak ada
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            navigate('/login');
+            return;
+        }
+
         window.addEventListener('scroll', onScrollHandler);
 
         const screenLoader = document.getElementsByClassName('screen_loader');

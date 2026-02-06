@@ -6,7 +6,9 @@ import { useTranslation } from 'react-i18next';
 import api from '@/services/api';
 import { toast } from 'react-toastify';
 import { IBasicResponse } from '@/constant';
+import { useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
+import { setPageTitle } from '@/store/themeConfigSlice';
 interface BirthdayMember {
   id: number;
   name: string;
@@ -36,6 +38,10 @@ interface LumenDashboardResponse extends IBasicResponse {
 }
 
 const Dashboard: React.FC = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setPageTitle('Dashboard'));
+  });
   const { t } = useTranslation();
   const [dashboardData, setDashboardData] = useState<LumenDashboardData | null>(null);
 

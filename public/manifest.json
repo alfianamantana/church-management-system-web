@@ -1,6 +1,6 @@
 {
-  "short_name": "VRISTO - Multipurpose Tailwind Dashboard Template",
-  "name": "VRISTO - Multipurpose Tailwind Dashboard Template",
+  "short_name": "Church Management System",
+  "name": "Church Management System Web Application",
   "icons": [
     {
       "src": "favicon.ico",

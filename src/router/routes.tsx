@@ -2,10 +2,11 @@ import path from 'path';
 import { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 const Login = lazy(() => import('../pages/auth/login'));
+const Register = lazy(() => import('../pages/auth/Register'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const Jemaat = lazy(() => import('../pages/Jemaat/List'));
 const JemaatCreate = lazy(() => import('../pages/Jemaat/Create'));
-const Calendar = lazy(() => import('../pages/Calendar'));
+const Calendar = lazy(() => import('../pages/Calendar/Calendar'));
 const MemberList = lazy(() => import('../pages/Member/list'));
 const RoleList = lazy(() => import('../pages/Role/List'));
 const ScheduleList = lazy(() => import('../pages/Schedulle/List'));
@@ -13,6 +14,9 @@ const ScheduleCreate = lazy(() => import('../pages/Schedulle/Create'));
 const KeuanganList = lazy(() => import('../pages/Keuangan/List'));
 const FamilyList = lazy(() => import('../pages/Family/List'));
 const JemaatEdit = lazy(() => import('../pages/Jemaat/Edit'));
+const ScheduleEdit = lazy(() => import('../pages/Schedulle/Edit'));
+const Assets = lazy(() => import('../pages/assets/List'));
+const ProfileDetail = lazy(() => import('../pages/Profile/Detail'));
 
 const ErrorElement = () => (
     <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
@@ -118,6 +122,13 @@ const routes = [
                         name: 'Create Schedule',
                         breadcrumb: 'Create',
                         description: 'Tambah data schedule',
+                    },
+                    {
+                        path: 'edit/:id',
+                        element: <ScheduleEdit />,
+                        name: 'Edit Schedule',
+                        breadcrumb: 'Edit',
+                        description: 'Edit data schedule',
                     }
                 ],
             },
@@ -157,6 +168,20 @@ const routes = [
                 name: 'Calendar',
                 breadcrumb: 'Calendar',
                 description: 'Halaman kalender acara',
+            },
+            {
+                path: 'assets',
+                element: <Assets />,
+                name: 'Assets',
+                breadcrumb: 'Assets',
+                description: 'Halaman manajemen data aset',
+            },
+            {
+                path: 'profile',
+                element: <ProfileDetail />,
+                name: 'Profile',
+                breadcrumb: 'Profile',
+                description: 'Halaman detail profil user',
             }
         ],
     },
@@ -169,6 +194,15 @@ const routes = [
         description: 'Halaman login user/admin',
         errorElement: <ErrorElement />,
     },
+    {
+        path: '/register',
+        element: <Register />,
+        layout: 'blank',
+        name: 'Register',
+        breadcrumb: 'Register',
+        description: 'Halaman registrasi user baru',
+        errorElement: <ErrorElement />,
+    }
 ];
 
 export { routes };
