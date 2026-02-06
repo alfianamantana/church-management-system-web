@@ -14,20 +14,7 @@ import { useTranslation } from 'react-i18next';
 import InputText from '../../components/InputText';
 import TextArea from '../../components/TextArea';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-
-interface IAsset {
-  id: number;
-  name: string;
-  description?: string;
-  value?: number;
-  acquisition_date?: string;
-  condition: 'excellent' | 'good' | 'fair' | 'poor' | 'damaged';
-  location?: string;
-  category?: string;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { getMessage, IBasicResponse, IAsset, IPagination } from '@/constant';
 
 interface IAssetDisplay {
   id: number;
@@ -41,19 +28,6 @@ interface IAssetDisplay {
   notes?: string;
   createdAt: string;
   updatedAt: string;
-}
-
-interface IBasicResponse {
-  code: number;
-  message: string[];
-  data?: any;
-}
-
-interface IPagination {
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
 }
 
 interface IAssetResponse extends IBasicResponse {
@@ -171,7 +145,8 @@ const AssetList: React.FC = () => {
         toast.error(String(t('failed_fetch_assets')));
       }
     } catch (error) {
-      toast.error(String(t('failed_fetch_assets')));
+      toast.error(t('something_went_wrong') as string);
+
     } finally {
       setLoading(false);
     }
@@ -264,7 +239,8 @@ const AssetList: React.FC = () => {
         toast.error(String(editingAsset ? t('failed_update_asset') : t('failed_add_asset')));
       }
     } catch (error) {
-      toast.error(String(editingAsset ? t('failed_update_asset') : t('failed_add_asset')));
+      toast.error(t('something_went_wrong') as string);
+
     } finally {
       setSubmitting(false);
     }
@@ -275,17 +251,18 @@ const AssetList: React.FC = () => {
 
     setDeleting(true);
     try {
-      const response = await api({ method: 'delete', url: `/assets/`, params: { id: deletingAsset.id } });
+      const { data } = await api({ method: 'delete', url: `/assets/`, params: { id: deletingAsset.id } });
+      const response: IBasicResponse = data;
 
-      if (response.data.code === 200) {
+      if (response.code === 200) {
         toast.success(String(t('asset_deleted')));
         setIsDeleteModalOpen(false);
         fetchAssets(currentPage, search);
       } else {
-        toast.error(String(t('failed_delete_asset')));
+        toast.error(getMessage(response.message));
       }
     } catch (error) {
-      toast.error(String(t('failed_delete_asset')));
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setDeleting(false);
     }
@@ -386,6 +363,7 @@ const AssetList: React.FC = () => {
           <>
             <div className="overflow-x-auto">
               <Table
+                id="asset-table"
                 heads={tableHeads}
                 data={processedAssets}
                 currentPage={currentPage}
@@ -399,6 +377,7 @@ const AssetList: React.FC = () => {
               />
             </div>
             <Pagination
+              id="asset-pagination"
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}

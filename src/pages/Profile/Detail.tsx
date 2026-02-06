@@ -4,13 +4,15 @@ import Modal from '../../components/Modal';
 import InputText from '../../components/InputText';
 import api from '@/services/api';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import { IUser } from '@/constant';
 import dayjs from 'dayjs';
+import { useDispatch } from 'react-redux';
 
 const ProfileDetail: React.FC = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState<boolean>(false);
@@ -36,7 +38,7 @@ const ProfileDetail: React.FC = () => {
         toast.error(data.message[0]);
       }
     } catch (error) {
-      toast.error('Failed to fetch profile data.');
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setLoading(false);
     }
@@ -79,7 +81,7 @@ const ProfileDetail: React.FC = () => {
         toast.error(data.message[0]);
       }
     } catch (error) {
-      toast.error('Failed to change password');
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setChangingPassword(false);
     }

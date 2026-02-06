@@ -5,7 +5,7 @@ import WomanSvg from '@/assets/svg/woman.svg';
 import { useTranslation } from 'react-i18next';
 import api from '@/services/api';
 import { toast } from 'react-toastify';
-import { IBasicResponse } from '@/constant';
+import { IBasicResponse, getMessage } from '@/constant';
 import { useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import { setPageTitle } from '@/store/themeConfigSlice';
@@ -54,12 +54,11 @@ const Dashboard: React.FC = () => {
       if (response.code === 200) {
         setDashboardData(response.data);
       } else {
-        toast.error(response.message[0]);
+        toast.error(getMessage(response.message));
       }
     } catch (error) {
-      console.log(error, '?');
+      toast.error(t('something_went_wrong') as string);
 
-      toast.error(t('error_fetching_data') as string);
     }
   }
 

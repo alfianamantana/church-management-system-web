@@ -201,5 +201,6 @@
     "confirm_logout_message": "Are you sure you want to log out?",
     "yes": "Yes",
     "no": "No",
-    "subscription_expired": "Subscription expired"
+    "subscription_expired": "Subscription expired",
+    "please_fill_all_fields": "Please fill all fields"
 }

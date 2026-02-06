@@ -5,7 +5,7 @@ import { setPageTitle } from '@/store/themeConfigSlice';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import api from '@/services/api';
-import { IBasicResponse, IRole } from '@/constant';
+import { IBasicResponse, IRole, getMessage } from '@/constant';
 import ScheduleForm from '../../components/Form/ScheduleForm';
 
 interface IScheduleFormData {
@@ -68,10 +68,10 @@ const ScheduleCreate: React.FC = () => {
         toast.success(t('schedules_created_successfully') as string);
         navigate('/schedule');
       } else {
-        toast.error(response.message?.[0]);
+        toast.error(getMessage(response.message));
       }
     } catch (error) {
-      toast.error(t('failed_create_schedules') as string);
+      toast.error(t('something_went_wrong') as string);
       throw error; // Re-throw to let ScheduleForm handle
     }
   };

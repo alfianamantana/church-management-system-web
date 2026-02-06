@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import DropdownSearch from '../DropdownSearch';
 import api from '../../services/api';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 interface JemaatFormData {
   name: string;
@@ -149,7 +150,7 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
       }
       return [];
     } catch (error) {
-      console.error('Error searching jemaat:', error);
+      toast.error(t('something_went_wrong') as string);
       return [];
     }
   };

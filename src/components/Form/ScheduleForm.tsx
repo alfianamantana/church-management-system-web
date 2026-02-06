@@ -10,7 +10,7 @@ import 'driver.js/dist/driver.css';
 import { DayPicker } from "react-day-picker";
 import dayjs from 'dayjs';
 import api from '@/services/api';
-import { IMusician, IBasicResponse, IRole } from '@/constant';
+import { IMusician, IBasicResponse, IRole, getMessage } from '@/constant';
 
 interface IResponseFetchMusicians extends IBasicResponse {
   data: IMusician[];
@@ -454,7 +454,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({ mode, initialSchedules = []
     try {
       await onSubmit(schedules, roles);
     } catch (error) {
-      // Error handling is done in onSubmit
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setSubmitting(false);
     }
@@ -468,10 +468,10 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({ mode, initialSchedules = []
       if (response.code === 200) {
         setMusicians(response.data);
       } else {
-        toast.error(response.message?.[0]);
+        toast.error(getMessage(response.message) as string);
       }
     } catch (error) {
-      toast.error(t('failed_fetch_musicians') as string);
+      toast.error(t('something_went_wrong') as string);
     }
   }
 
@@ -483,11 +483,10 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({ mode, initialSchedules = []
       if (response.code === 200) {
         setRoles(response.data);
       } else {
-        toast.error(response.message?.[0]);
+        toast.error(getMessage(response.message));
       }
-    }
-    catch (error) {
-      toast.error(t('failed_fetch_roles') as string);
+    } catch (error) {
+      toast.error(t('something_went_wrong') as string);
     }
   }
 

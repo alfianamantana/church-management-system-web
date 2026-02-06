@@ -1,8 +1,34 @@
 export interface IBasicResponse {
     code: number;
     status: 'success' | 'error';
-    message: string[];
+    message: IMessage;
 }
+
+export interface IAsset {
+    id: number;
+    name: string;
+    description?: string;
+    value?: number;
+    acquisition_date?: string;
+    condition: 'excellent' | 'good' | 'fair' | 'poor' | 'damaged';
+    location?: string;
+    category?: string;
+    notes?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+interface IMessage {
+    id: string[];
+    en: string[];
+}
+
+// Helper function to get message based on current language
+export const getMessage = (message: IMessage): string => {
+    const currentLang = localStorage.getItem('i18nextLng') || 'en';
+    const langKey = currentLang === 'id' ? 'id' : 'en';
+    return message[langKey]?.[0] || message.en?.[0] || 'Unknown error';
+};
 
 export type UserRole = 'superadmin' | 'user';
 

@@ -7,7 +7,7 @@ import api from '../../services/api';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { IBasicResponse, IJemaat, IPagination } from '../../constant';
+import { IBasicResponse, IJemaat, IPagination, getMessage } from '../../constant';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import { setPageTitle } from '@/store/themeConfigSlice';
@@ -61,10 +61,10 @@ const Jemaat: React.FC = () => {
         setTotalItems(response.pagination.total);
         setTotalPages(Math.ceil(response.pagination.total / PAGE_SIZE));
       } else {
-        toast.error(response.message[0]);
+        toast.error(getMessage(response.message));
       }
     } catch (error) {
-      toast.error('Something went wrong.');
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setLoading(false);
     }

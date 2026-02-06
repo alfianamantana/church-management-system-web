@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import api from '../../services/api';
-import { IBasicResponse, IUser } from '../../constant';
+import { IBasicResponse, IUser, getMessage } from '../../constant';
 import { toast } from 'react-toastify';
 import InputText from '../../components/InputText';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +26,7 @@ const LoginPage: React.FC = () => {
     setLoading(true);
 
     if (!email || !password) {
-      toast.error('Please enter both email and password');
+      toast.error(t('please_fill_all_fields') as string);
       setLoading(false);
       return;
     }
@@ -39,15 +39,15 @@ const LoginPage: React.FC = () => {
         await localStorage.setItem('token', tokenEncrypted);
         const userEncrypted = await encryptData(string);
         await localStorage.setItem('user', userEncrypted);
-        toast.success('Login successful!');
+        toast.success(getMessage(response.message) as string);
         navigate('/dashboard');
-      } else if (response.code === 403 && response.message[0] === 'Subscription expired') {
+      } else if (response.code === 403 && (getMessage(response.message) === 'Subscription expired' || getMessage(response.message) === 'Langganan kedaluwarsa')) {
         toast.error(t('subscription_expired') as string);
       } else {
-        toast.error(response.message[0]);
+        toast.error(getMessage(response.message) as string);
       }
     } catch (err) {
-      toast.error('Something went wrong. Please try again.');
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setLoading(false);
     }

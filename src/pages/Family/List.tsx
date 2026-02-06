@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import { useTranslation } from 'react-i18next';
-import { IFamily, IBasicResponse, IPagination, IJemaat } from '@/constant';
+import { IFamily, IBasicResponse, IPagination, IJemaat, getMessage } from '@/constant';
 import dayjs from 'dayjs';
 
 interface IFamilyResponse extends IBasicResponse {
@@ -90,10 +90,10 @@ const FamilyList: React.FC = () => {
         setTotal(response.pagination.total);
         setTotalPages(Math.ceil(response.pagination.total / pageSize));
       } else {
-        toast.error(response.message[0]);
+        toast.error(getMessage(response.message));
       }
     } catch (error) {
-      toast.error(t('failed_fetch_families') as string);
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setLoading(false);
     }
@@ -141,11 +141,11 @@ const FamilyList: React.FC = () => {
       if (response.code === 200) {
         return response.data as IJemaat[];
       } else {
-        toast.error(response.message[0]);
+        toast.error(getMessage(response.message));
         return [];
       }
     } catch (error) {
-      toast.error(t('failed_fetch_family_members') as string);
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setViewLoading(false);
     }
@@ -182,7 +182,7 @@ const FamilyList: React.FC = () => {
         toast.error(response.data.message[0]);
       }
     } catch (error) {
-      toast.error(t(editingFamily ? 'failed_update_family' : 'failed_add_family') as string);
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setSubmitting(false);
     }
@@ -203,7 +203,7 @@ const FamilyList: React.FC = () => {
         toast.error(response.data.message[0]);
       }
     } catch (error) {
-      toast.error(t('failed_delete_family') as string);
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setDeleting(false);
     }

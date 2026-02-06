@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import { IBasicResponse, IJemaat } from '../../constant';
+import { IBasicResponse, IJemaat, getMessage } from '../../constant';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
@@ -48,7 +48,7 @@ const EditJemaat: React.FC = () => {
             toast.error(t('jemaat_not_found') as string);
           }
         } else {
-          toast.error(t(response.message[0]) as string);
+          toast.error(getMessage(response.message));
           navigate('/jemaat');
           return;
         }
@@ -78,7 +78,7 @@ const EditJemaat: React.FC = () => {
         navigate('/jemaat');
         toast.success(t('jemaat_updated') as string);
       } else {
-        toast.error(res.message[0]);
+        toast.error(getMessage(res.message));
       }
     } catch (err) {
       toast.error(t('something_went_wrong') as string);

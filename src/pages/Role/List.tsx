@@ -5,10 +5,11 @@ import Pagination from '../../components/Pagination';
 import Modal from '../../components/Modal';
 import api from '@/services/api';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { setPageTitle } from '@/store/themeConfigSlice';
-import { IRole, IBasicResponse, IPagination } from '@/constant';
+import { IRole, IBasicResponse, IPagination, getMessage } from '@/constant';
 import dayjs from 'dayjs';
+import { useDispatch } from 'react-redux';
 
 interface IRoleResponse extends IBasicResponse {
   data: IRole[];
@@ -24,6 +25,7 @@ const RoleList: React.FC = () => {
   const [total, setTotal] = useState<number>(0);
   const pageSize = 10;
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   // Modal and form states
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -55,10 +57,10 @@ const RoleList: React.FC = () => {
         setTotal(response.pagination.total);
         setTotalPages(Math.ceil(response.pagination.total / pageSize));
       } else {
-        toast.error(response.message[0]);
+        toast.error(getMessage(response.message));
       }
     } catch (error) {
-      toast.error('Failed to fetch roles.');
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setLoading(false);
     }
@@ -139,7 +141,7 @@ const RoleList: React.FC = () => {
         toast.error(response.data.message[0]);
       }
     } catch (error) {
-      toast.error('Failed to delete role');
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setDeleting(false);
     }
@@ -190,6 +192,7 @@ const RoleList: React.FC = () => {
           <>
             <div className="overflow-x-auto">
               <Table
+                id="role-table"
                 heads={tableHeads}
                 data={roles}
                 currentPage={currentPage}
@@ -203,6 +206,7 @@ const RoleList: React.FC = () => {
               />
             </div>
             <Pagination
+              id="role-pagination"
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}

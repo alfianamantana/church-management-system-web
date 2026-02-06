@@ -7,12 +7,13 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import Modal from '../../components/Modal';
-import { IEvent, IBasicResponse, IJemaat } from '../../constant';
+import { IEvent, IBasicResponse, IJemaat, getMessage } from '../../constant';
 import { toast } from 'react-toastify';
 import InputText from '../../components/InputText';
 import TextArea from '../../components/TextArea';
 import api from '../../services/api';
 import SkeletonCalendar from '../../components/Skeletons/Calendar';
+import { useTranslation } from 'react-i18next';
 import Dropdown from '../../components/Dropdowns';
 import { DayPicker } from "react-day-picker";
 import dayjs from 'dayjs';
@@ -40,6 +41,7 @@ interface birthdayEventResponse extends IBasicResponse {
 
 const Calendar: React.FC = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   useEffect(() => {
     dispatch(setPageTitle('Calendar'));
   });
@@ -188,11 +190,11 @@ const Calendar: React.FC = () => {
         setEvents(formattedEvents);
         await fetchJemaatThatHaveBirthday();
       } else {
-        toast.error(response.message[0]);
+        toast.error(getMessage(response.message));
         setLoading(false);
       }
     } catch (error) {
-      toast.error('Failed to fetch events.');
+      toast.error(t('something_went_wrong') as string);
       setLoading(false);
     }
   }
@@ -218,10 +220,10 @@ const Calendar: React.FC = () => {
         }));
         setEvents((prevEvents) => [...prevEvents, ...birthdayEvents]);
       } else {
-        toast.error(response.message[0]);
+        toast.error(getMessage(response.message));
       }
     } catch (error) {
-      toast.error('Something went wrong while fetching birthday events.');
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setLoading(false);
     }
@@ -264,10 +266,10 @@ const Calendar: React.FC = () => {
         fetchEvents();
         setIsAddEventModal(false);
       } else {
-        toast.error(response.message[0]);
+        toast.error(getMessage(response.message));
       }
     } catch (error) {
-      toast.error('Something went wrong. Please try again.');
+      toast.error(t('something_went_wrong') as string);
     }
   };
   const changeValue = (e: any) => {

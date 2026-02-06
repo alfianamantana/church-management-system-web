@@ -9,7 +9,7 @@ import api from '@/services/api';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '@/store/themeConfigSlice';
-import { ISchedule, IBasicResponse, IPagination } from '@/constant';
+import { ISchedule, IBasicResponse, IPagination, getMessage } from '@/constant';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -79,10 +79,10 @@ const ScheduleList: React.FC = () => {
         setTotal(response.pagination.total);
         setTotalPages(Math.ceil(response.pagination.total / pageSize));
       } else {
-        toast.error(response.message[0]);
+        toast.error(getMessage(response.message));
       }
     } catch (error) {
-      toast.error('Failed to fetch schedules.');
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setLoading(false);
     }
@@ -99,7 +99,7 @@ const ScheduleList: React.FC = () => {
       setViewSchedule(schedule);
       setIsViewModalOpen(true);
     } catch (err) {
-      toast.error('Failed to load schedule details.');
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setViewLoading(false);
     }
@@ -147,7 +147,7 @@ const ScheduleList: React.FC = () => {
         toast.error(response.data.message[0]);
       }
     } catch (error) {
-      toast.error(`Failed to ${editingSchedule ? 'update' : 'add'} schedule`);
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setSubmitting(false);
     }
@@ -168,7 +168,7 @@ const ScheduleList: React.FC = () => {
         toast.error(response.data.message[0]);
       }
     } catch (error) {
-      toast.error('Failed to delete schedule');
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setDeleting(false);
     }
@@ -222,6 +222,7 @@ const ScheduleList: React.FC = () => {
         ) : (
           <>
             <Table
+              id="schedule-table"
               heads={tableHeads}
               data={schedules}
               currentPage={currentPage}
@@ -235,84 +236,8 @@ const ScheduleList: React.FC = () => {
               callbackView={handleViewSchedule}
               action={true}
             />
-
-            {/* View Schedule Modal */}
-            <Modal
-              isOpen={isViewModalOpen}
-              onClose={() => setIsViewModalOpen(false)}
-              title={viewSchedule ? `${t('schedule')}: ${viewSchedule.service_name}` : t('schedule')}
-              size="md"
-              id="view-schedule-modal"
-            >
-              <div className="space-y-4" id="view-modal-content">
-                {viewLoading ? (
-                  <div className="text-center py-4" id="view-loading">Loading...</div>
-                ) : (
-                  viewSchedule && (
-                    <div id="view-schedule-details">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4" id="view-grid">
-                        <div className="md:col-span-2" id="view-details-section">
-                          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('details')}</h4>
-                          <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4" id="view-details-card">
-                            <div className="mb-2" id="view-service-name">
-                              <div className="text-sm text-gray-500">{t('service_name')}</div>
-                              <div className="font-medium text-gray-900 dark:text-gray-100 truncate">{viewSchedule.service_name}</div>
-                            </div>
-                            <div className="mb-2" id="view-scheduled-at">
-                              <div className="text-sm text-gray-500">{t('scheduled_at')}</div>
-                              <div className="font-medium">{dayjs(viewSchedule.scheduled_at).format('DD-MM-YYYY HH:mm')}</div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div id="view-summary-section">
-                          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('summary')}</h4>
-                          <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4 text-center" id="view-summary-card">
-                            <div className="text-xs text-gray-500">{t('members')}</div>
-                            <div className="text-2xl font-semibold">{(viewSchedule.serviceAssignments || []).length}</div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-4" id="view-musicians-section">
-                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('musicians')}</h4>
-                        <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md" id="view-musicians-list">
-                          {(viewSchedule.serviceAssignments || []).length > 0 ? (
-                            <ul className="divide-y divide-gray-100 dark:divide-gray-800" id="musicians-ul">
-                              {(viewSchedule.serviceAssignments || []).map(a => (
-                                <li key={a.id} className="flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-900" id={`musician-item-${a.id}`}>
-                                  <div className="flex items-center gap-3" id={`musician-info-${a.id}`}>
-                                    <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-sm text-gray-600 dark:text-white">{(a.member?.name || '').charAt(0).toUpperCase()}</div>
-                                    <div>
-                                      <div className="font-medium text-gray-900 dark:text-gray-100">{a.member?.name || '-'}</div>
-                                      <div className="text-xs text-gray-500">{a.role?.role_name || '-'}</div>
-                                    </div>
-                                  </div>
-                                  <div className="text-sm text-gray-500"></div>
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <div className="p-4 text-sm text-gray-500" id="no-musicians">No musician assigned</div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex justify-end mt-4" id="view-modal-actions">
-                        <button
-                          onClick={() => setIsViewModalOpen(false)}
-                          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                          id="view-close-button"
-                        >
-                          {t('close')}
-                        </button>
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
-            </Modal>
             <Pagination
+              id="schedule-pagination"
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
@@ -322,6 +247,82 @@ const ScheduleList: React.FC = () => {
           </>
         )}
       </Card>
+
+      <Modal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        title={viewSchedule ? `${t('schedule')}: ${viewSchedule.service_name}` : t('schedule')}
+        size="md"
+        id="view-schedule-modal"
+      >
+        <div className="space-y-4" id="view-modal-content">
+          {viewLoading ? (
+            <div className="text-center py-4" id="view-loading">Loading...</div>
+          ) : (
+            viewSchedule && (
+              <div id="view-schedule-details">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4" id="view-grid">
+                  <div className="md:col-span-2" id="view-details-section">
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('details')}</h4>
+                    <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4" id="view-details-card">
+                      <div className="mb-2" id="view-service-name">
+                        <div className="text-sm text-gray-500">{t('service_name')}</div>
+                        <div className="font-medium text-gray-900 dark:text-gray-100 truncate">{viewSchedule.service_name}</div>
+                      </div>
+                      <div className="mb-2" id="view-scheduled-at">
+                        <div className="text-sm text-gray-500">{t('scheduled_at')}</div>
+                        <div className="font-medium">{dayjs(viewSchedule.scheduled_at).format('DD-MM-YYYY HH:mm')}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="view-summary-section">
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('summary')}</h4>
+                    <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4 text-center" id="view-summary-card">
+                      <div className="text-xs text-gray-500">{t('members')}</div>
+                      <div className="text-2xl font-semibold">{(viewSchedule.serviceAssignments || []).length}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4" id="view-musicians-section">
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('musicians')}</h4>
+                  <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md" id="view-musicians-list">
+                    {(viewSchedule.serviceAssignments || []).length > 0 ? (
+                      <ul className="divide-y divide-gray-100 dark:divide-gray-800" id="musicians-ul">
+                        {(viewSchedule.serviceAssignments || []).map(a => (
+                          <li key={a.id} className="flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-900" id={`musician-item-${a.id}`}>
+                            <div className="flex items-center gap-3" id={`musician-info-${a.id}`}>
+                              <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-sm text-gray-600 dark:text-white">{(a.member?.name || '').charAt(0).toUpperCase()}</div>
+                              <div>
+                                <div className="font-medium text-gray-900 dark:text-gray-100">{a.member?.name || '-'}</div>
+                                <div className="text-xs text-gray-500">{a.role?.role_name || '-'}</div>
+                              </div>
+                            </div>
+                            <div className="text-sm text-gray-500"></div>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="p-4 text-sm text-gray-500" id="no-musicians">No musician assigned</div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex justify-end mt-4" id="view-modal-actions">
+                  <button
+                    onClick={() => setIsViewModalOpen(false)}
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    id="view-close-button"
+                  >
+                    {t('close')}
+                  </button>
+                </div>
+              </div>
+            )
+          )}
+        </div>
+      </Modal>
 
       <Modal
         id="form-schedule-modal"

@@ -110,7 +110,7 @@ const KeuanganList: React.FC = () => {
         toast.error(String(t('failed_fetch_transactions')));
       }
     } catch (error) {
-      toast.error(String(t('failed_fetch_transactions')));
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setLoading(false);
     }
@@ -208,7 +208,7 @@ const KeuanganList: React.FC = () => {
         toast.error(response.data.message[0]);
       }
     } catch (error) {
-      toast.error(String(t('failed_delete_transaction')));
+      toast.error(t('something_went_wrong') as string);
     } finally {
       setDeleting(false);
     }
@@ -294,6 +294,7 @@ const KeuanganList: React.FC = () => {
           <>
             <div className="overflow-x-auto" id="table-container">
               <Table
+                id="transactions-table"
                 heads={tableHeads}
                 data={processedTransactions}
                 currentPage={currentPage}
@@ -307,6 +308,7 @@ const KeuanganList: React.FC = () => {
               />
             </div>
             <Pagination
+              id="transactions-pagination"
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}

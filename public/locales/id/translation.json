@@ -201,5 +201,6 @@
     "confirm_logout_message": "Apakah Anda yakin ingin keluar?",
     "yes": "Ya",
     "no": "Tidak",
-    "subscription_expired": "Langganan telah berakhir"
+    "subscription_expired": "Langganan telah berakhir",
+    "please_fill_all_fields": "Silakan isi semua field"
 }

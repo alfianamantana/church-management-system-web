@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import { IBasicResponse } from '../../constant';
+import { IBasicResponse, getMessage } from '../../constant';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
@@ -33,7 +33,7 @@ const CreateJemaat: React.FC = () => {
         navigate('/jemaat');
         toast.success(t('jemaat_added') as string);
       } else {
-        toast.error(res.message[0]);
+        toast.error(getMessage(res.message));
       }
     } catch (err) {
       toast.error(t('something_went_wrong') as string);

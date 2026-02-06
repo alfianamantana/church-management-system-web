@@ -5,7 +5,7 @@ import { setPageTitle } from '@/store/themeConfigSlice';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '@/services/api';
-import { IBasicResponse, IRole, ISchedule } from '@/constant';
+import { IBasicResponse, IRole, ISchedule, getMessage } from '@/constant';
 import ScheduleForm from '../../components/Form/ScheduleForm';
 
 interface IScheduleFormData {
@@ -89,11 +89,11 @@ const ScheduleEdit: React.FC = () => {
           navigate('/schedule');
         }
       } else {
-        toast.error(response.message?.[0]);
+        toast.error(getMessage(response.message));
         navigate('/schedule');
       }
     } catch (error) {
-      toast.error(t('failed_fetch_schedule') as string);
+      toast.error(t('something_went_wrong') as string);
       navigate('/schedule');
     } finally {
       setLoading(false);
@@ -145,10 +145,10 @@ const ScheduleEdit: React.FC = () => {
         toast.success(t('schedule_updated_successfully') as string);
         navigate('/schedule');
       } else {
-        toast.error(response.message?.[0]);
+        toast.error(getMessage(response.message));
       }
     } catch (error) {
-      toast.error(t('failed_update_schedule') as string);
+      toast.error(t('something_went_wrong') as string);
       throw error; // Re-throw to let ScheduleForm handle
     }
   };
