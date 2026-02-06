@@ -47,6 +47,8 @@ const DefaultLayout = ({ children }: PropsWithChildren) => {
         const user = localStorage.getItem('user');
 
         if (!token || !user) {
+            console.log('kepanggil');
+
             // Hapus jika salah satu tidak ada
             localStorage.removeItem('token');
             localStorage.removeItem('user');

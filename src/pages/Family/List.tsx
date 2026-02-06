@@ -267,6 +267,8 @@ const FamilyList: React.FC = () => {
           <>
             <div className="overflow-x-auto" id="table-container">
               <Table
+
+                id='family-table'
                 heads={tableHeads}
                 data={families}
                 currentPage={currentPage}
@@ -282,6 +284,7 @@ const FamilyList: React.FC = () => {
               />
             </div>
             <Pagination
+              id='family-pagination'
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}

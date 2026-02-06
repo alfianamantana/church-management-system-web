@@ -53,6 +53,7 @@ export interface IUser {
     id: number;
     name: string;
     email: string;
+    unique_key: string;
     phone_number: string;
     subscribe_until: string | null;
     role: UserRole;

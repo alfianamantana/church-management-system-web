@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { decryptData } from './crypto';
-import { IBasicResponse } from '../constant';
+import { IBasicResponse, IUser } from '../constant';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
@@ -13,19 +13,20 @@ const api = axios.create({
 
 // Attach token from localStorage (if present) to every request
 api.interceptors.request.use(
-    (config) => {
+    async (config) => {
         try {
             const token = localStorage.getItem('token');
-            const role = localStorage.getItem('role');
-            if (role) {
-                const decryptedRole = decryptData(role);
-                const roleObj = decryptedRole;
-                config.headers = config.headers || {};
-                config.headers['role'] = `${roleObj}`;
-            }
+            const user = localStorage.getItem('user');
             if (token) {
                 config.headers = config.headers || {};
-                config.headers['token'] = `${token}`;
+                const decryptedToken = await decryptData(token);
+                console.log(decryptedToken, 'decryptedToken');
+                config.headers['token'] = `${decryptedToken}`;
+                if (user) {
+                    const decryptedUser: string = await decryptData(user);
+                    const parsedUser: IUser = JSON.parse(decryptedUser);
+                    config.headers['Authorization'] = parsedUser.unique_key;
+                }
             }
         } catch (e) {
             // ignore (e.g., during SSR or if localStorage not available)

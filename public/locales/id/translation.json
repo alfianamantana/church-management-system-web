@@ -196,5 +196,10 @@
     "personal_information": "Informasi Pribadi",
     "birth_information": "Informasi Kelahiran",
     "baptism_information": "Informasi Baptis",
-    "family_information": "Informasi Keluarga"
+    "family_information": "Informasi Keluarga",
+    "confirm_logout": "Konfirmasi Logout",
+    "confirm_logout_message": "Apakah Anda yakin ingin keluar?",
+    "yes": "Ya",
+    "no": "Tidak",
+    "subscription_expired": "Langganan telah berakhir"
 }

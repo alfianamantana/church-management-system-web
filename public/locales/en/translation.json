@@ -196,5 +196,10 @@
     "personal_information": "Personal Information",
     "birth_information": "Birth Information",
     "baptism_information": "Baptism Information",
-    "family_information": "Family Information"
+    "family_information": "Family Information",
+    "confirm_logout": "Confirm Logout",
+    "confirm_logout_message": "Are you sure you want to log out?",
+    "yes": "Yes",
+    "no": "No",
+    "subscription_expired": "Subscription expired"
 }

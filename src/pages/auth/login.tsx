@@ -5,7 +5,7 @@ import { IBasicResponse, IUser } from '../../constant';
 import { toast } from 'react-toastify';
 import InputText from '../../components/InputText';
 import { useTranslation } from 'react-i18next';
-import { encryptData } from '../../services/crypto';
+import { encryptData } from '@/services/crypto';
 import { useNavigate } from "react-router";
 
 
@@ -35,11 +35,14 @@ const LoginPage: React.FC = () => {
       const response: ILoginResponse = data;
       if (response.code === 200) {
         const string = JSON.stringify(response.data);
-        let userEncrypted = await encryptData(string);
-        localStorage.setItem('user', userEncrypted);
-        localStorage.setItem('token', response.token);
-        navigate('/dashboard');
+        const tokenEncrypted = await encryptData(response.token);
+        await localStorage.setItem('token', tokenEncrypted);
+        const userEncrypted = await encryptData(string);
+        await localStorage.setItem('user', userEncrypted);
         toast.success('Login successful!');
+        navigate('/dashboard');
+      } else if (response.code === 403 && response.message[0] === 'Subscription expired') {
+        toast.error(t('subscription_expired') as string);
       } else {
         toast.error(response.message[0]);
       }
