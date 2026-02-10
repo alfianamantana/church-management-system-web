@@ -31,7 +31,7 @@ const ProfileDetail: React.FC = () => {
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get('/profile');
+      const { data } = await api.get('/user/profile');
       if (data.code === 200) {
         setUser(data.data);
       } else {
@@ -64,7 +64,7 @@ const ProfileDetail: React.FC = () => {
 
     setChangingPassword(true);
     try {
-      const { data } = await api.put('/profile/change-password', {
+      const { data } = await api.put('/user/change-password', {
         current_password: passwordForm.current_password,
         new_password: passwordForm.new_password
       });

@@ -83,7 +83,7 @@ export interface IUser {
     phone_number: string;
     subscribe_until: string | null;
     role: UserRole;
-    subscribe_type: 'basic' | 'full';
+    subscribe_type: 'bibit' | 'bertumbuh' | 'full';
     createdAt: string;
     updatedAt: string;
 }

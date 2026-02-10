@@ -100,7 +100,7 @@ const Dropdown = (props: any, forwardedRef: any) => {
 
             <div
                 ref={popperRef}
-                style={styles.popper}
+                style={{ ...styles.popper, marginTop: '0.5rem' }}
                 {...attributes.popper}
                 className="z-50"
                 onClick={toggleDropdown}

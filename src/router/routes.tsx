@@ -17,6 +17,7 @@ const JemaatEdit = lazy(() => import('../pages/Jemaat/Edit'));
 const ScheduleEdit = lazy(() => import('../pages/Schedulle/Edit'));
 const Assets = lazy(() => import('../pages/assets/List'));
 const ProfileDetail = lazy(() => import('../pages/Profile/Detail'));
+const Admin = lazy(() => import('../pages/admin/List'));
 
 const ErrorElement = () => (
     <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
@@ -161,6 +162,13 @@ const routes = [
                         description: 'Daftar family',
                     },
                 ],
+            },
+            {
+                path: 'admin',
+                element: <Admin />,
+                name: 'Admin',
+                breadcrumb: 'Admin',
+                description: 'Halaman manajemen data admin',
             },
             {
                 path: 'calendar',
