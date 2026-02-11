@@ -207,9 +207,9 @@ const Dropdown = forwardRef<DropdownRef, DropdownProps>(({
               fixed z-50
               ${getTransformOrigin()}
               ${isAnimatingOut ? 'dropdown-exit' : 'dropdown-enter'}
-              bg-white dark:bg-gray-900 
-              border border-gray-200 dark:border-gray-700 
-              rounded-xl shadow-xl ring-1 ring-black ring-opacity-5
+              bg-popover 
+              border border-border 
+              rounded-xl shadow-xl ring-1 ring-ring
               overflow-hidden
             `}
             style={dropdownPosition}

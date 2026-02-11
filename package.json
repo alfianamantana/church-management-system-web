@@ -30,6 +30,7 @@
         "@types/react": "^18.0.21",
         "@types/react-dom": "^18.0.6",
         "axios": "^1.13.4",
+        "country-list-with-dial-code-and-flag": "^5.1.1",
         "crypto-js": "^4.2.0",
         "dayjs": "^1.11.19",
         "driver.js": "^1.4.0",

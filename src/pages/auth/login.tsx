@@ -7,6 +7,8 @@ import InputText from '../../components/InputText';
 import { useTranslation } from 'react-i18next';
 import { encryptData } from '@/services/crypto';
 import { useNavigate } from "react-router";
+import Card from '../../components/Card';
+import ThemeLanguageSwitcher from '../../components/ThemeLanguageSwitcher';
 
 
 interface ILoginResponse extends IBasicResponse {
@@ -54,14 +56,21 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4">
-      <div className="max-w-md w-full p-8 flex flex-col gap-y-6 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md transition-all duration-300 bg-white dark:bg-gray-800 backdrop-blur-sm">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Lumen</h2>
-          <p className="text-gray-600 dark:text-gray-400">{t('church_management_system')}</p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary to-accent px-4 relative">
+      <div className="absolute top-4 right-4">
+        <ThemeLanguageSwitcher />
+      </div>
+      <Card
+        id="login-card"
+        className="max-w-md w-full p-8 flex flex-col gap-y-6 rounded-xl hover:shadow-md transition-all duration-300 backdrop-blur-sm"
+      >
+        <div id="login-header" className="text-center">
+          <h2 id="login-title" className="text-3xl font-bold text-card-foreground mb-2">Lumen</h2>
+          <p id="login-subtitle" className="text-muted-foreground">{t('church_management_system')}</p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form id="login-form" onSubmit={handleSubmit} className="space-y-4">
           <InputText
+            id="login-email"
             label={t('email')}
             type="email"
             value={email}
@@ -70,6 +79,7 @@ const LoginPage: React.FC = () => {
             className="w-full"
           />
           <InputText
+            id="login-password"
             label={t('password')}
             type="password"
             value={password}
@@ -78,8 +88,9 @@ const LoginPage: React.FC = () => {
             className="w-full"
           />
           <button
+            id="login-submit"
             type="submit"
-            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+            className="w-full py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
             disabled={loading || !email || !password}
           >
             {loading ? (
@@ -95,16 +106,17 @@ const LoginPage: React.FC = () => {
             )}
           </button>
         </form>
-        <p>
+        <p id="login-no-account">
           {t('no_account')}{' '}
           <button
+            id="login-register-button"
             onClick={() => navigate('/register')}
-            className="text-blue-600 hover:underline"
+            className="text-primary hover:underline"
           >
             {t('register')}
           </button>
         </p>
-      </div>
+      </Card>
 
     </div>
   );

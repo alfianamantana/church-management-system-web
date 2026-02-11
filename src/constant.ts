@@ -150,3 +150,11 @@ export interface ITransaction {
     updatedAt: string;
     category?: ICategory;
 }
+
+export interface IPriorityNeed {
+    id: number;
+    name: string;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
+}
