@@ -12,7 +12,8 @@ import Sidebar from './Sidebar';
 import Portals from '../../components/Portals';
 import { routes } from '../../router/routes';
 import { RouteObject } from 'react-router-dom';
-
+import { decryptData } from '@/services/crypto';
+import { IUser } from '@/constant';
 type Route = RouteObject & {
     layout?: string;
     name?: string;
@@ -47,13 +48,20 @@ const DefaultLayout = ({ children }: PropsWithChildren) => {
         const user = localStorage.getItem('user');
 
         if (!token || !user) {
-            console.log('kepanggil');
-
             // Hapus jika salah satu tidak ada
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             navigate('/login');
             return;
+        }
+        if (user) {
+            const decryptedUser: IUser = JSON.parse(decryptData(user))
+            if (decryptedUser.churches) {
+                if (decryptedUser.churches.length === 0) {
+                    navigate('/create-church', { state: { user_id: decryptedUser.id } });
+                    return;
+                }
+            }
         }
 
         window.addEventListener('scroll', onScrollHandler);
@@ -92,10 +100,10 @@ const DefaultLayout = ({ children }: PropsWithChildren) => {
             {/* BEGIN MAIN CONTAINER */}
             <div className="relative">
                 {/* sidebar menu overlay */}
-                <div className={`${(!themeConfig.sidebar && 'hidden') || ''} fixed inset-0 bg-[black]/60 z-50 lg:hidden`} onClick={() => dispatch(toggleSidebar())}></div>
+                <div id="sidebar-overlay" className={`${(!themeConfig.sidebar && 'hidden') || ''} fixed inset-0 bg-[black]/60 z-50 lg:hidden`} onClick={() => dispatch(toggleSidebar())}></div>
                 {/* screen loader */}
                 {showLoader && (
-                    <div className="screen_loader fixed inset-0 bg-[#fafafa] dark:bg-[#060818] z-[60] grid place-content-center animate__animated">
+                    <div id="screen-loader" className="screen_loader fixed inset-0 bg-background z-[60] grid place-content-center animate__animated">
                         <svg width="64" height="64" viewBox="0 0 135 135" xmlns="http://www.w3.org/2000/svg" fill="#4361ee">
                             <path d="M67.447 58c5.523 0 10-4.477 10-10s-4.477-10-10-10-10 4.477-10 10 4.477 10 10 10zm9.448 9.447c0 5.523 4.477 10 10 10 5.522 0 10-4.477 10-10s-4.478-10-10-10c-5.523 0-10 4.477-10 10zm-9.448 9.448c-5.523 0-10 4.477-10 10 0 5.522 4.477 10 10 10s10-4.478 10-10c0-5.523-4.477-10-10-10zM58 67.447c0-5.523-4.477-10-10-10s-10 4.477-10 10 4.477 10 10 10 10-4.477 10-10z">
                                 <animateTransform attributeName="transform" type="rotate" from="0 67 67" to="-360 67 67" dur="2.5s" repeatCount="indefinite" />
@@ -106,9 +114,9 @@ const DefaultLayout = ({ children }: PropsWithChildren) => {
                         </svg>
                     </div>
                 )}
-                <div className="fixed bottom-6 ltr:right-6 rtl:left-6 z-50">
+                <div id="go-to-top-container" className="fixed bottom-6 ltr:right-6 rtl:left-6 z-50">
                     {showTopButton && (
-                        <button type="button" className="btn btn-outline-primary rounded-full p-2 animate-pulse bg-[#fafafa] dark:bg-[#060818] dark:hover:bg-primary" onClick={goToTop}>
+                        <button id="go-to-top-button" type="button" className="btn btn-outline-primary rounded-full p-2 animate-pulse bg-background dark:hover:bg-primary" onClick={goToTop}>
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M8 7l4-4m0 0l4 4m-4-4v18" />
                             </svg>
@@ -120,19 +128,19 @@ const DefaultLayout = ({ children }: PropsWithChildren) => {
                 <Setting />
                 {/* END APP SETTING LAUNCHER */}
 
-                <div className={`${themeConfig.navbar} main-container text-black dark:text-white-dark min-h-screen`}>
+                <div id="main-container" className={`${themeConfig.navbar} main-container text-foreground min-h-screen`}>
                     {/* BEGIN SIDEBAR */}
                     <Sidebar />
                     {/* END SIDEBAR */}
 
-                    <div className="main-content flex flex-col min-h-screen">
+                    <div id="main-content" className="main-content flex flex-col min-h-screen">
                         {/* BEGIN TOP NAVBAR */}
                         <Header />
                         {/* END TOP NAVBAR */}
 
                         {/* BEGIN CONTENT AREA */}
                         <Suspense>
-                            <div className={`${themeConfig.animation} p-6 animate__animated`}>
+                            <div id="content-area" className={`${themeConfig.animation} p-6 animate__animated`}>
                                 {/* Render nested routes */}
                                 <Outlet />
                             </div>

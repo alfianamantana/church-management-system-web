@@ -1,18 +1,28 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { IRootState } from '../../store';
-import { toggleRTL, toggleTheme, toggleSidebar } from '../../store/themeConfigSlice';
+import { toggleRTL, toggleTheme, toggleSidebar, toggleColorTheme } from '../../store/themeConfigSlice';
 import i18next from 'i18next';
 import Dropdown from '../Dropdown';
-import Modal from '../Modal';
-
+import Dropdowns, { DropdownRef } from '../Dropdowns';
+import ThemeColorSwitcher from '../ThemeColorSwitcher';
+import UserDropdownProfile from '../UserDropdownProfile';
+import { decryptData } from '@/services/crypto';
+import { IChurch, IUser } from '@/constant';
+import CountryFlagSvg from 'country-list-with-dial-code-and-flag/dist/flag-svg';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
+import { NavLink } from 'react-router-dom';
 const Header = () => {
     const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
+    const [church, setChurch] = useState<IChurch>({} as IChurch);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [user, setUser] = useState<IUser | null>(null);
+    const worshipDropdownRef = useRef<DropdownRef>(null);
     useEffect(() => {
         const selector = document.querySelector('ul.horizontal-menu a[href="' + window.location.pathname + '"]');
         if (selector) {
@@ -48,13 +58,111 @@ const Header = () => {
         }
     };
     const [flag, setFlag] = useState(themeConfig.locale);
+    useEffect(() => {
+        let selected_church = localStorage.getItem('selected_church');
+        let decrypted_church = JSON.parse(decryptData(selected_church as string) as string);
+        setChurch(decrypted_church)
+    }, [])
+
+    useEffect(() => {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            const decryptedUser: IUser = JSON.parse(decryptData(userData));
+            setUser(decryptedUser);
+        }
+    }, [])
+
+    const getInitials = (name: string) => {
+        const names = name.split(' ');
+        return names.map(n => n[0]).join('').toUpperCase();
+    };
+
+    const menuItems = [
+        {
+            to: "/dashboard",
+            label: "Dashboard",
+            icon: (
+                <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        opacity="0.5"
+                        d="M2 12.2039C2 9.91549 2 8.77128 2.5192 7.82274C3.0384 6.87421 3.98695 6.28551 5.88403 5.10813L7.88403 3.86687C9.88939 2.62229 10.8921 2 12 2C13.1079 2 14.1106 2.62229 16.116 3.86687L18.116 5.10812C20.0131 6.28551 20.9616 6.87421 21.4808 7.82274C22 8.77128 22 9.91549 22 12.2039V13.725C22 17.6258 22 19.5763 20.8284 20.7881C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.7881C2 19.5763 2 17.6258 2 13.725V12.2039Z"
+                        fill="currentColor"
+                    />
+                    <path
+                        d="M9 17.25C8.58579 17.25 8.25 17.5858 8.25 18C8.25 18.4142 8.58579 18.75 9 18.75H15C15.4142 18.75 15.75 18.4142 15.75 18C15.75 17.5858 15.4142 17.25 15 17.25H9Z"
+                        fill="currentColor"
+                    />
+                </svg>
+            ),
+        },
+        {
+            to: "/jemaat",
+            label: "Jemaat",
+            icon: (
+                <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" fill="currentColor" />
+                    <path opacity="0.5" d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+            ),
+        },
+        {
+            to: "/family",
+            label: "Family",
+            icon: (
+                <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor" opacity="0.5" />
+                    <path d="M12 2l10 9h-3v9H5v-9H2l10-9z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+            ),
+        },
+        {
+            to: "/calendar",
+            label: "Calendar",
+            icon: (
+                <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 11.5C21 16.1944 16.9706 20 12 20C7.02944 20 3 16.1944 3 11.5C3 6.80558 7.02944 3 12 3C16.9706 3 21 6.80558 21 11.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M12 7V12L15 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+            ),
+        },
+        {
+            to: "/assets",
+            label: "Assets",
+            icon: (
+                <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 4H20C21.1046 4 22 4.89543 22 6V18C22 19.1046 21.1046 20 20 20H4C2.89543 20 2 19.1046 2 18V6C2 4.89543 2.89543 4 4 4Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M16 2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M8 2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M2 10H22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+            ),
+        },
+        {
+            to: "/keuangan",
+            label: "Keuangan",
+            icon: (
+                <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2V22M17 7H9.5C8.57174 7 7.6815 7.36875 7.02513 8.02513C6.36875 8.6815 6 9.57174 6 10.5C6 11.4283 6.36875 12.3185 7.02513 12.9749C7.6815 13.6313 8.57174 14 9.5 14H14.5C15.4283 14 16.3185 14.3687 16.9749 15.0251C17.6313 15.6815 18 16.5717 18 17.5C18 18.4283 17.6313 19.3185 16.9749 19.9749C16.3185 20.6313 15.4283 21 14.5 21H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+            ),
+        },
+        {
+            to: "/admin",
+            label: "Admin",
+            icon: (
+                <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" fill="currentColor" />
+                    <path opacity="0.5" d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+            ),
+        },
+    ];
 
     return (
         <header id="main-header" className={`z-40 ${themeConfig.semidark && themeConfig.menu === 'horizontal' ? 'dark' : ''}`}>
             <div id="header-container" className="shadow-sm">
-                <div id="header-content" className="relative bg-white flex w-full items-center px-5 py-2.5 dark:bg-black">
-                    <div className="horizontal-logo flex lg:hidden justify-between items-center ltr:mr-2 rtl:ml-2">
-
+                <div id="header-content" className="relative bg-gradient-to-br from-secondary to-accent flex w-full items-center px-5 py-2.5 dark:bg-card">
+                    <div id="horizontal-logo" className="horizontal-logo flex lg:hidden justify-between items-center ltr:mr-2 rtl:ml-2">
                         <button
                             id="sidebar-toggle"
                             type="button"
@@ -73,7 +181,77 @@ const Header = () => {
 
                     <div id="header-controls" className="sm:flex-1 ltr:sm:ml-0 ltr:ml-auto sm:rtl:mr-0 rtl:mr-auto flex items-center space-x-1.5 lg:space-x-2 rtl:space-x-reverse dark:text-[#d0d2d6]">
                         <div id="header-spacer" className="sm:ltr:mr-auto sm:rtl:ml-auto">
+                            <Tippy content={t('click_to_change_church')} placement="bottom">
+                                <button id='select-church-btn' className='btn-primary py-2 px-3 rounded text-xs shadow-lg border text-white hover:shadow-lg transition-all duration-200' onClick={() => navigate('/select-church')}>
+                                    {church?.name || t('select_church')}, {church?.city || ''}  <span dangerouslySetInnerHTML={{ __html: CountryFlagSvg[church.country] }} style={{ width: 16, height: 12, marginRight: 4, display: 'inline-block' }} />
+                                </button>
+                            </Tippy>
                         </div>
+
+                        {/* horizontal menu */}
+                        <ul id='horizontal-menu' className="horizontal-menu hidden py-1.5 font-semibold px-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {menuItems.map((item) => (
+                                <li key={item.to} className="menu nav-item">
+                                    <NavLink to={item.to} className="nav-link group w-full">
+                                        <div className="flex items-center">
+                                            {item.icon}
+                                            <span className="ltr:pl-3 rtl:pr-3">{item.label}</span>
+                                        </div>
+                                    </NavLink>
+                                </li>
+                            ))}
+                            <li className="menu nav-item relative">
+                                <Dropdowns
+                                    ref={worshipDropdownRef}
+                                    trigger={
+                                        <button type="button" className="nav-link group w-full">
+                                            <div className="flex items-center">
+                                                <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M12 22C10.8954 22 10 21.1046 10 20V18C10 16.8954 10.8954 16 12 16C13.1046 16 14 16.8954 14 18V20C14 21.1046 13.1046 22 12 22Z"
+                                                        fill="currentColor"
+                                                    />
+                                                    <path
+                                                        opacity="0.5"
+                                                        d="M19 11H17C15.8954 11 15 10.1046 15 9V7C15 5.89543 15.8954 5 17 5H19C20.1046 5 21 5.89543 21 7V9C21 10.1046 20.1046 11 19 11Z"
+                                                        fill="currentColor"
+                                                    />
+                                                    <path
+                                                        opacity="0.5"
+                                                        d="M7 11H5C3.89543 11 3 10.1046 3 9V7C3 5.89543 3.89543 5 5 5H7C8.10457 5 9 5.89543 9 7V9C9 10.1046 8.10457 11 7 11Z"
+                                                        fill="currentColor"
+                                                    />
+                                                    <path
+                                                        opacity="0.5"
+                                                        d="M19 22H17C15.8954 22 15 21.1046 15 20V18C15 16.8954 15.8954 16 17 16H19C20.1046 16 21 16.8954 21 18V20C21 21.1046 20.1046 22 19 22Z"
+                                                        fill="currentColor"
+                                                    />
+                                                    <path
+                                                        opacity="0.5"
+                                                        d="M7 22H5C3.89543 22 3 21.1046 3 20V18C3 16.8954 3.89543 16 5 16H7C8.10457 16 9 16.8954 9 18V20C9 21.1046 8.10457 22 7 22Z"
+                                                        fill="currentColor"
+                                                    />
+                                                </svg>
+                                                <span className="ltr:pl-3 rtl:pr-3">Worship Service</span>
+                                            </div>
+                                            <div className="rtl:rotate-90 -rotate-90">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 m-auto">
+                                                    <path d="M8.12 9.29L12 13.17L15.88 9.29C16.27 8.9 16.9 8.9 17.29 9.29C17.68 9.68 17.68 10.31 17.29 10.7L12.7 15.29C12.31 15.68 11.68 15.68 11.29 15.29L6.7 10.7C6.31 10.31 6.31 9.68 6.7 9.29C7.09 8.9 7.72 8.9 8.12 9.29Z" fill="currentColor" />
+                                                </svg>
+                                            </div>
+                                        </button>
+                                    }
+                                    position="bottom"
+                                >
+                                    <div className="text-popover-foreground w-full ">
+                                        <NavLink to="/member" className="block px-4 py-2 hover:bg-accent hover:text-accent-foreground " onClick={() => worshipDropdownRef.current?.close()}>Member</NavLink>
+                                        <NavLink to="/role" className="block px-4 py-2 hover:bg-accent hover:text-accent-foreground " onClick={() => worshipDropdownRef.current?.close()}>Role</NavLink>
+                                        <NavLink to="/schedule" className="block px-4 py-2 hover:bg-accent hover:text-accent-foreground " onClick={() => worshipDropdownRef.current?.close()}>Schedule</NavLink>
+                                    </div>
+                                </Dropdowns>
+                            </li>
+                        </ul>
+
                         <div id="theme-toggle-container">
                             {themeConfig.theme === 'light' ? (
                                 <button
@@ -147,7 +325,7 @@ const Header = () => {
                                 btnClassName="block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60"
                                 button={<img id="language-flag" className="w-5 h-5 object-cover rounded-full" src={`/assets/images/flags/${flag.toUpperCase()}.svg`} alt="flag" />}
                             >
-                                <ul id="language-list" className="!px-2 text-dark dark:text-white-dark grid grid-cols-2 gap-2 font-semibold dark:text-white-light/90 w-[280px]">
+                                <ul id="language-list" className="!px-2 text-foreground dark:text-white-dark grid grid-cols-2 gap-2 font-semibold dark:text-white-light/90 w-[280px]">
                                     {themeConfig.languageList.map((item: any) => {
                                         return (
                                             <li key={item.code} id={`language-${item.code}`}>
@@ -170,130 +348,12 @@ const Header = () => {
                                 </ul>
                             </Dropdown>
                         </div>
-                        <div id="user-dropdown-container" className="dropdown shrink-0 flex">
-                            <Dropdown
-                                offset={[0, 8]}
-                                placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                btnClassName="relative group block"
-                                button={<img id="user-profile-img" className="w-9 h-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src="/assets/images/user-profile.jpeg" alt="userProfile" />}
-                            >
-                                <ul id="user-menu" className="text-dark dark:text-white-dark !py-0 w-[230px] font-semibold dark:text-white-light/90">
-                                    <li id="user-info">
-                                        <div id="user-info-content" className="flex items-center px-4 py-4">
-                                            <img id="user-avatar" className="rounded-md w-10 h-10 object-cover" src="/assets/images/user-profile.jpeg" alt="userProfile" />
-                                            <div id="user-details" className="ltr:pl-4 rtl:pr-4 truncate">
-                                                <h4 id="user-name" className="text-base">
-                                                    John Doe
-                                                    <span id="user-status" className="text-xs bg-success-light rounded text-success px-1 ltr:ml-2 rtl:ml-2">Pro</span>
-                                                </h4>
-                                                <button id="user-email" type="button" className="text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white">
-                                                    johndoe@gmail.com
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li id="profile-menu-item">
-                                        <Link id="profile-link" to="/profile" className="dark:hover:text-white">
-                                            <svg className="ltr:mr-2 rtl:ml-2 shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <circle cx="12" cy="6" r="4" stroke="currentColor" strokeWidth="1.5" />
-                                                <path
-                                                    opacity="0.5"
-                                                    d="M20 17.5C20 19.9853 20 22 12 22C4 22 4 19.9853 4 17.5C4 15.0147 7.58172 13 12 13C16.4183 13 20 15.0147 20 17.5Z"
-                                                    stroke="currentColor"
-                                                    strokeWidth="1.5"
-                                                />
-                                            </svg>
-                                            Profile
-                                        </Link>
-                                    </li>
-                                    <li id="inbox-menu-item">
-                                        <Link id="inbox-link" to="/apps/mailbox" className="dark:hover:text-white">
-                                            <svg className="ltr:mr-2 rtl:ml-2 shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    opacity="0.5"
-                                                    d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z"
-                                                    stroke="currentColor"
-                                                    strokeWidth="1.5"
-                                                />
-                                                <path
-                                                    d="M6 8L8.1589 9.79908C9.99553 11.3296 10.9139 12.0949 12 12.0949C13.0861 12.0949 14.0045 11.3296 15.8411 9.79908L18 8"
-                                                    stroke="currentColor"
-                                                    strokeWidth="1.5"
-                                                    strokeLinecap="round"
-                                                />
-                                            </svg>
-                                            Inbox
-                                        </Link>
-                                    </li>
-                                    <li id="lock-screen-menu-item">
-                                        <Link id="lock-screen-link" to="/auth/boxed-lockscreen" className="dark:hover:text-white">
-                                            <svg className="ltr:mr-2 rtl:ml-2 shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M2 16C2 13.1716 2 11.7574 2.87868 10.8787C3.75736 10 5.17157 10 8 10H16C18.8284 10 20.2426 10 21.1213 10.8787C22 11.7574 22 13.1716 22 16C22 18.8284 22 20.2426 21.1213 21.1213C20.2426 22 18.8284 22 16 22H8C5.17157 22 3.75736 22 2.87868 21.1213C2 20.2426 2 18.8284 2 16Z"
-                                                    stroke="currentColor"
-                                                    strokeWidth="1.5"
-                                                />
-                                                <path opacity="0.5" d="M6 10V8C6 4.68629 8.68629 2 12 2C15.3137 2 18 4.68629 18 8V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                                <g opacity="0.5">
-                                                    <path d="M9 16C9 16.5523 8.55228 17 8 17C7.44772 17 7 16.5523 7 16C7 15.4477 7.44772 15 8 15C8.55228 15 9 15.4477 9 16Z" fill="currentColor" />
-                                                    <path
-                                                        d="M13 16C13 16.5523 12.5523 17 12 17C11.4477 17 11 16.5523 11 16C11 15.4477 11.4477 15 12 15C12.5523 15 13 15.4477 13 16Z"
-                                                        fill="currentColor"
-                                                    />
-                                                    <path
-                                                        d="M17 16C17 16.5523 16.5523 17 16 17C15.4477 17 15 16.5523 15 16C15 15.4477 15.4477 15 16 15C16.5523 15 17 15.4477 17 16Z"
-                                                        fill="currentColor"
-                                                    />
-                                                </g>
-                                            </svg>
-                                            Lock Screen
-                                        </Link>
-                                    </li>
-                                    <li id="sign-out-menu-item" className="border-t border-white-light dark:border-white-light/10">
-                                        <button id="sign-out-btn" className="text-danger !py-3" onClick={() => setShowLogoutModal(true)}>
-                                            <svg className="ltr:mr-2 rtl:ml-2 rotate-90 shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    opacity="0.5"
-                                                    d="M17 9.00195C19.175 9.01406 20.3529 9.11051 21.1213 9.8789C22 10.7576 22 12.1718 22 15.0002V16.0002C22 18.8286 22 20.2429 21.1213 21.1215C20.2426 22.0002 18.8284 22.0002 16 22.0002H8C5.17157 22.0002 3.75736 22.0002 2.87868 21.1215C2 20.2429 2 18.8286 2 16.0002L2 15.0002C2 12.1718 2 10.7576 2.87868 9.87889C3.64706 9.11051 4.82497 9.01406 7 9.00195"
-                                                    stroke="currentColor"
-                                                    strokeWidth="1.5"
-                                                    strokeLinecap="round"
-                                                />
-                                                <path d="M12 15L12 2M12 2L15 5.5M12 2L9 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                            </svg>
-                                            Sign Out
-                                        </button>
-                                    </li>
-                                </ul>
-                            </Dropdown>
-                        </div>
+                        <ThemeColorSwitcher />
+                        <UserDropdownProfile user={user} showLogoutModal={showLogoutModal} setShowLogoutModal={setShowLogoutModal} />
                     </div>
                 </div>
             </div>
-            <Modal isOpen={showLogoutModal} onClose={() => setShowLogoutModal(false)} id="logout-modal">
-                <div className="p-5 text-center">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('confirm_logout')}</h3>
-                    <p className="text-gray-600 dark:text-gray-400 mb-6">{t('confirm_logout_message')}</p>
-                    <div className="flex justify-center space-x-4">
-                        <button
-                            onClick={() => {
-                                localStorage.removeItem('user');
-                                localStorage.removeItem('token');
-                                navigate('/login');
-                            }}
-                            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                        >
-                            {t('yes')}
-                        </button>
-                        <button
-                            onClick={() => setShowLogoutModal(false)}
-                            className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                        >
-                            {t('no')}
-                        </button>
-                    </div>
-                </div>
-            </Modal>
+
         </header>
     );
 };

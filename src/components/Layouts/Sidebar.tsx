@@ -48,18 +48,19 @@ const Sidebar = () => {
     return (
         <div className={semidark ? 'dark' : ''}>
             <nav
+                id="sidebar-nav"
                 className={`sidebar fixed min-h-screen h-full top-0 bottom-0 w-[260px] shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] z-50 transition-all duration-300 ${semidark ? 'text-white-dark' : ''}`}
             >
-                <div className="bg-white dark:bg-black h-full">
-                    <div className="flex justify-between items-center px-4 py-3">
-                        <NavLink to="/" className="main-logo flex items-center shrink-0">
-                            <img className="w-8 ml-[5px] flex-none" src="/assets/images/logo.svg" alt="logo" />
-                            <span className="text-2xl ltr:ml-1.5 rtl:mr-1.5 font-semibold align-middle lg:inline dark:text-white-light">Lumen</span>
+                <div id="sidebar-bg" className="bg-primary h-full">
+                    <div id="sidebar-header" className="flex justify-between items-center px-4 py-3">
+                        <NavLink id="sidebar-logo" to="/" className="main-logo flex items-center shrink-0">
+                            <span id="sidebar-logo-text" className="text-2xl ltr:ml-1.5 rtl:mr-1.5 font-semibold align-middle lg:inline text-sidebar-foreground">Lumen</span>
                         </NavLink>
 
                         <button
+                            id="sidebar-collapse-btn"
                             type="button"
-                            className="collapse-icon w-8 h-8 rounded-full flex items-center hover:bg-gray-500/10 dark:hover:bg-dark-light/10 dark:text-white-light transition duration-300 rtl:rotate-180"
+                            className="collapse-icon w-8 h-8 rounded-full flex items-center hover:bg-sidebar-accent/10 text-sidebar-foreground transition duration-300 rtl:rotate-180"
                             onClick={() => dispatch(toggleSidebar())}
                         >
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 m-auto">
@@ -68,9 +69,9 @@ const Sidebar = () => {
                             </svg>
                         </button>
                     </div>
-                    <PerfectScrollbar className="h-[calc(100vh-80px)] relative">
-                        <ul className="relative font-semibold space-y-0.5 p-4 py-0">
-                            <li className="menu nav-item">
+                    <PerfectScrollbar id="sidebar-scrollbar" className="h-[calc(100vh-80px)] relative">
+                        <ul id="sidebar-menu" className="relative font-semibold space-y-0.5 p-4 py-0">
+                            <li id="dashboard-menu-item" className="menu nav-item">
                                 <NavLink to="/dashboard" className={({ isActive }) => `${isActive ? 'active' : ''} nav-link group w-full`}>
                                     <div className="flex items-center">
                                         <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -84,46 +85,46 @@ const Sidebar = () => {
                                                 fill="currentColor"
                                             />
                                         </svg>
-                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Dashboard</span>
+                                        <span className="ltr:pl-3 rtl:pr-3 text-sidebar-foreground dark:group-hover:text-sidebar-foreground">Dashboard</span>
                                     </div>
                                 </NavLink>
                             </li>
-                            <li className="menu nav-item">
+                            <li id="jemaat-menu-item" className="menu nav-item">
                                 <NavLink to="/jemaat" className={({ isActive }) => `${isActive ? 'active' : ''} nav-link group w-full`}>
                                     <div className="flex items-center">
                                         <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" fill="currentColor" />
                                             <path opacity="0.5" d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                                         </svg>
-                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Jemaat</span>
+                                        <span className="ltr:pl-3 rtl:pr-3 text-sidebar-foreground dark:group-hover:text-sidebar-foreground">Jemaat</span>
                                     </div>
                                 </NavLink>
                             </li>
-                            <li className="menu nav-item">
+                            <li id="family-menu-item" className="menu nav-item">
                                 <NavLink to="/family" className={({ isActive }) => `${isActive ? 'active' : ''} nav-link group w-full`}>
                                     <div className="flex items-center">
                                         <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor" opacity="0.5" />
                                             <path d="M12 2l10 9h-3v9H5v-9H2l10-9z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
-                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Family</span>
+                                        <span className="ltr:pl-3 rtl:pr-3 text-sidebar-foreground dark:group-hover:text-sidebar-foreground">Family</span>
                                     </div>
                                 </NavLink>
                             </li>
 
-                            <li className="menu nav-item">
+                            <li id="calendar-menu-item" className="menu nav-item">
                                 <NavLink to="/calendar" className={({ isActive }) => `${isActive ? 'active' : ''} nav-link group w-full`}>
                                     <div className="flex items-center">
                                         <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M21 11.5C21 16.1944 16.9706 20 12 20C7.02944 20 3 16.1944 3 11.5C3 6.80558 7.02944 3 12 3C16.9706 3 21 6.80558 21 11.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                             <path d="M12 7V12L15 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
-                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Calendar</span>
+                                        <span className="ltr:pl-3 rtl:pr-3 text-sidebar-foreground dark:group-hover:text-sidebar-foreground">Calendar</span>
                                     </div>
                                 </NavLink>
                             </li>
 
-                            <li className="menu nav-item">
+                            <li id="assets-menu-item" className="menu nav-item">
                                 <NavLink to="/assets" className={({ isActive }) => `${isActive ? 'active' : ''} nav-link group w-full`}>
                                     <div className="flex items-center">
                                         <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -132,24 +133,24 @@ const Sidebar = () => {
                                             <path d="M8 2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                             <path d="M2 10H22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
-                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Assets</span>
+                                        <span className="ltr:pl-3 rtl:pr-3 text-sidebar-foreground dark:group-hover:text-sidebar-foreground">Assets</span>
                                     </div>
                                 </NavLink>
                             </li>
 
 
-                            <li className="menu nav-item">
+                            <li id="keuangan-menu-item" className="menu nav-item">
                                 <NavLink to="/keuangan" className={({ isActive }) => `${isActive ? 'active' : ''} nav-link group w-full`}>
                                     <div className="flex items-center">
                                         <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M12 2V22M17 7H9.5C8.57174 7 7.6815 7.36875 7.02513 8.02513C6.36875 8.6815 6 9.57174 6 10.5C6 11.4283 6.36875 12.3185 7.02513 12.9749C7.6815 13.6313 8.57174 14 9.5 14H14.5C15.4283 14 16.3185 14.3687 16.9749 15.0251C17.6313 15.6815 18 16.5717 18 17.5C18 18.4283 17.6313 19.3185 16.9749 19.9749C16.3185 20.6313 15.4283 21 14.5 21H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
-                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Keuangan</span>
+                                        <span className="ltr:pl-3 rtl:pr-3 text-sidebar-foreground dark:group-hover:text-sidebar-foreground">Keuangan</span>
                                     </div>
                                 </NavLink>
                             </li>
 
-                            <li className="menu nav-item">
+                            <li id="admin-menu-item" className="menu nav-item">
                                 <NavLink to="/admin" className={({ isActive }) => `${isActive ? 'active' : ''} nav-link group w-full`}>
                                     <div className="flex items-center">
                                         <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -157,13 +158,11 @@ const Sidebar = () => {
                                             <path opacity="0.5" d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                                         </svg>
 
-                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Admin</span>
+                                        <span className="ltr:pl-3 rtl:pr-3 text-sidebar-foreground dark:group-hover:text-sidebar-foreground">Admin</span>
                                     </div>
                                 </NavLink>
                             </li>
-
-
-                            <li className="menu nav-item">
+                            <li id="worship-service-menu-item" className="menu nav-item">
                                 <button type="button" className={`${currentMenu === 'dashboard' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('dashboard')}>
                                     <div className="flex items-center">
                                         <svg className="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -193,7 +192,7 @@ const Sidebar = () => {
                                                 fill="currentColor"
                                             />
                                         </svg>
-                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Worship Service</span>
+                                        <span className="ltr:pl-3 rtl:pr-3 text-sidebar-foreground dark:group-hover:text-sidebar-foreground">Worship Service</span>
                                     </div>
 
                                     <div className={currentMenu !== 'dashboard' ? 'rtl:rotate-90 -rotate-90' : ''}>
@@ -204,7 +203,7 @@ const Sidebar = () => {
                                 </button>
 
                                 <AnimateHeight duration={300} height={currentMenu === 'dashboard' ? 'auto' : 0}>
-                                    <ul className="sub-menu text-gray-500">
+                                    <ul id="worship-service-submenu" className="sub-menu text-muted-foreground">
                                         <li>
                                             <NavLink to="/member">Member</NavLink>
                                         </li>

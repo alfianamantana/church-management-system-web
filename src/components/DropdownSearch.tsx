@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import InputText from './InputText';
 
 interface Option {
   id: string | number;
@@ -6,6 +7,7 @@ interface Option {
 }
 
 interface DropdownSearchProps {
+  id?: string;
   placeholder?: string;
   onSearch: (query: string) => Promise<Option[]>;
   onSelect: (option: Option | Option[] | null) => void;
@@ -15,6 +17,7 @@ interface DropdownSearchProps {
 }
 
 const DropdownSearch: React.FC<DropdownSearchProps> = ({
+  id,
   placeholder = 'Search...',
   onSearch,
   onSelect,
@@ -119,28 +122,29 @@ const DropdownSearch: React.FC<DropdownSearchProps> = ({
   };
 
   return (
-    <div className="relative w-full" ref={dropdownRef}>
+    <div className="relative w-full" ref={dropdownRef} {...(id ? { id } : {})}>
       <div className="relative">
         <div className="flex items-center gap-2 w-full">
           {/* Single-select: show full-width card with X to clear */}
           {!multiSelect && selected.length > 0 ? (
-            <div className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100">
+            <div className="w-full flex items-center justify-between px-3 py-2 border border-border rounded bg-input text-foreground dark:bg-input dark:border-border" id={id ? `${id}-selected` : undefined}>
               <div className="truncate">{selected[0].label}</div>
             </div>
           ) : (
             // Multi-select or no selection: show chips (if any) and input
-            <div className="flex flex-1 flex-wrap items-center gap-2 border border-gray-300 rounded-md bg-white dark:bg-gray-900 p-2 dark:border-gray-700">
+            <div className=" w-full flex-wrap items-center gap-2 rounded-xl bg-popover dark:bg-popover dark:border-border" id={id ? `${id}-input-wrapper` : undefined}>
               {selected.length > 0 && (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2" id={id ? `${id}-chips` : undefined}>
                   {selected.map((s) => (
-                    <span key={s.id} className="inline-flex items-center px-2 py-1 bg-gray-100 rounded-full text-sm text-gray-800 dark:bg-gray-700 dark:text-gray-100">
+                    <span key={s.id} className="inline-flex items-center px-2 py-1 bg-muted rounded-full text-sm text-foreground dark:bg-muted dark:text-foreground" id={id ? `${id}-chip-${s.id}` : undefined}>
                       <span className="mr-2">{s.label}</span>
                       {multiSelect && (
                         <button
                           type="button"
                           onClick={() => handleRemove(s)}
-                          className="ml-1 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
+                          className="ml-1 text-muted-foreground transition-all duration-200 hover:text-foreground dark:text-muted-foreground dark:hover:text-foreground"
                           aria-label={`remove ${s.label}`}
+                          id={id ? `${id}-remove-${s.id}` : undefined}
                         >
                           &times;
                         </button>
@@ -150,7 +154,7 @@ const DropdownSearch: React.FC<DropdownSearchProps> = ({
                 </div>
               )}
 
-              <input
+              <InputText
                 ref={inputRef}
                 type="text"
                 value={query}
@@ -161,40 +165,38 @@ const DropdownSearch: React.FC<DropdownSearchProps> = ({
                 }}
                 onBlur={() => setIsFocused(false)}
                 placeholder={placeholder}
-                className="flex-1 min-w-[120px] px-3 py-2 pr-10 focus:outline-none text-gray-900 dark:bg-gray-900 dark:text-gray-100"
+                className="flex-1 min-w-[120px] bg-transparent"
+                id={id ? `${id}-input` : undefined}
+                autoComplete="off"
+                rightIcon={
+                  loading ? (
+                    <svg className="animate-spin h-5 w-5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  ) : (query || selected.length > 0) ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  ) : undefined
+                }
+                onRightIconClick={
+                  loading ? undefined : (query || selected.length > 0) ? handleClear : undefined
+                }
               />
-            </div>
-          )}
-
-          {(query || selected.length > 0) && (
-            <button
-              onClick={handleClear}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          )}
-
-          {loading && (
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-              <svg className="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
             </div>
           )}
         </div>
       </div>
 
       {isOpen && options.length > 0 && (
-        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-300 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-700 max-h-60 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-2 bg-popover border border-border rounded-xl shadow-xl dark:bg-popover dark:border-border max-h-60 overflow-y-auto ring-1 ring-ring" id={id ? `${id}-dropdown` : undefined}>
           {options.map((option) => (
             <div
               key={option.id}
               onClick={() => handleSelect(option)}
-              className="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="px-3 py-2 cursor-pointer hover:bg-muted dark:hover:bg-muted text-foreground dark:text-foreground"
+              id={id ? `${id}-option-${option.id}` : undefined}
             >
               {option.label}
             </div>

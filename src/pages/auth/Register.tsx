@@ -6,12 +6,11 @@ import CountryList from 'country-list-with-dial-code-and-flag';
 import CountryFlagSvg from 'country-list-with-dial-code-and-flag/dist/flag-svg';
 import Dropdown from '../../components/Dropdowns';
 import Card from '../../components/Card';
-import { IPriorityNeed } from '../../constant';
+import { IPriorityNeed, IBasicResponse, getMessage } from '../../constant';
 import api from '../../services/api';
-import { useDispatch, useSelector } from 'react-redux';
-import { toggleRTL, toggleTheme } from '../../store/themeConfigSlice';
-import { IRootState } from '../../store';
+import { useDispatch, } from 'react-redux';
 import ThemeLanguageSwitcher from '../../components/ThemeLanguageSwitcher';
+import { toast } from 'react-toastify';
 
 const countries = CountryList.getAll();
 
@@ -19,20 +18,9 @@ const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
-  const themeConfig = useSelector((state: IRootState) => state.themeConfig);
-  const [flag, setFlag] = useState(themeConfig.locale);
-
-  const setLocale = (flag: string) => {
-    setFlag(flag);
-    if (flag.toLowerCase() === 'ae') {
-      dispatch(toggleRTL('rtl'));
-    } else {
-      dispatch(toggleRTL('ltr'));
-    }
-  };
 
   const [form, setForm] = useState({
+    name: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -69,18 +57,53 @@ const RegisterPage: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Validasi sederhana
+
+    // Validasi lengkap semua field
     const newErrors: { [key: string]: string } = {};
-    if (!form.email) newErrors.email = t('email_required');
-    if (!form.password) newErrors.password = t('password_required');
-    if (form.password !== form.confirmPassword) newErrors.confirmPassword = t('password_mismatch');
-    if (!form.phone) newErrors.phone = t('phone_required');
+    if (!form.name.trim()) newErrors.name = t('name_required') || 'Name is required';
+    if (!form.email.trim()) newErrors.email = t('email_required') || 'Email is required';
+    if (!form.password) newErrors.password = t('password_required') || 'Password is required';
+    if (!form.confirmPassword) newErrors.confirmPassword = t('confirm_password_required') || 'Confirm password is required';
+    if (form.password && form.confirmPassword && form.password !== form.confirmPassword) {
+      newErrors.confirmPassword = t('password_mismatch') || 'Passwords do not match';
+    }
+    if (!form.phone.trim()) newErrors.phone = t('phone_required') || 'Phone number is required';
+    if (selectedPriorities.length === 0) {
+      newErrors.priorityNeeds = t('priority_needs_required') || 'Please select at least one priority need';
+    }
+
+    // Set errors state
     setErrors(newErrors);
-    if (Object.keys(newErrors).length === 0) {
-      // Submit ke backend
-      // ...
+
+    // Jika ada error, tampilkan toast dan stop
+    if (Object.keys(newErrors).length > 0) {
+      toast.error('Please fill all required fields');
+      return;
+    }
+
+    // Jika validasi lolos, lanjutkan dengan API call
+    try {
+      const registerData = {
+        name: form.name.trim(),
+        email: form.email.trim(),
+        password: form.password,
+        phone_number: dialCode + form.phone,
+        priority_needs: selectedPriorities,
+      };
+
+      const { data } = await api.post('/user/register', registerData);
+      const response: IBasicResponse = data;
+
+      if (response.code === 201) {
+        toast.success(getMessage(response.message) as string);
+        navigate('/otp', { state: { email: form.email } });
+      } else {
+        toast.error(getMessage(response.message) as string);
+      }
+    } catch (error: any) {
+      toast.error('Registration failed. Please try again.');
     }
   };
 
@@ -101,7 +124,18 @@ const RegisterPage: React.FC = () => {
           <h2 id="register-title" className="text-2xl md:text-3xl font-bold text-card-foreground mb-2">Lumen</h2>
           <p id="register-subtitle" className="text-muted-foreground">{t('church_management_system')}</p>
         </div>
-        <form id="register-form" className="flex flex-col gap-y-4" onSubmit={handleSubmit}>
+        <div id="register-form" className="flex flex-col gap-y-4" >
+          <InputText
+            id="register-name"
+            label={t('name')}
+            name="name"
+            type="text"
+            value={form.name}
+            onChange={handleChange}
+            required
+            error={errors.name}
+            autoComplete="name"
+          />
           <InputText
             id="register-email"
             label="Email"
@@ -148,7 +182,7 @@ const RegisterPage: React.FC = () => {
                     <button
                       id="register-country-trigger"
                       type="button"
-                      className="flex items-center h-full px-1 border-r ml-1 bg-background text-foreground focus:outline-none"
+                      className="flex items-center h-full px-1 border-r ml-1 bg-input text-foreground focus:outline-none"
                     >
                       {flagSvg && <span dangerouslySetInnerHTML={{ __html: flagSvg }} style={{ width: 17, height: 17, marginRight: 8, display: 'inline-block' }} />}
                       <span id="register-dial-code" className="font-semibold text-xs">+{dialCode}</span>
@@ -204,10 +238,10 @@ const RegisterPage: React.FC = () => {
                 className="pl-24 w-full px-3 py-2 border rounded-lg  focus:outline-none focus:ring-2 border-border focus:ring-ring bg-input text-foreground dark:focus:ring-ring"
                 style={{ marginBottom: 0 }}
               />
-              {errors.phone && (
-                <div id="register-phone-error" className="text-destructive mt-1 text-sm">{errors.phone}</div>
-              )}
             </div>
+            {errors.phone && (
+              <div id="register-phone-error" className="text-destructive mt-1 text-sm">{errors.phone}</div>
+            )}
 
             <div id="register-priority-container" className="mt-3 p-2 md:p-4 rounded-lg bg-muted border border-border shadow-sm">
               <div id="register-priority-label" className="text-xs md:text-sm font-semibold mb-1 text-foreground">{t('register_priority_title')}</div>
@@ -236,16 +270,20 @@ const RegisterPage: React.FC = () => {
                   </label>
                 ))}
               </div>
+              {errors.priorityNeeds && (
+                <div id="register-priority-error" className="text-destructive mt-2 text-sm">{errors.priorityNeeds}</div>
+              )}
             </div>
           </div>
           <button
+            onClick={handleSubmit}
             id="register-submit"
             type="submit"
             className="w-full py-2 md:py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
           >
             {t('register') || 'Register'}
           </button>
-        </form>
+        </div>
         <button
           id="register-back"
           onClick={() => navigate('/login')}

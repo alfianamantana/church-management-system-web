@@ -1,7 +1,7 @@
 import path from 'path';
 import { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
-const Login = lazy(() => import('../pages/auth/login'));
+const Login = lazy(() => import('../pages/auth/Login'));
 const Register = lazy(() => import('../pages/auth/Register'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const Jemaat = lazy(() => import('../pages/Jemaat/List'));
@@ -9,15 +9,18 @@ const JemaatCreate = lazy(() => import('../pages/Jemaat/Create'));
 const Calendar = lazy(() => import('../pages/Calendar/Calendar'));
 const MemberList = lazy(() => import('../pages/Member/list'));
 const RoleList = lazy(() => import('../pages/Role/List'));
-const ScheduleList = lazy(() => import('../pages/Schedulle/List'));
-const ScheduleCreate = lazy(() => import('../pages/Schedulle/Create'));
+const ScheduleList = lazy(() => import('../pages/Schedule/List'));
+const ScheduleCreate = lazy(() => import('../pages/Schedule/Create'));
 const KeuanganList = lazy(() => import('../pages/Keuangan/List'));
 const FamilyList = lazy(() => import('../pages/Family/List'));
 const JemaatEdit = lazy(() => import('../pages/Jemaat/Edit'));
-const ScheduleEdit = lazy(() => import('../pages/Schedulle/Edit'));
+const ScheduleEdit = lazy(() => import('../pages/Schedule/Edit'));
 const Assets = lazy(() => import('../pages/assets/List'));
 const ProfileDetail = lazy(() => import('../pages/Profile/Detail'));
 const Admin = lazy(() => import('../pages/admin/List'));
+const OTP = lazy(() => import('../pages/auth/OTP'));
+const CreateChurch = lazy(() => import('../pages/auth/CreateChurch'));
+const SelectChurch = lazy(() => import('../pages/auth/SelectChurch'));
 
 const ErrorElement = () => (
     <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
@@ -209,6 +212,33 @@ const routes = [
         name: 'Register',
         breadcrumb: 'Register',
         description: 'Halaman registrasi user baru',
+        errorElement: <ErrorElement />,
+    },
+    {
+        path: '/otp',
+        element: <OTP />,
+        layout: 'blank',
+        name: 'OTP',
+        breadcrumb: 'OTP',
+        description: 'Halaman verifikasi OTP',
+        errorElement: <ErrorElement />,
+    },
+    {
+        path: '/create-church',
+        element: <CreateChurch />,
+        layout: 'blank-default',
+        name: 'Create Church',
+        breadcrumb: 'Create Church',
+        description: 'Halaman pembuatan gereja',
+        errorElement: <ErrorElement />,
+    },
+    {
+        path: '/select-church',
+        element: <SelectChurch />,
+        layout: 'blank-default',
+        name: 'Select Church',
+        breadcrumb: 'Select Church',
+        description: 'Halaman pemilihan gereja',
         errorElement: <ErrorElement />,
     }
 ];

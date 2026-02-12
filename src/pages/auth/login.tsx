@@ -36,13 +36,23 @@ const LoginPage: React.FC = () => {
       const { data } = await api.post('/user/login', { email, password });
       const response: ILoginResponse = data;
       if (response.code === 200) {
+        const userData = response.data;
+        if (!userData?.is_verified) {
+          navigate('/otp', { state: { email } });
+          return;
+        }
+        // Always save token and user to localStorage after successful login
         const string = JSON.stringify(response.data);
         const tokenEncrypted = await encryptData(response.token);
         await localStorage.setItem('token', tokenEncrypted);
         const userEncrypted = await encryptData(string);
         await localStorage.setItem('user', userEncrypted);
+        if (!userData.churches.length) {
+          navigate('/create-church');
+          return;
+        }
         toast.success(getMessage(response.message) as string);
-        navigate('/dashboard');
+        navigate('/select-church');
       } else if (response.code === 403 && (getMessage(response.message) === 'Subscription expired' || getMessage(response.message) === 'Langganan kedaluwarsa')) {
         toast.error(t('subscription_expired') as string);
       } else {

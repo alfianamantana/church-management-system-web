@@ -84,8 +84,13 @@ export interface IUser {
     subscribe_until: string | null;
     role: UserRole;
     subscribe_type: 'bibit' | 'bertumbuh' | 'full';
+    is_verified: boolean;
+    is_trial_account: boolean;
+    is_main_account: boolean;
     createdAt: string;
     updatedAt: string;
+
+    churches: IChurch[];
 }
 
 export interface IPagination {
@@ -155,6 +160,18 @@ export interface IPriorityNeed {
     id: number;
     name: string;
     description?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface IChurch {
+    id: number;
+    name: string;
+    address: string;
+    city: string;
+    country: string;
+    phone_number: string;
+    email: string;
     createdAt: string;
     updatedAt: string;
 }

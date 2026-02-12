@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import ReactDOM from 'react-dom';
-import { usePopper } from 'react-popper';
-interface DropdownRef {
+export interface DropdownRef {
   close: () => void;
 }
 

@@ -48,30 +48,29 @@ const Modal: React.FC<ModalProps> = ({
   return (
     <div
       id={id}
-      className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-200 ${isAnimatingOut ? 'opacity-0' : 'opacity-100'
+      className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-200 bg-black/50 ${isAnimatingOut ? 'opacity-0' : 'opacity-100'
         }`}
-      style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
       onClick={onClose}
     >
       <div
-        className={`relative w-full ${sizeClasses[size]} mx-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg transform transition-all duration-200 ${isAnimatingOut
+        className={`relative w-full ${sizeClasses[size]} mx-4 bg-card rounded-lg shadow-lg transform transition-all duration-200 ${isAnimatingOut
           ? 'opacity-0 scale-95 -translate-y-2'
           : 'opacity-100 scale-100 translate-y-0'
           } ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
+          <div className="flex items-center justify-between p-4 border-b border-border">
+            <h3 className="text-lg font-semibold text-card-foreground">{title}</h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200"
+              className="text-muted-foreground hover:text-foreground transition-all duration-200"
             >
               &times;
             </button>
           </div>
         )}
-        <div className="p-4">
+        <div className="p-4 text-card-foreground">
           {children}
         </div>
       </div>

@@ -108,7 +108,7 @@ const ThemeLanguageSwitcher = ({ className = '' }: ThemeLanguageSwitcherProps) =
           btnClassName="block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60 transition-all duration-200"
           button={<img id="language-flag" className="w-5 h-5 object-cover rounded-full" src={`/assets/images/flags/${flag.toUpperCase()}.svg`} alt="flag" />}
         >
-          <ul id="language-list" className="!px-2 text-dark dark:text-white-dark grid grid-cols-2 gap-2 font-semibold dark:text-white-light/90 w-[280px]">
+          <ul id="language-list" className="!px-2 text-foreground dark:text-white-dark grid grid-cols-2 gap-2 font-semibold dark:text-white-light/90 w-[280px]">
             {themeConfig.languageList.map((item: any) => {
               return (
                 <li key={item.code} id={`language-${item.code}`}>

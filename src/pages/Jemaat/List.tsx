@@ -135,7 +135,7 @@ const Jemaat: React.FC = () => {
               placeholder={t("search_by_name")}
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+              className="flex-1 px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm md:text-base"
             />
             <div className="flex flex-col gap-2 md:flex-row md:gap-2">
               <button
@@ -145,12 +145,12 @@ const Jemaat: React.FC = () => {
                   setCurrentPage(1);
                 }}
                 type="button"
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200 text-sm md:text-base"
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary transition-all duration-200 text-sm md:text-base"
               >
                 {t('search')}
               </button>
               <NavLink to="/jemaat/create">
-                <button id="create-jemaat-button" className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200 text-sm md:text-base'>
+                <button id="create-jemaat-button" className='px-4 py-2 bg-success text-white rounded-md hover:bg-success transition-all duration-200 text-sm md:text-base'>
                   {t("create_jemaat")}
                 </button>
               </NavLink>
@@ -198,7 +198,7 @@ const Jemaat: React.FC = () => {
         size="sm"
       >
         <div className="space-y-4" id="delete-modal-content">
-          <p className="text-gray-700 dark:text-gray-300">
+          <p className="text-muted-foreground">
             {t('confirm_delete_jemaat') || 'Are you sure you want to delete jemaat'} <strong>{deletingJemaat?.name}</strong>? {t('cannot_be_undone') || 'This action cannot be undone.'}
           </p>
           <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="delete-modal-actions">
@@ -206,7 +206,7 @@ const Jemaat: React.FC = () => {
               id="cancel-delete-button"
               type="button"
               onClick={() => setIsDeleteModalOpen(false)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm md:text-base"
+              className="px-4 py-2 border border-border rounded-md text-muted-foreground hover:bg-muted text-sm md:text-base"
             >
               {t('cancel')}
             </button>
@@ -214,7 +214,7 @@ const Jemaat: React.FC = () => {
               id="confirm-delete-button"
               onClick={handleConfirmDelete}
               disabled={deleting}
-              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+              className="px-4 py-2 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
             >
               {deleting ? t('deleting') : t('delete')}
             </button>

@@ -14,6 +14,7 @@ const defaultState = {
     locale: 'en',
     sidebar: false,
     pageTitle: '',
+    colorTheme: 'amber',
     languageList: [
         { code: 'en', name: 'English' },
         { code: 'id', name: 'Indonesian' },
@@ -31,6 +32,7 @@ const initialState = {
     locale: localStorage.getItem('i18nextLng') || themeConfig.locale,
     isDarkMode: false,
     sidebar: localStorage.getItem('sidebar') || defaultState.sidebar,
+    colorTheme: localStorage.getItem('colorTheme') || themeConfig.colorTheme,
     semidark: localStorage.getItem('semidark') || themeConfig.semidark,
     languageList: [
         { code: 'en', name: 'English' },
@@ -58,10 +60,16 @@ const themeConfigSlice = createSlice({
                 }
             }
 
-            if (state.isDarkMode) {
-                document.querySelector('body')?.classList.add('dark');
-            } else {
-                document.querySelector('body')?.classList.remove('dark');
+            // Apply theme classes
+            const body = document.querySelector('body');
+            if (body) {
+                body.classList.remove('dark', 'theme-amber', 'theme-crimson', 'theme-caramel', 'theme-mustard', 'theme-sepia', 'theme-brick-red', 'theme-terracotta');
+                if (state.isDarkMode) {
+                    body.classList.add('dark');
+                }
+                if (state.colorTheme !== 'amber') {
+                    body.classList.add(`theme-${state.colorTheme}`);
+                }
             }
         },
         toggleMenu(state, { payload }) {
@@ -102,6 +110,20 @@ const themeConfigSlice = createSlice({
             i18next.changeLanguage(payload);
             state.locale = payload;
         },
+        toggleColorTheme(state, { payload }) {
+            payload = payload || state.colorTheme; // amber | crimson | caramel | mustard | sepia | brick-red | terracotta
+            localStorage.setItem('colorTheme', payload);
+            state.colorTheme = payload;
+
+            // Apply theme classes
+            const body = document.querySelector('body');
+            if (body) {
+                body.classList.remove('theme-amber', 'theme-crimson', 'theme-caramel', 'theme-mustard', 'theme-sepia', 'theme-brick-red', 'theme-terracotta');
+                if (payload !== 'amber') {
+                    body.classList.add(`theme-${payload}`);
+                }
+            }
+        },
         toggleSidebar(state) {
             state.sidebar = !state.sidebar;
         },
@@ -112,6 +134,6 @@ const themeConfigSlice = createSlice({
     },
 });
 
-export const { toggleTheme, toggleMenu, toggleLayout, toggleRTL, toggleAnimation, toggleNavbar, toggleSemidark, toggleLocale, toggleSidebar, setPageTitle } = themeConfigSlice.actions;
+export const { toggleTheme, toggleMenu, toggleLayout, toggleRTL, toggleAnimation, toggleNavbar, toggleSemidark, toggleLocale, toggleSidebar, toggleColorTheme, setPageTitle } = themeConfigSlice.actions;
 
 export default themeConfigSlice.reducer;

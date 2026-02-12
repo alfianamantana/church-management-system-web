@@ -17,15 +17,20 @@ api.interceptors.request.use(
         try {
             const token = localStorage.getItem('token');
             const user = localStorage.getItem('user');
+            const church = localStorage.getItem('selected_church');
             if (token) {
                 config.headers = config.headers || {};
                 const decryptedToken = await decryptData(token);
-                console.log(decryptedToken, 'decryptedToken');
                 config.headers['token'] = `${decryptedToken}`;
                 if (user) {
                     const decryptedUser: string = await decryptData(user);
                     const parsedUser: IUser = JSON.parse(decryptedUser);
                     config.headers['Authorization'] = parsedUser.unique_key;
+                }
+                if (church) {
+                    const decryptedChurch = await decryptData(church);
+                    const parsedChurch = JSON.parse(decryptedChurch);
+                    config.headers['church'] = parsedChurch.id;
                 }
             }
         } catch (e) {
