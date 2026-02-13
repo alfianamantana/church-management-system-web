@@ -9,6 +9,8 @@ import DropdownSearch from '../DropdownSearch';
 import api from '../../services/api';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'react-toastify';
+import CountryList from 'country-list-with-dial-code-and-flag';
+import CountryFlagSvg from 'country-list-with-dial-code-and-flag/dist/flag-svg';
 
 interface JemaatFormData {
   name: string;
@@ -20,6 +22,7 @@ interface JemaatFormData {
   mom_id: string;
   dad_id: string;
   gender: string;
+  couple_id?: string;
 }
 
 interface JemaatFormInitialData extends JemaatFormData {
@@ -35,6 +38,13 @@ interface JemaatFormProps {
 }
 
 const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, loading }) => {
+  // Country code for phone input (default to ID)
+  const countries = CountryList.getAll();
+  const [country, setCountry] = useState('ID');
+  const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
+  const selectedCountry = CountryList.findOneByCountryCode(country);
+  const dialCode = selectedCountry ? selectedCountry.dial_code.replace('+', '') : '';
+  const flagSvg = selectedCountry ? CountryFlagSvg[selectedCountry.code] : '';
   const { t } = useTranslation();
   const [selectedBaptism, setSelectedBaptism] = useState<Date>();
   const [selectedBirth, setSelectedBirth] = useState<Date>();
@@ -69,7 +79,10 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
     mom_id: '',
     dad_id: '',
     gender: 'male',
+    couple_id: '',
   });
+
+  const [selectedCouple, setSelectedCouple] = useState<{ id: string | number; label: string } | null>(null);
 
   useEffect(() => {
     if (initialData) {
@@ -173,6 +186,15 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
     }));
   };
 
+  const handleCoupleSelect = (option: { id: string | number; label: string } | { id: string | number; label: string }[] | null) => {
+    const selectedOption = Array.isArray(option) ? option[0] : option;
+    setSelectedCouple(selectedOption);
+    setForm((prev) => ({
+      ...prev,
+      couple_id: selectedOption ? selectedOption.id.toString() : '',
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(form);
@@ -180,14 +202,15 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
 
   return (
     <Card title={title} id="jemaat-form-card">
-      <div className="space-y-6">
+      <div className="space-y-6" id="jemaat-form-fields">
         {/* Personal Information */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">
+        <div className="space-y-4" id="personal-info-section">
+          <h3 className="text-lg font-semibold text-foreground border-b border-border pb-2" id="personal-info-title">
             {t('personal_information')}
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4" id="personal-info-grid-1">
             <InputText
+              id="jemaat-name"
               label={t('name')}
               name="name"
               value={form.name}
@@ -195,30 +218,33 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
               required
             />
             <Dropdown
+              id="jemaat-gender-dropdown"
               fullWidth={true}
               position="bottom"
               label={t('gender')}
               trigger={
-                <button className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left flex items-center justify-between">
+                <button id="jemaat-gender-trigger" className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-border focus:ring-ring bg-card text-card-foreground text-left flex items-center justify-between">
                   {form.gender === 'male' ? t('male') : t('female')}
                   {isGenderDropdownOpen ? (
-                    <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    <ChevronUp className="w-4 h-4 text-muted-foreground" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
                   )}
                 </button>
               }
               onOpenChange={setIsGenderDropdownOpen}
             >
-              <div className="py-2 max-h-40 overflow-y-auto w-48">
+              <div className="py-2 max-h-40 overflow-y-auto w-48" id="jemaat-gender-options">
                 <div
-                  className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer dark:text-white transition-all duration-200"
+                  id="jemaat-gender-male"
+                  className="px-4 py-2 hover:bg-accent cursor-pointer text-foreground transition-all duration-200"
                   onClick={() => handleSelectChange('gender', 'male')}
                 >
                   {t('male')}
                 </div>
                 <div
-                  className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer dark:text-white transition-all duration-200"
+                  id="jemaat-gender-female"
+                  className="px-4 py-2 hover:bg-accent cursor-pointer text-foreground transition-all duration-200"
                   onClick={() => handleSelectChange('gender', 'female')}
                 >
                   {t('female')}
@@ -226,66 +252,164 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
               </div>
             </Dropdown>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4" id="personal-info-grid-2">
             <InputText
+              id="jemaat-birth-place"
               label={t('birth_place')}
               name="born_place"
               value={form.born_place}
               onChange={handleChange}
               required
             />
-            <InputText
-              label={t('phone_number')}
-              name="phone_number"
-              value={form.phone_number}
-              onChange={handleChange}
-              required
-            />
+            <div id="jemaat-phone-container" className="relative">
+              <label htmlFor="jemaat-phone-number">
+                {t('phone_number')}
+              </label>
+              <div className="mt-1 relative" id="jemaat-phone-input-wrapper">
+                <div id="jemaat-dial-prefix" className="absolute inset-y-0 left-0 flex items-center h-full z-10">
+                  <Dropdown
+                    id="jemaat-country-dropdown"
+                    label={undefined}
+                    trigger={
+                      <button
+                        id="jemaat-country-trigger"
+                        type="button"
+                        className="flex items-center h-full px-1 border-r ml-1 bg-input text-foreground focus:outline-none"
+                      >
+                        {flagSvg && <span dangerouslySetInnerHTML={{ __html: flagSvg }} style={{ width: 17, height: 17, marginRight: 8, display: 'inline-block' }} />}
+                        <span id="jemaat-dial-code" className="font-semibold text-xs">+{dialCode}</span>
+                        <svg
+                          id="jemaat-country-chevron"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className={`ml-2 w-4 h-4 transform transition-transform duration-200 ${countryDropdownOpen ? 'rotate-180' : ''}`}
+                          aria-hidden="true"
+                        >
+                          <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    }
+                    onOpenChange={setCountryDropdownOpen}
+                  >
+                    <div id="jemaat-country-list" className="max-h-64 overflow-y-auto w-full md:w-80">
+                      {countries.map((c: any, i) => (
+                        <button
+                          id={`jemaat-country-${c.code}`}
+                          key={c.code + i}
+                          type="button"
+                          className={`w-full flex items-center px-3 py-2 hover:bg-muted ${country === c.code ? 'bg-accent font-bold' : ''}`}
+                          onClick={() => {
+                            setCountry(c.code);
+                            setCountryDropdownOpen(false);
+                          }}
+                        >
+                          <span dangerouslySetInnerHTML={{ __html: CountryFlagSvg[c.code] }} style={{ width: 20, height: 20, marginRight: 8, display: 'inline-block' }} />
+                          <span className="mr-2 text-foreground text-sm">{c.name}</span>
+                          <span className="text-muted-foreground">({c.dial_code})</span>
+                        </button>
+                      ))}
+                    </div>
+                  </Dropdown>
+                </div>
+                <input
+                  id="jemaat-phone-number"
+                  name="phone_number"
+                  type="tel"
+                  value={form.phone_number}
+                  onChange={handleChange}
+                  required
+                  placeholder={t('register_phone_placeholder')}
+                  autoComplete="tel"
+                  pattern="[0-9]+"
+                  inputMode="numeric"
+                  maxLength={15}
+                  className="pl-24 w-full px-3 py-2 border rounded-lg  focus:outline-none focus:ring-2 border-border focus:ring-ring bg-input text-foreground dark:focus:ring-ring"
+                  style={{ marginBottom: 0 }}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2 mt-2" id="jemaat-married-checkbox-container">
+            <div className="flex items-center gap-2">
+              <input
+                id="jemaat-is-married"
+                name="is_married"
+                type="checkbox"
+                checked={form.is_married}
+                onChange={handleChange}
+                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="jemaat-is-married" className="text-sm font-medium text-foreground" id="jemaat-married-label">
+                {t('married')}
+              </label>
+            </div>
+            {form.is_married && (
+              <div className="mt-2" id="jemaat-couple-dropdown-container">
+                <label className="block text-sm font-medium text-foreground mb-1" id="jemaat-couple-label">
+                  {t('couple')}
+                </label>
+                <DropdownSearch
+                  id="jemaat-couple-dropdown"
+                  placeholder={t('search_couple')}
+                  onSearch={searchJemaat}
+                  onSelect={handleCoupleSelect}
+                  selectedValue={selectedCouple}
+                  debounceMs={500}
+                />
+              </div>
+            )}
           </div>
         </div>
 
         {/* Birth Information */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">
+        <div className="space-y-4" id="birth-info-section">
+          <h3 className="text-lg font-semibold text-foreground border-b border-border pb-2" id="birth-info-title">
             {t('birth_information')}
           </h3>
           <Dropdown
+            id="jemaat-birth-date-dropdown"
             position="bottom"
             label={t('birth_date')}
             trigger={
-              <button className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left flex items-center justify-between">
+              <button id="jemaat-birth-date-trigger" className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-border focus:ring-ring bg-card text-card-foreground text-left flex items-center justify-between">
                 {form.birth_date ? dayjs(form.birth_date).format('DD-MM-YYYY') : t('select_birth_date')}
                 {isBirthDateDropdownOpen ? (
-                  <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  <ChevronUp className="w-4 h-4 text-muted-foreground" />
                 ) : (
-                  <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
                 )}
               </button>
             }
             onOpenChange={setIsBirthDateDropdownOpen}
           >
-            <div className="p-4 w-full">
-              <div className='flex flex-row gap-2 mb-4'>
+            <div className="p-4 w-full" id="jemaat-birth-date-picker-container">
+              <div className='flex flex-row gap-2 mb-4' id="jemaat-birth-date-dropdowns">
                 <Dropdown
+                  id="jemaat-birth-month-dropdown"
                   fullWidth={true}
                   ref={birthMonthDropdownRef}
                   trigger={
-                    <button className=" w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left flex items-center justify-between">
+                    <button
+                      id="jemaat-birth-month-trigger"
+                      className=" w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-border focus:ring-ring bg-card text-card-foreground text-left flex items-center justify-between"
+                    >
                       {new Date(0, selectedMonthBirth).toLocaleString('default', { month: 'long' })}
                       {isBirthMonthDropdownOpen ? (
-                        <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <ChevronUp className="w-4 h-4 text-muted-foreground" />
                       ) : (
-                        <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
                       )}
                     </button>
                   }
                   onOpenChange={setIsBirthMonthDropdownOpen}
                 >
-                  <div className="max-h-40 overflow-y-auto w-full">
+                  <div className="max-h-40 overflow-y-auto w-full" id="jemaat-birth-month-options">
                     {Array.from({ length: 12 }, (_, i) => i).map((month) => (
                       <div
                         key={month}
-                        className="px-4 py-2 w-full hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 cursor-pointer"
+                        id={`jemaat-birth-month-option-${month}`}
+                        className="px-4 py-2 w-full hover:bg-accent text-foreground cursor-pointer"
                         onClick={() => {
                           setSelectedMonthBirth(month);
                           birthMonthDropdownRef.current?.close();
@@ -297,25 +421,30 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
                   </div>
                 </Dropdown>
                 <Dropdown
+                  id="jemaat-birth-year-dropdown"
                   fullWidth={true}
                   ref={birthYearDropdownRef}
                   trigger={
-                    <button className=" w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left flex items-center justify-between">
+                    <button
+                      id="jemaat-birth-year-trigger"
+                      className=" w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-border focus:ring-ring bg-card text-card-foreground text-left flex items-center justify-between"
+                    >
                       {selectedYearBirth}
                       {isBirthYearDropdownOpen ? (
-                        <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <ChevronUp className="w-4 h-4 text-muted-foreground" />
                       ) : (
-                        <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
                       )}
                     </button>
                   }
                   onOpenChange={setIsBirthYearDropdownOpen}
                 >
-                  <div className="max-h-40 overflow-y-auto w-full">
+                  <div className="max-h-40 overflow-y-auto w-full" id="jemaat-birth-year-options">
                     {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((year) => (
                       <div
                         key={year}
-                        className="px-4 py-2 w-full hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 cursor-pointer"
+                        id={`jemaat-birth-year-option-${year}`}
+                        className="px-4 py-2 w-full hover:bg-accent text-foreground cursor-pointer"
                         onClick={() => {
                           setSelectedYearBirth(year);
                           birthYearDropdownRef.current?.close();
@@ -328,6 +457,7 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
                 </Dropdown>
               </div>
               <DayPicker
+                id="jemaat-birth-daypicker"
                 disabled={{ after: new Date() }}
                 animate
                 mode="single"
@@ -340,48 +470,51 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
         </div>
 
         {/* Baptism Information */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">
+        <div className="space-y-4" id="baptism-info-section">
+          <h3 className="text-lg font-semibold text-foreground border-b border-border pb-2" id="baptism-info-title">
             {t('baptism_information')}
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4" id="baptism-info-grid">
             <Dropdown
+              id="jemaat-baptism-date-dropdown"
               position="top"
               label={t('baptism_date_optional')}
               trigger={
-                <button className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left flex items-center justify-between">
+                <button id="jemaat-baptism-date-trigger" className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-border focus:ring-ring bg-card text-card-foreground text-left flex items-center justify-between">
                   {form.baptism_date ? dayjs(form.baptism_date).format('DD-MM-YYYY') : t('select_baptism_date')}
                   {isBaptismDateDropdownOpen ? (
-                    <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    <ChevronUp className="w-4 h-4 text-muted-foreground" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
                   )}
                 </button>
               }
               onOpenChange={setIsBaptismDateDropdownOpen}
             >
-              <div className="p-4 w-full">
-                <div className='flex flex-row gap-2 mb-4'>
+              <div className="p-4 w-full" id="jemaat-baptism-date-picker-container">
+                <div className='flex flex-row gap-2 mb-4' id="jemaat-baptism-date-dropdowns">
                   <Dropdown
+                    id="jemaat-baptism-month-dropdown"
                     fullWidth={true}
                     ref={monthDropdownRef}
                     trigger={
-                      <button className=" w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left flex items-center justify-between">
+                      <button id="jemaat-baptism-month-trigger" className=" w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-border focus:ring-ring bg-card text-card-foreground text-left flex items-center justify-between">
                         {new Date(0, selectedMonth).toLocaleString('default', { month: 'long' })}
                         {isBaptismMonthDropdownOpen ? (
-                          <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                          <ChevronUp className="w-4 h-4 text-muted-foreground" />
                         ) : (
-                          <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                          <ChevronDown className="w-4 h-4 text-muted-foreground" />
                         )}
                       </button>
                     }
                     onOpenChange={setIsBaptismMonthDropdownOpen}
                   >
-                    <div className="max-h-40 overflow-y-auto w-full">
+                    <div className="max-h-40 overflow-y-auto w-full" id="jemaat-baptism-month-options">
                       {Array.from({ length: 12 }, (_, i) => i).map((month) => (
                         <div
                           key={month}
-                          className="px-4 py-2 w-full hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 cursor-pointer"
+                          id={`jemaat-baptism-month-option-${month}`}
+                          className="px-4 py-2 w-full hover:bg-accent text-foreground cursor-pointer"
                           onClick={() => {
                             setSelectedMonth(month);
                             monthDropdownRef.current?.close();
@@ -393,25 +526,27 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
                     </div>
                   </Dropdown>
                   <Dropdown
+                    id="jemaat-baptism-year-dropdown"
                     fullWidth={true}
                     ref={yearDropdownRef}
                     trigger={
-                      <button className=" w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left flex items-center justify-between">
+                      <button id="jemaat-baptism-year-trigger" className=" w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-border focus:ring-ring bg-card text-card-foreground text-left flex items-center justify-between">
                         {selectedYear}
                         {isBaptismYearDropdownOpen ? (
-                          <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                          <ChevronUp className="w-4 h-4 text-muted-foreground" />
                         ) : (
-                          <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                          <ChevronDown className="w-4 h-4 text-muted-foreground" />
                         )}
                       </button>
                     }
                     onOpenChange={setIsBaptismYearDropdownOpen}
                   >
-                    <div className="max-h-40 overflow-y-auto w-full">
+                    <div className="max-h-40 overflow-y-auto w-full" id="jemaat-baptism-year-options">
                       {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((year) => (
                         <div
                           key={year}
-                          className="px-4 py-2 w-full hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 cursor-pointer"
+                          id={`jemaat-baptism-year-option-${year}`}
+                          className="px-4 py-2 w-full hover:bg-accent text-foreground cursor-pointer"
                           onClick={() => {
                             setSelectedYear(year);
                             yearDropdownRef.current?.close();
@@ -424,6 +559,7 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
                   </Dropdown>
                 </div>
                 <DayPicker
+                  id="jemaat-baptism-daypicker"
                   disabled={{ after: new Date() }}
                   animate
                   pagedNavigation
@@ -434,33 +570,21 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
                 />
               </div>
             </Dropdown>
-            <div className="flex items-center gap-2 mt-6">
-              <input
-                id="is_married"
-                name="is_married"
-                type="checkbox"
-                checked={form.is_married}
-                onChange={handleChange}
-                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <label htmlFor="is_married" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                {t('married')}
-              </label>
-            </div>
           </div>
         </div>
 
         {/* Family Information */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">
+        <div className="space-y-4" id="family-info-section">
+          <h3 className="text-lg font-semibold text-foreground border-b border-border pb-2" id="family-info-title">
             {t('family_information')}
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4" id="family-info-grid">
+            <div id="jemaat-mom-dropdown-container">
+              <label className="block text-sm font-medium text-foreground mb-1" id="jemaat-mom-label">
                 {t('mom')}
               </label>
               <DropdownSearch
+                id="jemaat-mom-dropdown"
                 placeholder={t('search_mom')}
                 onSearch={searchJemaat}
                 onSelect={handleMomSelect}
@@ -468,11 +592,12 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
                 debounceMs={500}
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+            <div id="jemaat-dad-dropdown-container">
+              <label className="block text-sm font-medium text-foreground mb-1" id="jemaat-dad-label">
                 {t('dad')}
               </label>
               <DropdownSearch
+                id="jemaat-dad-dropdown"
                 placeholder={t('search_dad')}
                 onSearch={searchJemaat}
                 onSelect={handleDadSelect}
@@ -483,11 +608,12 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
           </div>
         </div>
 
-        <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="pt-4 border-t border-border" id="jemaat-form-submit-container">
           <button
+            id="jemaat-form-submit"
             onClick={handleSubmit}
             type="submit"
-            className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition disabled:opacity-60"
+            className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition disabled:opacity-60"
             disabled={loading}
           >
             {loading ? t('saving') : t('save')}

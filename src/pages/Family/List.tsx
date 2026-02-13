@@ -238,20 +238,20 @@ const FamilyList: React.FC = () => {
               placeholder={t('search_by_name')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+              className="flex-1 px-3 py-2 border border-border rounded-md bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm md:text-base"
               id="search-input"
             />
             <div className="flex flex-col gap-2 md:flex-row md:gap-2">
               <button
                 onClick={handleSearch}
                 type="button"
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200 text-sm md:text-base"
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-all duration-200 text-sm md:text-base"
                 id="search-button"
               >
                 {t('search')}
               </button>
               <button
-                className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200 text-sm md:text-base'
+                className="px-4 py-2 bg-success text-white rounded-md hover:opacity-90 transition-all duration-200 text-sm md:text-base"
                 onClick={handleAddFamily}
                 id="add-family-button"
               >
@@ -262,12 +262,11 @@ const FamilyList: React.FC = () => {
         </div>
 
         {loading ? (
-          <div className="text-center py-4" id="loading-indicator">{t('loading')}...</div>
+          <div className="text-center py-4 text-primary" id="loading-indicator">{t('loading')}...</div>
         ) : (
           <>
             <div className="overflow-x-auto" id="table-container">
               <Table
-
                 id='family-table'
                 heads={tableHeads}
                 data={families}
@@ -312,7 +311,7 @@ const FamilyList: React.FC = () => {
             id="family-name-input"
           />
           <div id="select-members-section">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" id="select-members-label">
+            <label className="block text-sm font-medium text-foreground mb-2" id="select-members-label">
               {t('select_members')}
             </label>
             <DropdownSearch
@@ -325,7 +324,7 @@ const FamilyList: React.FC = () => {
                     return data.data.map((j: IJemaat) => ({ id: j.id, label: j.name }));
                   }
                 } catch (err) {
-                  console.error('jemaat search error', err);
+                  toast.error(t('something_went_wrong') as string);
                 }
                 return [];
               }}
@@ -345,7 +344,7 @@ const FamilyList: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-4 py-2 border border-border rounded-md text-foreground hover:bg-muted"
               id="form-cancel-button"
             >
               {t('cancel')}
@@ -353,7 +352,7 @@ const FamilyList: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
               id="form-submit-button"
             >
               {submitting ? (editingFamily ? t('updating') : t('adding')) : (editingFamily ? t('update_family') : t('add_family'))}
@@ -370,14 +369,14 @@ const FamilyList: React.FC = () => {
         id="delete-confirmation-modal"
       >
         <div className="space-y-4" id="delete-modal-content">
-          <p className="text-gray-700 dark:text-gray-300" id="delete-confirmation-text">
+          <p className="text-foreground" id="delete-confirmation-text">
             {t('confirm_delete_family')}
           </p>
           <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="delete-modal-actions">
             <button
               type="button"
               onClick={() => setIsDeleteModalOpen(false)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-4 py-2 border border-border rounded-md text-foreground hover:bg-muted"
               id="delete-cancel-button"
             >
               {t('cancel')}
@@ -385,7 +384,7 @@ const FamilyList: React.FC = () => {
             <button
               onClick={handleConfirmDelete}
               disabled={deleting}
-              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-destructive text-white rounded-md hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
               id="delete-confirm-button"
             >
               {deleting ? t('deleting') : t('delete')}
@@ -402,16 +401,16 @@ const FamilyList: React.FC = () => {
       >
         <div id="family-detail-modal" className="space-y-4">
           {viewLoading ? (
-            <div className="text-center py-4" id="view-loading">{t('loading')}...</div>
+            <div className="text-center py-4 text-primary" id="view-loading">{t('loading')}...</div>
           ) : (
             <div className="space-y-4" id="view-content">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4" id="view-grid">
                 <div className="md:col-span-2" id="view-details-section">
                   <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('details')}</h4>
-                  <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4" id="view-details-card">
+                  <div className="mt-2 bg-card dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4" id="view-details-card">
                     <div className="mb-2" id="view-family-name">
                       <div className="text-sm text-gray-500">{t('family_name')}</div>
-                      <div className="font-medium text-gray-900 dark:text-gray-100 truncate">{viewFamily?.name || '-'}</div>
+                      <div className="font-medium text-foreground dark:text-gray-100 truncate">{viewFamily?.name || '-'}</div>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-300" id="view-meta-grid">
                       <div id="view-created-at">
@@ -428,7 +427,7 @@ const FamilyList: React.FC = () => {
 
                 <div id="view-summary-section">
                   <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('summary')}</h4>
-                  <div className="mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4 text-center" id="view-summary-card">
+                  <div className="mt-2 bg-card dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4 text-center" id="view-summary-card">
                     <div className="text-xs text-gray-500">{t('members')}</div>
                     <div className="text-2xl font-semibold">{viewMembers.length}</div>
                   </div>
@@ -441,11 +440,11 @@ const FamilyList: React.FC = () => {
                   {viewMembers.length > 0 ? (
                     <ul className="divide-y divide-gray-100 dark:divide-gray-800" id="members-ul">
                       {viewMembers.map(m => (
-                        <li key={m.id} className="flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-900" id={`member-item-${m.id}`}>
+                        <li key={m.id} className="flex items-center justify-between px-4 py-2 bg-white dark:bg-card" id={`member-item-${m.id}`}>
                           <div className="flex items-center gap-3" id={`member-info-${m.id}`}>
                             <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-sm text-gray-600 dark:text-white" id={`member-avatar-${m.id}`}>{(m.name || '').charAt(0).toUpperCase()}</div>
                             <div id={`member-details-${m.id}`}>
-                              <div className="font-medium text-gray-900 dark:text-gray-100" id={`member-name-${m.id}`}>{m.name}</div>
+                              <div className="font-medium text-foreground dark:text-gray-100" id={`member-name-${m.id}`}>{m.name}</div>
                               <div className="text-xs text-gray-500" id={`member-meta-${m.id}`}>{t(m.gender)} - Age: {m.age}</div>
                               {(m as any).email && <div className="text-xs text-gray-500" id={`member-email-${m.id}`}>{(m as any).email}</div>}
                             </div>
@@ -465,7 +464,7 @@ const FamilyList: React.FC = () => {
           <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="view-modal-actions">
             <button
               onClick={() => setIsViewModalOpen(false)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-4 py-2 border border-border rounded-md text-foreground hover:bg-muted"
               id="view-close-button"
             >
               {t('close')}

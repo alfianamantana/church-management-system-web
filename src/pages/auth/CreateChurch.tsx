@@ -219,9 +219,10 @@ const CreateChurchPage: React.FC = () => {
                 onOpenChange={setCountryDropdownOpen}
               >
                 <div className="max-h-60 overflow-y-auto">
-                  {countries.map((country) => (
+                  {countries.map((country, i) => (
                     <button
-                      key={country.code}
+                      id={`create-church-country-${country.code}`}
+                      key={country.code + i}
                       type="button"
                       onClick={() => handleCountrySelect(country.code)}
                       className="w-full px-4 py-2 text-left hover:bg-accent hover:text-accent-foreground flex items-center"
@@ -269,10 +270,10 @@ const CreateChurchPage: React.FC = () => {
                     onOpenChange={setPhoneDropdownOpen}
                   >
                     <div id="create-church-phone-country-list" className="max-h-64 overflow-y-auto w-full md:w-80">
-                      {countries.map((country) => (
+                      {countries.map((country, i) => (
                         <button
                           id={`create-church-phone-country-${country.code}`}
-                          key={country.code}
+                          key={country.code + i}
                           type="button"
                           className={`w-full flex items-center px-3 py-2 hover:bg-muted ${form.country === country.code ? 'bg-accent font-bold' : ''}`}
                           onClick={() => {

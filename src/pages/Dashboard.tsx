@@ -109,14 +109,14 @@ const Dashboard: React.FC = () => {
               <img src={WomanSvg} alt="Woman Icon" className="w-6 h-6 mr-2" id="female-icon" />
               <div>
                 <div className="text-sm text-muted-foreground" id="female-label">{t('female')}</div>
-                <div className="text-2xl font-semibold text-secondary" id="female-count">{totals.female}</div>
+                <div className="text-2xl font-semibold text-primary" id="female-count">{totals.female}</div>
               </div>
             </div>
           </div>
         </Card>
         <Card id="total-families-card">
           <div className="text-sm text-muted-foreground" id="total-families-label">{t('total_families')}</div>
-          <div className="mt-2 text-2xl font-bold text-foreground" id="total-families-value">{totals.familyCount}</div>
+          <div className="mt-2 text-2xl font-bold text-primary" id="total-families-value">{totals.familyCount}</div>
         </Card>
 
       </section>
@@ -136,7 +136,7 @@ const Dashboard: React.FC = () => {
 
         <Card id="events-card">
           <div className="text-sm text-muted-foreground" id="events-label">{t('events_this_month')}</div>
-          <div className="mt-2 text-2xl font-bold text-foreground" id="events-count">{totals.eventsThisMonth}</div>
+          <div className="mt-2 text-2xl font-bold text-primary" id="events-count">{totals.eventsThisMonth}</div>
           <ul className="mt-2 text-sm text-muted-foreground max-h-32 overflow-y-auto" id="events-list">
             {eventsThisMonth.map(ev => (
               <li key={ev.id} className="py-1" id={`event-${ev.id}`}>{ev.title} — {dayjs(ev.start).format('DD-MM-YYYY')}</li>

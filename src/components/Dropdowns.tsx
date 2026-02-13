@@ -39,9 +39,21 @@ const Dropdown = forwardRef<DropdownRef, DropdownProps>(({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // If the click is inside any open dropdown (including nested), do not close
+      // Find the closest element with class 'fixed' and 'z-50' (dropdown portal)
+      let target = event.target as Node | null;
+      let isInDropdown = false;
+      while (target) {
+        if (target instanceof HTMLElement && target.classList.contains('z-50') && target.classList.contains('fixed')) {
+          isInDropdown = true;
+          break;
+        }
+        target = target.parentNode;
+      }
       if (
         dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
-        dropdownContentRef.current && !dropdownContentRef.current.contains(event.target as Node)
+        dropdownContentRef.current && !dropdownContentRef.current.contains(event.target as Node) &&
+        !isInDropdown
       ) {
         closeDropdown();
       }

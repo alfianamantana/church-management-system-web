@@ -17,11 +17,6 @@ const SelectChurchPage: React.FC = () => {
   const [user, setUser] = useState<IUser | null>(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const getInitials = (name: string) => {
-    const names = name.split(' ');
-    return names.map(n => n[0]).join('').toUpperCase();
-  };
-
   useEffect(() => {
     const fetchChurches = async () => {
       try {

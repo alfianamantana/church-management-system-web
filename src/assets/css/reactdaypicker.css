@@ -1,7 +1,7 @@
 /* Variables declaration */
 .rdp-root {
-  --rdp-accent-color: oklch(0.707 0.165 254.624);/* The accent color used for selected days and UI elements. */
-  --rdp-accent-background-color: #f0f0ff; /* The accent background color used for selected days and UI elements. */
+  --rdp-accent-color: hsl(var(--primary)); /* The accent color used for selected days and UI elements. */
+  --rdp-accent-background-color: hsl(var(--primary) / 0.1); /* The accent background color used for selected days and UI elements. */
 
   --rdp-day-height: 44px; /* The height of the day cells. */
   --rdp-day-width: 100%; /* The width of the day cells. */
@@ -14,7 +14,7 @@
   --rdp-selected-border: 2px solid var(--rdp-accent-color); /* The border of the selected days. */
   --rdp-disabled-opacity: 0.5; /* The opacity of the disabled days. */
   --rdp-outside-opacity: 0.75; /* The opacity of the days outside the current month. */
-  --rdp-today-color: var(--rdp-accent-color); /* The color of the today's date. */
+  --rdp-today-color: hsl(var(--primary)); /* The color of the today's date. */
 
   --rdp-dropdown-gap: 0.5rem; /* The gap between the dropdowns used in the month captons. */
 
@@ -25,24 +25,24 @@
   --rdp-nav_button-width: 2.25rem; /* The width of the navigation buttons. */
   --rdp-nav-height: 2.75rem; /* The height of the navigation bar. */
 
-  --rdp-range_middle-background-color: var(--rdp-accent-background-color); /* The color of the background for days in the middle of a range. */
-  --rdp-range_middle-color: inherit; /* The color of the range text. */
+  --rdp-range_middle-background-color: hsl(var(--primary) / 0.1); /* The color of the background for days in the middle of a range. */
+  --rdp-range_middle-color: hsl(var(--foreground)); /* The color of the range text. */
 
-  --rdp-range_start-color: white; /* The color of the range text. */
+  --rdp-range_start-color: hsl(var(--primary-foreground)); /* The color of the range text. */
   --rdp-range_start-background: linear-gradient(
     var(--rdp-gradient-direction),
     transparent 50%,
     var(--rdp-range_middle-background-color) 50%
   ); /* Used for the background of the start of the selected range. */
-  --rdp-range_start-date-background-color: var(--rdp-accent-color); /* The background color of the date when at the start of the selected range. */
+  --rdp-range_start-date-background-color: hsl(var(--primary)); /* The background color of the date when at the start of the selected range. */
 
   --rdp-range_end-background: linear-gradient(
     var(--rdp-gradient-direction),
     var(--rdp-range_middle-background-color) 50%,
     transparent 50%
   ); /* Used for the background of the end of the selected range. */
-  --rdp-range_end-color: white; /* The color of the range text. */
-  --rdp-range_end-date-background-color: var(--rdp-accent-color); /* The background color of the date when at the end of the selected range. */
+  --rdp-range_end-color: hsl(var(--primary-foreground)); /* The color of the range text. */
+  --rdp-range_end-date-background-color: hsl(var(--primary)); /* The background color of the date when at the end of the selected range. */
 
   --rdp-week_number-border-radius: 100%; /* The border radius of the week number. */
   --rdp-week_number-border: 2px solid transparent; /* The border of the week number. */
@@ -84,10 +84,7 @@
   width: var(--rdp-day-width);
   height: var(--rdp-day-height);
   text-align: center;
-}
-
-.dark .rdp-day {
-  color: white;
+  color: hsl(var(--foreground));
 }
 
 .rdp-day_button {
@@ -121,19 +118,12 @@
   white-space: nowrap;
   border: 0;
 
-  color: black;
-}
-
-.dark .rdp-caption_label  {
-  color: white;
+  color: hsl(var(--foreground));
 }
 
 .rdp-weekdays {
-  color: black;
-}
-
-.dark .rdp-weekdays {
-  color: white;
+  backgroud-color: !hsl(var(--primary));
+  color: hsl(var(--foreground));
 }
 
 .rdp-dropdown:focus-visible ~ .rdp-caption_label {
@@ -150,7 +140,7 @@
   margin: 0;
   cursor: pointer;
   font: inherit;
-  color: oklch(0.707 0.165 254.624);
+  color: hsl(var(--primary));
   -moz-appearance: none;
   -webkit-appearance: none;
   display: inline-flex;
@@ -174,7 +164,7 @@
 
 .rdp-chevron {
   display: inline-block;
-  fill: var(--rdp-accent-color);
+  fill: hsl(var(--primary));
 }
 
 .rdp-root[dir="rtl"] .rdp-nav .rdp-chevron {

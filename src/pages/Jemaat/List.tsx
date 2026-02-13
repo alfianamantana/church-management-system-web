@@ -149,11 +149,9 @@ const Jemaat: React.FC = () => {
               >
                 {t('search')}
               </button>
-              <NavLink to="/jemaat/create">
-                <button id="create-jemaat-button" className='px-4 py-2 bg-success text-white rounded-md hover:bg-success transition-all duration-200 text-sm md:text-base'>
-                  {t("create_jemaat")}
-                </button>
-              </NavLink>
+              <button onClick={() => navigate('/jemaat/create')} id="create-jemaat-button" className='px-4 py-2 bg-success text-white rounded-md hover:opacity-90 transition-all duration-200 text-sm md:text-base'>
+                {t("create_jemaat")}
+              </button>
             </div>
           </div>
         </div>

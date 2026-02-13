@@ -63,7 +63,7 @@ const themeConfigSlice = createSlice({
             // Apply theme classes
             const body = document.querySelector('body');
             if (body) {
-                body.classList.remove('dark', 'theme-amber', 'theme-crimson', 'theme-caramel', 'theme-mustard', 'theme-sepia', 'theme-brick-red', 'theme-terracotta');
+                body.classList.remove('dark', 'theme-amber', 'theme-amber-glow', 'theme-warm-reverie', 'theme-crimson', 'theme-caramel', 'theme-mustard', 'theme-sepia', 'theme-brick-red', 'theme-terracotta', 'theme-whispering-silk', 'theme-serene-heritage', 'theme-linen-breeze', 'theme-golden-solstice', 'theme-dusk-harmony', 'theme-velvet-sunset', 'theme-eternal-ember', 'theme-sandalwood-minimal', 'theme-ivory-root', 'theme-cozy-opulence', 'theme-gentle-manor');
                 if (state.isDarkMode) {
                     body.classList.add('dark');
                 }
@@ -111,14 +111,14 @@ const themeConfigSlice = createSlice({
             state.locale = payload;
         },
         toggleColorTheme(state, { payload }) {
-            payload = payload || state.colorTheme; // amber | crimson | caramel | mustard | sepia | brick-red | terracotta
+            payload = payload || state.colorTheme; // amber | amber-glow | warm-reverie | crimson | caramel | mustard | sepia | brick-red | terracotta | whispering-silk | serene-heritage | linen-breeze | golden-solstice | dusk-harmony | velvet-sunset | eternal-ember | sandalwood-minimal | ivory-root | cozy-opulence | gentle-manor
             localStorage.setItem('colorTheme', payload);
             state.colorTheme = payload;
 
             // Apply theme classes
             const body = document.querySelector('body');
             if (body) {
-                body.classList.remove('theme-amber', 'theme-crimson', 'theme-caramel', 'theme-mustard', 'theme-sepia', 'theme-brick-red', 'theme-terracotta');
+                body.classList.remove('theme-amber', 'theme-amber-glow', 'theme-warm-reverie', 'theme-crimson', 'theme-caramel', 'theme-mustard', 'theme-sepia', 'theme-brick-red', 'theme-terracotta', 'theme-whispering-silk', 'theme-serene-heritage', 'theme-linen-breeze', 'theme-golden-solstice', 'theme-dusk-harmony', 'theme-velvet-sunset', 'theme-eternal-ember', 'theme-sandalwood-minimal', 'theme-ivory-root', 'theme-cozy-opulence', 'theme-gentle-manor');
                 if (payload !== 'amber') {
                     body.classList.add(`theme-${payload}`);
                 }

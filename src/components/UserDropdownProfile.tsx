@@ -31,7 +31,7 @@ const UserDropdownProfile: React.FC<UserDropdownProfileProps> = ({ user, showLog
         btnClassName="relative group block"
         button={
           user ? (
-            <div id="user-initials-avatar" className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold text-sm group-hover:saturate-100">
+            <div id="user-initials-avatar" className="border-2 border-white dark:border-dark w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold text-sm group-hover:saturate-100">
               {getInitials(user.name)}
             </div>
           ) : (

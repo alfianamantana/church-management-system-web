@@ -23,14 +23,14 @@ const Pagination: React.FC<PaginationProps> = ({ id, currentPage, totalPages, on
   const to = Math.min(currentPage * pageSize, totalItems);
 
   return (
-    <div id={id} className={`border-gray-200 dark:border-gray-700`}>
+    <div id={id} className={`border-border`}>
       <div className="flex items-center justify-between">
-        <div className="text-sm text-gray-600 dark:text-gray-400 min-w-[140px]">
+        <div className="text-sm text-muted-foreground min-w-[140px]">
           {`Showing ${from} to ${to} of ${totalItems}`}
         </div>
         <nav className="flex gap-2" aria-label="Pagination">
           <button
-            className="w-8 h-8 flex items-center justify-center rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
+            className="w-8 h-8 flex items-center justify-center rounded bg-muted text-muted-foreground hover:bg-muted disabled:opacity-50"
             onClick={() => onPageChange(1)}
             disabled={currentPage === 1}
             aria-label="First"
@@ -38,7 +38,7 @@ const Pagination: React.FC<PaginationProps> = ({ id, currentPage, totalPages, on
             &lt;&lt;
           </button>
           <button
-            className="w-8 h-8 flex items-center justify-center rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
+            className="w-8 h-8 flex items-center justify-center rounded bg-muted text-muted-foreground hover:bg-muted disabled:opacity-50"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
             aria-label="Previous"
@@ -48,7 +48,7 @@ const Pagination: React.FC<PaginationProps> = ({ id, currentPage, totalPages, on
           {pages.map(page => (
             <button
               key={page}
-              className={`w-8 h-8 flex items-center justify-center border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-blue-900 ${page === currentPage ? 'font-bold bg-blue-100 dark:bg-blue-900 border-blue-400 dark:border-blue-600' : ''}`}
+              className={`w-8 h-8 flex items-center justify-center border border-border bg-card text-muted-foreground hover:bg-primary/10 ${page === currentPage ? 'font-bold bg-primary/10 border-primary' : ''}`}
               onClick={() => onPageChange(page)}
               aria-current={page === currentPage ? 'page' : undefined}
             >
@@ -56,7 +56,7 @@ const Pagination: React.FC<PaginationProps> = ({ id, currentPage, totalPages, on
             </button>
           ))}
           <button
-            className="w-8 h-8 flex items-center justify-center rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
+            className="w-8 h-8 flex items-center justify-center rounded bg-muted text-muted-foreground hover:bg-muted disabled:opacity-50"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             aria-label="Next"
@@ -64,7 +64,7 @@ const Pagination: React.FC<PaginationProps> = ({ id, currentPage, totalPages, on
             &gt;
           </button>
           <button
-            className="w-8 h-8 flex items-center justify-center rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
+            className="w-8 h-8 flex items-center justify-center rounded bg-muted text-muted-foreground hover:bg-muted disabled:opacity-50"
             onClick={() => onPageChange(totalPages)}
             disabled={currentPage === totalPages}
             aria-label="Last"
