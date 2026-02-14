@@ -8,6 +8,7 @@ import i18next from 'i18next';
 import Dropdown from '../Dropdown';
 import Dropdowns, { DropdownRef } from '../Dropdowns';
 import ThemeColorSwitcher from '../ThemeColorSwitcher';
+import CurrencySwitcher from '../CurrencySwitcher';
 import UserDropdownProfile from '../UserDropdownProfile';
 import ListMenu from '../ListMenu';
 import { decryptData } from '@/services/crypto';
@@ -15,7 +16,6 @@ import { IChurch, IUser } from '@/constant';
 import CountryFlagSvg from 'country-list-with-dial-code-and-flag/dist/flag-svg';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
-import { NavLink } from 'react-router-dom';
 const Header = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
@@ -51,11 +51,6 @@ const Header = () => {
             setUser(decryptedUser);
         }
     }, [])
-
-    const getInitials = (name: string) => {
-        const names = name.split(' ');
-        return names.map(n => n[0]).join('').toUpperCase();
-    };
 
     return (
         <header id="main-header" className={`z-40 ${themeConfig.semidark && themeConfig.menu === 'horizontal' ? 'dark' : ''}`}>
@@ -186,6 +181,7 @@ const Header = () => {
                             </Dropdown>
                         </div>
                         <ThemeColorSwitcher />
+                        <CurrencySwitcher />
                         <UserDropdownProfile user={user} showLogoutModal={showLogoutModal} setShowLogoutModal={setShowLogoutModal} />
                     </div>
                 </div>

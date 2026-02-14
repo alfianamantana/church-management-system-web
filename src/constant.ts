@@ -30,6 +30,57 @@ export const getMessage = (message: IMessage): string => {
     return message[langKey]?.[0] || message.en?.[0] || 'Unknown error';
 };
 
+// Currency configuration
+export interface ICurrency {
+    code: string;
+    name: string;
+    symbol: string;
+    symbolPosition: 'before' | 'after';
+}
+
+export const CURRENCIES: ICurrency[] = [
+    {
+        code: 'IDR',
+        name: 'Indonesian Rupiah',
+        symbol: 'Rp',
+        symbolPosition: 'before',
+    },
+    {
+        code: 'USD',
+        name: 'US Dollar',
+        symbol: '$',
+        symbolPosition: 'before',
+    },
+];
+
+// Helper function to format currency
+export const formatCurrency = (amount: number | string, currencyCode: string = 'IDR'): string => {
+    const currency = CURRENCIES.find((c) => c.code === currencyCode);
+    if (!currency) return `${amount}`;
+
+    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+    if (isNaN(numAmount)) return `${amount}`;
+
+    const formattedAmount = new Intl.NumberFormat('id-ID', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+    }).format(numAmount);
+
+    if (currency.symbolPosition === 'before') {
+        return `${currency.symbol} ${formattedAmount}`;
+    } else {
+        return `${formattedAmount} ${currency.symbol}`;
+    }
+};
+
+// Helper function to get currency by code
+export const getCurrency = (code: string): ICurrency | undefined => {
+    return CURRENCIES.find((c) => c.code === code);
+};
+
+// Default currency (can be changed based on church settings)
+export const DEFAULT_CURRENCY = 'IDR';
+
 export type UserRole = 'superadmin' | 'user';
 
 export interface IMusician {

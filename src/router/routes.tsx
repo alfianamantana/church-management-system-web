@@ -20,6 +20,7 @@ const ProfileDetail = lazy(() => import('../pages/Profile/Detail'));
 const Admin = lazy(() => import('../pages/admin/List'));
 const OTP = lazy(() => import('../pages/auth/OTP'));
 const CreateChurch = lazy(() => import('../pages/auth/CreateChurch'));
+const EditChurch = lazy(() => import('../pages/auth/EditChurch'));
 const SelectChurch = lazy(() => import('../pages/auth/SelectChurch'));
 
 const ErrorElement = () => (
@@ -230,6 +231,15 @@ const routes = [
         name: 'Create Church',
         breadcrumb: 'Create Church',
         description: 'Halaman pembuatan gereja',
+        errorElement: <ErrorElement />,
+    },
+    {
+        path: '/edit-church',
+        element: <EditChurch />,
+        layout: 'blank-default',
+        name: 'Edit Church',
+        breadcrumb: 'Edit Church',
+        description: 'Halaman edit gereja',
         errorElement: <ErrorElement />,
     },
     {

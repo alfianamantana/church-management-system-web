@@ -310,6 +310,7 @@ const FamilyList: React.FC = () => {
               {t('select_members')}
             </label>
             <DropdownSearch
+              id="jemaat-dropdown"
               multiSelect
               placeholder={t('search_jemaat') as string}
               onSearch={async (q: string) => {
@@ -415,16 +416,6 @@ const FamilyList: React.FC = () => {
                       <div className="text-sm text-gray-500">{t('family_name')}</div>
                       <div className="font-medium text-foreground dark:text-gray-100 truncate">{viewFamily?.name || '-'}</div>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-300" id="view-meta-grid">
-                      <div id="view-created-at">
-                        <div className="text-xs text-gray-500">{t('created_at')}</div>
-                        <div className="font-medium">{dayjs(viewFamily?.createdAt).format('DD-MM-YYYY') || '-'}</div>
-                      </div>
-                      <div id="view-member-count">
-                        <div className="text-xs text-gray-500">{t('member_count')}</div>
-                        <div className="font-medium">{viewMembers.length}</div>
-                      </div>
-                    </div>
                   </div>
                 </div>
 
@@ -463,18 +454,6 @@ const FamilyList: React.FC = () => {
               </div>
             </div>
           )}
-
-          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="view-modal-actions">
-            <Button
-              onClick={() => setIsViewModalOpen(false)}
-              variant="outline"
-              size="sm"
-              className="px-3 text-xs"
-              id="view-close-button"
-            >
-              {t('close')}
-            </Button>
-          </div>
         </div>
       </Modal>
     </div>

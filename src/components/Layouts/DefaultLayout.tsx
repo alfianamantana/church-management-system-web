@@ -51,6 +51,7 @@ const DefaultLayout = ({ children }: PropsWithChildren) => {
             // Hapus jika salah satu tidak ada
             localStorage.removeItem('token');
             localStorage.removeItem('user');
+            localStorage.removeItem('selected_church');
             navigate('/login');
             return;
         }

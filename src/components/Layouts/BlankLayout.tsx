@@ -16,7 +16,7 @@ const BlankLayout = ({ children }: PropsWithChildren) => {
 
     return (
         <App>
-            <div className="min-h-screen bg-muted text-foreground">{children}</div>
+            <div className="min-h-screen bg-muted">{children}</div>
         </App>
     );
 };

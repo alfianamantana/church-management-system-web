@@ -64,7 +64,7 @@ const Jemaat: React.FC = () => {
       if (response.code === 200) {
         setJemaatData(response.data.map(jemaat => ({
           ...jemaat,
-          birth_date: dayjs(jemaat.birth_date).format('DD-MM-YYYY'),
+          birth_date: dayjs(jemaat.birth_date).format('DD MMM, YYYY'),
         })));
         setTotalItems(response.pagination.total);
         setTotalPages(Math.ceil(response.pagination.total / PAGE_SIZE));

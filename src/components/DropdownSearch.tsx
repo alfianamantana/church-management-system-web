@@ -121,6 +121,13 @@ const DropdownSearch: React.FC<DropdownSearchProps> = ({
     inputRef.current?.focus();
   };
 
+  const handleClearQuery = () => {
+    setQuery('');
+    setOptions([]);
+    setIsOpen(false);
+    inputRef.current?.focus();
+  };
+
   return (
     <div className="relative w-full" ref={dropdownRef} {...(id ? { id } : {})}>
       <div className="relative">
@@ -129,6 +136,17 @@ const DropdownSearch: React.FC<DropdownSearchProps> = ({
           {!multiSelect && selected.length > 0 ? (
             <div className="w-full flex items-center justify-between px-3 py-2 border border-border rounded bg-input text-foreground dark:bg-input dark:border-border" id={id ? `${id}-selected` : undefined}>
               <div className="truncate">{selected[0].label}</div>
+              <button
+                type="button"
+                onClick={handleClear}
+                className="ml-2 text-muted-foreground hover:text-foreground transition-colors duration-200"
+                aria-label="Clear selection"
+                id={id ? `${id}-clear` : undefined}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
           ) : (
             // Multi-select or no selection: show chips (if any) and input
@@ -174,14 +192,18 @@ const DropdownSearch: React.FC<DropdownSearchProps> = ({
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                  ) : (query || selected.length > 0) ? (
+                  ) : query ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  ) : selected.length > 0 ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   ) : undefined
                 }
                 onRightIconClick={
-                  loading ? undefined : (query || selected.length > 0) ? handleClear : undefined
+                  loading ? undefined : query ? handleClearQuery : selected.length > 0 ? handleClear : undefined
                 }
               />
             </div>

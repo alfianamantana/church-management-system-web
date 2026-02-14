@@ -15,7 +15,7 @@ import InputText from '../../components/InputText';
 import TextArea from '../../components/TextArea';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import Button from '../../components/Button';
-import { getMessage, IBasicResponse, IAsset, IPagination } from '@/constant';
+import { getMessage, getCurrency, IBasicResponse, IAsset, IPagination } from '@/constant';
 
 interface IAssetDisplay {
   id: number;
@@ -58,6 +58,9 @@ const AssetList: React.FC = () => {
 
   // Condition dropdown state
   const [selectedCondition, setSelectedCondition] = useState<string>('good');
+
+  // Currency symbol state
+  const [currencySymbol, setCurrencySymbol] = useState<string>('Rp');
 
   // Modal and form states
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -107,6 +110,15 @@ const AssetList: React.FC = () => {
       condition: selectedCondition,
     }));
   }, [selectedCondition]);
+
+  // Load currency symbol from localStorage
+  useEffect(() => {
+    const savedCurrency = localStorage.getItem('selected_currency') || 'IDR';
+    const currency = getCurrency(savedCurrency);
+    if (currency) {
+      setCurrencySymbol(currency.symbol);
+    }
+  }, []);
 
   // Reset dropdown states when closed
   useEffect(() => {
@@ -293,8 +305,8 @@ const AssetList: React.FC = () => {
 
   const tableHeads = [
     { label: t('asset_name'), key: 'name', thClass: 'w-32' },
-    { label: t('description'), key: 'description', thClass: 'w-72' },
     { label: t('value'), key: 'value', tdClass: 'text-right', thClass: 'w-32' },
+    { label: t('description'), key: 'description', thClass: 'w-72' },
     {
       label: t('condition'), key: 'condition', thClass: 'w-32', render: (value: string) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${value === 'excellent' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
@@ -314,7 +326,7 @@ const AssetList: React.FC = () => {
 
   const processedAssets = assets.map(asset => ({
     ...asset,
-    value: asset.value && asset.value !== '-' ? `Rp ${asset.value}` : '-',
+    value: asset.value && asset.value !== '-' ? `${currencySymbol} ${asset.value}` : '-',
     description: asset.description || '-',
     location: asset.location || '-',
     category: asset.category || '-',
@@ -406,7 +418,8 @@ const AssetList: React.FC = () => {
               name="value"
               value={formData.value}
               onChange={handleInputChange}
-              placeholder="Rp 0"
+              placeholder={`0`}
+              leftIcon={<span className="text-muted-foreground font-medium">{currencySymbol}</span>}
             />
           </div>
 
