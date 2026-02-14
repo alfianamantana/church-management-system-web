@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 
 interface ModalProps {
   isOpen: boolean;
@@ -33,11 +34,13 @@ const Modal: React.FC<ModalProps> = ({
     if (isOpen) {
       setIsAnimatingOut(false);
       setIsVisible(true);
+      document.body.style.overflow = 'hidden';
     } else if (isVisible) {
       setIsAnimatingOut(true);
       const t = setTimeout(() => {
         setIsAnimatingOut(false);
         setIsVisible(false);
+        document.body.style.overflow = '';
       }, 200); // duration matches Tailwind transition
       return () => clearTimeout(t);
     }
@@ -45,7 +48,7 @@ const Modal: React.FC<ModalProps> = ({
 
   if (!isVisible && !isAnimatingOut) return null;
 
-  return (
+  const modalContent = (
     <div
       id={id}
       className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-200 bg-black/50 ${isAnimatingOut ? 'opacity-0' : 'opacity-100'
@@ -76,6 +79,8 @@ const Modal: React.FC<ModalProps> = ({
       </div>
     </div>
   );
+
+  return ReactDOM.createPortal(modalContent, document.body);
 };
 
 export default Modal;

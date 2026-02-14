@@ -3,6 +3,7 @@ import Card from '../../components/Card';
 import Table from '../../components/Table';
 import Pagination from '../../components/Pagination';
 import Modal from '../../components/Modal';
+import InputText from '../../components/InputText';
 import api from '@/services/api';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
@@ -159,28 +160,27 @@ const RoleList: React.FC = () => {
   return (
     <div>
       <Card title="Role List" id="role-list-card">
-        <div className="mb-4 px-2 md:px-0">
-          <div className="flex flex-col gap-3 md:flex-row md:gap-2">
-            <input
+        <div className="mb-4 px-2 md:px-0" id="search-section">
+          <div className="flex flex-col gap-3 md:flex-row md:gap-2" id="search-controls">
+            <InputText
+              id="search-input"
               type="text"
-              placeholder="Search by role name..."
+              placeholder={t("search_by_name")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+              className="flex-1 px-2 text-xs"
             />
             <div className="flex flex-col gap-2 md:flex-row md:gap-2">
               <button
+                id="search-button"
                 onClick={handleSearch}
                 type="button"
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200 text-sm md:text-base"
+                className="px-3 bg-primary text-primary-foreground rounded-md hover:bg-primary transition-all duration-200 text-xs"
               >
-                Search
+                {t('search')}
               </button>
-              <button
-                className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200 text-sm md:text-base'
-                onClick={handleAddRole}
-              >
-                Add Role
+              <button onClick={handleAddRole} id="add-role-button" className='px-3 bg-success text-white rounded-md hover:opacity-90 transition-all duration-200 text-xs'>
+                {t("add_role")}
               </button>
             </div>
           </div>

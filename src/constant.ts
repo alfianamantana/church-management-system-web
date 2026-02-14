@@ -127,6 +127,9 @@ export interface IJemaat {
     family_id: number | null;
     dad: IJemaat | null;
     mom: IJemaat | null;
+    couple_id: number | null;
+    couple: IJemaat | null;
+    children: IJemaat[];
 }
 
 export interface ICategory {

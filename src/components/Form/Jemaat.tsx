@@ -11,6 +11,8 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'react-toastify';
 import CountryList from 'country-list-with-dial-code-and-flag';
 import CountryFlagSvg from 'country-list-with-dial-code-and-flag/dist/flag-svg';
+import DatePicker from '../DayPicker';
+import Button from '../Button';
 
 interface JemaatFormData {
   name: string;
@@ -48,23 +50,9 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
   const { t } = useTranslation();
   const [selectedBaptism, setSelectedBaptism] = useState<Date>();
   const [selectedBirth, setSelectedBirth] = useState<Date>();
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedYearBirth, setSelectedYearBirth] = useState(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedMonthBirth, setSelectedMonthBirth] = useState(new Date().getMonth());
-  const yearDropdownRef = useRef<{ close: () => void }>(null);
-  const birthYearDropdownRef = useRef<{ close: () => void }>(null);
-  const monthDropdownRef = useRef<{ close: () => void }>(null);
-  const birthMonthDropdownRef = useRef<{ close: () => void }>(null);
 
   // Dropdown open states for chevron icons
-  const [isBirthDateDropdownOpen, setIsBirthDateDropdownOpen] = useState(false);
-  const [isBirthMonthDropdownOpen, setIsBirthMonthDropdownOpen] = useState(false);
-  const [isBirthYearDropdownOpen, setIsBirthYearDropdownOpen] = useState(false);
   const [isGenderDropdownOpen, setIsGenderDropdownOpen] = useState(false);
-  const [isBaptismDateDropdownOpen, setIsBaptismDateDropdownOpen] = useState(false);
-  const [isBaptismMonthDropdownOpen, setIsBaptismMonthDropdownOpen] = useState(false);
-  const [isBaptismYearDropdownOpen, setIsBaptismYearDropdownOpen] = useState(false);
 
   const [selectedMom, setSelectedMom] = useState<{ id: string | number; label: string } | null>(null);
   const [selectedDad, setSelectedDad] = useState<{ id: string | number; label: string } | null>(null);
@@ -87,17 +75,21 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
   useEffect(() => {
     if (initialData) {
       setForm(prev => ({ ...prev, ...initialData }));
-      if (initialData.birth_date) {
-        const birthDate = new Date(initialData.birth_date);
-        setSelectedBirth(birthDate);
-        setSelectedYearBirth(birthDate.getFullYear());
-        setSelectedMonthBirth(birthDate.getMonth());
-      }
-      if (initialData.baptism_date) {
-        const baptismDate = new Date(initialData.baptism_date);
-        setSelectedBaptism(baptismDate);
-        setSelectedYear(baptismDate.getFullYear());
-        setSelectedMonth(baptismDate.getMonth());
+      try {
+        if (initialData.birth_date) {
+          const birthDate = new Date(initialData.birth_date);
+          if (!isNaN(birthDate.getTime())) {
+            setSelectedBirth(birthDate);
+          }
+        }
+        if (initialData.baptism_date) {
+          const baptismDate = new Date(initialData.baptism_date);
+          if (!isNaN(baptismDate.getTime())) {
+            setSelectedBaptism(baptismDate);
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing dates in JemaatForm:', error);
       }
       if (initialData.mom) {
         setSelectedMom({ id: initialData.mom.id, label: initialData.mom.name });
@@ -114,8 +106,6 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
         ...prev,
         baptism_date: dayjs(selectedBaptism).format('YYYY-MM-DD'),
       }));
-      setSelectedYear(selectedBaptism.getFullYear());
-      setSelectedMonth(selectedBaptism.getMonth());
     }
   }, [selectedBaptism]);
 
@@ -125,8 +115,6 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
         ...prev,
         birth_date: dayjs(selectedBirth).format('YYYY-MM-DD'),
       }));
-      setSelectedYearBirth(selectedBirth.getFullYear());
-      setSelectedMonthBirth(selectedBirth.getMonth());
     }
   }, [selectedBirth]);
 
@@ -205,7 +193,7 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
       <div className="space-y-6" id="jemaat-form-fields">
         {/* Personal Information */}
         <div className="space-y-4" id="personal-info-section">
-          <h3 className="text-lg font-semibold text-foreground border-b border-border pb-2" id="personal-info-title">
+          <h3 className="text-base font-semibold text-foreground border-b border-border pb-2" id="personal-info-title">
             {t('personal_information')}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4" id="personal-info-grid-1">
@@ -364,218 +352,39 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
 
         {/* Birth Information */}
         <div className="space-y-4" id="birth-info-section">
-          <h3 className="text-lg font-semibold text-foreground border-b border-border pb-2" id="birth-info-title">
+          <h3 className="text-base font-semibold text-foreground border-b border-border pb-2" id="birth-info-title">
             {t('birth_information')}
           </h3>
-          <Dropdown
-            id="jemaat-birth-date-dropdown"
-            position="bottom"
+          <DatePicker
             label={t('birth_date')}
-            trigger={
-              <button id="jemaat-birth-date-trigger" className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-border focus:ring-ring bg-card text-card-foreground text-left flex items-center justify-between">
-                {form.birth_date ? dayjs(form.birth_date).format('DD-MM-YYYY') : t('select_birth_date')}
-                {isBirthDateDropdownOpen ? (
-                  <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                )}
-              </button>
-            }
-            onOpenChange={setIsBirthDateDropdownOpen}
-          >
-            <div className="p-4 w-full" id="jemaat-birth-date-picker-container">
-              <div className='flex flex-row gap-2 mb-4' id="jemaat-birth-date-dropdowns">
-                <Dropdown
-                  id="jemaat-birth-month-dropdown"
-                  fullWidth={true}
-                  ref={birthMonthDropdownRef}
-                  trigger={
-                    <button
-                      id="jemaat-birth-month-trigger"
-                      className=" w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-border focus:ring-ring bg-card text-card-foreground text-left flex items-center justify-between"
-                    >
-                      {new Date(0, selectedMonthBirth).toLocaleString('default', { month: 'long' })}
-                      {isBirthMonthDropdownOpen ? (
-                        <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                      )}
-                    </button>
-                  }
-                  onOpenChange={setIsBirthMonthDropdownOpen}
-                >
-                  <div className="max-h-40 overflow-y-auto w-full" id="jemaat-birth-month-options">
-                    {Array.from({ length: 12 }, (_, i) => i).map((month) => (
-                      <div
-                        key={month}
-                        id={`jemaat-birth-month-option-${month}`}
-                        className="px-4 py-2 w-full hover:bg-accent text-foreground cursor-pointer"
-                        onClick={() => {
-                          setSelectedMonthBirth(month);
-                          birthMonthDropdownRef.current?.close();
-                        }}
-                      >
-                        {new Date(0, month).toLocaleString('default', { month: 'long' })}
-                      </div>
-                    ))}
-                  </div>
-                </Dropdown>
-                <Dropdown
-                  id="jemaat-birth-year-dropdown"
-                  fullWidth={true}
-                  ref={birthYearDropdownRef}
-                  trigger={
-                    <button
-                      id="jemaat-birth-year-trigger"
-                      className=" w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-border focus:ring-ring bg-card text-card-foreground text-left flex items-center justify-between"
-                    >
-                      {selectedYearBirth}
-                      {isBirthYearDropdownOpen ? (
-                        <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                      )}
-                    </button>
-                  }
-                  onOpenChange={setIsBirthYearDropdownOpen}
-                >
-                  <div className="max-h-40 overflow-y-auto w-full" id="jemaat-birth-year-options">
-                    {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((year) => (
-                      <div
-                        key={year}
-                        id={`jemaat-birth-year-option-${year}`}
-                        className="px-4 py-2 w-full hover:bg-accent text-foreground cursor-pointer"
-                        onClick={() => {
-                          setSelectedYearBirth(year);
-                          birthYearDropdownRef.current?.close();
-                        }}
-                      >
-                        {year}
-                      </div>
-                    ))}
-                  </div>
-                </Dropdown>
-              </div>
-              <DayPicker
-                id="jemaat-birth-daypicker"
-                disabled={{ after: new Date() }}
-                animate
-                mode="single"
-                selected={selectedBirth}
-                onSelect={setSelectedBirth}
-                month={new Date(selectedYearBirth, selectedMonthBirth)}
-              />
-            </div>
-          </Dropdown>
+            selectedDate={selectedBirth}
+            onSelect={setSelectedBirth}
+            id="jemaat-birth-date"
+            position="bottom-left"
+            disabled={{ after: new Date() }}
+          />
         </div>
 
         {/* Baptism Information */}
         <div className="space-y-4" id="baptism-info-section">
-          <h3 className="text-lg font-semibold text-foreground border-b border-border pb-2" id="baptism-info-title">
+          <h3 className="text-base font-semibold text-foreground border-b border-border pb-2" id="baptism-info-title">
             {t('baptism_information')}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4" id="baptism-info-grid">
-            <Dropdown
-              id="jemaat-baptism-date-dropdown"
-              position="top"
+            <DatePicker
               label={t('baptism_date_optional')}
-              trigger={
-                <button id="jemaat-baptism-date-trigger" className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-border focus:ring-ring bg-card text-card-foreground text-left flex items-center justify-between">
-                  {form.baptism_date ? dayjs(form.baptism_date).format('DD-MM-YYYY') : t('select_baptism_date')}
-                  {isBaptismDateDropdownOpen ? (
-                    <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                  )}
-                </button>
-              }
-              onOpenChange={setIsBaptismDateDropdownOpen}
-            >
-              <div className="p-4 w-full" id="jemaat-baptism-date-picker-container">
-                <div className='flex flex-row gap-2 mb-4' id="jemaat-baptism-date-dropdowns">
-                  <Dropdown
-                    id="jemaat-baptism-month-dropdown"
-                    fullWidth={true}
-                    ref={monthDropdownRef}
-                    trigger={
-                      <button id="jemaat-baptism-month-trigger" className=" w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-border focus:ring-ring bg-card text-card-foreground text-left flex items-center justify-between">
-                        {new Date(0, selectedMonth).toLocaleString('default', { month: 'long' })}
-                        {isBaptismMonthDropdownOpen ? (
-                          <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                        ) : (
-                          <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                        )}
-                      </button>
-                    }
-                    onOpenChange={setIsBaptismMonthDropdownOpen}
-                  >
-                    <div className="max-h-40 overflow-y-auto w-full" id="jemaat-baptism-month-options">
-                      {Array.from({ length: 12 }, (_, i) => i).map((month) => (
-                        <div
-                          key={month}
-                          id={`jemaat-baptism-month-option-${month}`}
-                          className="px-4 py-2 w-full hover:bg-accent text-foreground cursor-pointer"
-                          onClick={() => {
-                            setSelectedMonth(month);
-                            monthDropdownRef.current?.close();
-                          }}
-                        >
-                          {new Date(0, month).toLocaleString('default', { month: 'long' })}
-                        </div>
-                      ))}
-                    </div>
-                  </Dropdown>
-                  <Dropdown
-                    id="jemaat-baptism-year-dropdown"
-                    fullWidth={true}
-                    ref={yearDropdownRef}
-                    trigger={
-                      <button id="jemaat-baptism-year-trigger" className=" w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-border focus:ring-ring bg-card text-card-foreground text-left flex items-center justify-between">
-                        {selectedYear}
-                        {isBaptismYearDropdownOpen ? (
-                          <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                        ) : (
-                          <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                        )}
-                      </button>
-                    }
-                    onOpenChange={setIsBaptismYearDropdownOpen}
-                  >
-                    <div className="max-h-40 overflow-y-auto w-full" id="jemaat-baptism-year-options">
-                      {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((year) => (
-                        <div
-                          key={year}
-                          id={`jemaat-baptism-year-option-${year}`}
-                          className="px-4 py-2 w-full hover:bg-accent text-foreground cursor-pointer"
-                          onClick={() => {
-                            setSelectedYear(year);
-                            yearDropdownRef.current?.close();
-                          }}
-                        >
-                          {year}
-                        </div>
-                      ))}
-                    </div>
-                  </Dropdown>
-                </div>
-                <DayPicker
-                  id="jemaat-baptism-daypicker"
-                  disabled={{ after: new Date() }}
-                  animate
-                  pagedNavigation
-                  mode="single"
-                  selected={selectedBaptism}
-                  onSelect={setSelectedBaptism}
-                  month={new Date(selectedYear, selectedMonth)}
-                />
-              </div>
-            </Dropdown>
+              selectedDate={selectedBaptism}
+              onSelect={setSelectedBaptism}
+              id="jemaat-baptism-date"
+              position="top-left"
+              disabled={{ after: new Date() }}
+            />
           </div>
         </div>
 
         {/* Family Information */}
         <div className="space-y-4" id="family-info-section">
-          <h3 className="text-lg font-semibold text-foreground border-b border-border pb-2" id="family-info-title">
+          <h3 className="text-base font-semibold text-foreground border-b border-border pb-2" id="family-info-title">
             {t('family_information')}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4" id="family-info-grid">
@@ -609,15 +418,23 @@ const JemaatForm: React.FC<JemaatFormProps> = ({ title, initialData, onSubmit, l
         </div>
 
         <div className="pt-4 border-t border-border" id="jemaat-form-submit-container">
-          <button
+          <Button
             id="jemaat-form-submit"
             onClick={handleSubmit}
             type="submit"
-            className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition disabled:opacity-60"
-            disabled={loading}
+            variant="primary"
+            className="w-full"
+            loading={loading}
           >
             {loading ? t('saving') : t('save')}
-          </button>
+          </Button>
+          <Button
+            variant="secondary"
+            className="w-full mt-2"
+            onClick={() => window.history.back()}
+          >
+            {t('cancel')}
+          </Button>
         </div>
       </div>
     </Card>

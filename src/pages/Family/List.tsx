@@ -4,6 +4,7 @@ import Table from '../../components/Table';
 import Pagination from '../../components/Pagination';
 import Modal from '../../components/Modal';
 import InputText from '../../components/InputText';
+import Button from '../../components/Button';
 import DropdownSearch from '../../components/DropdownSearch';
 import api from '@/services/api';
 import { toast } from 'react-toastify';
@@ -214,16 +215,6 @@ const FamilyList: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const addJemaat = (id: number) => {
-    if (!selectedJemaatIds.includes(id)) {
-      setSelectedJemaatIds(prev => [...prev, id]);
-    }
-  };
-
-  const removeJemaat = (id: number) => {
-    setSelectedJemaatIds(prev => prev.filter(i => i !== id));
-  };
-
   const tableHeads = [
     { label: t('family_name'), key: 'name' },
   ];
@@ -233,30 +224,34 @@ const FamilyList: React.FC = () => {
       <Card title={t('family_list')} id="family-list-card">
         <div className="mb-4 px-2 md:px-0" id="search-section">
           <div className="flex flex-col gap-3 md:flex-row md:gap-2" id="search-controls">
-            <input
+            <InputText
               type="text"
               placeholder={t('search_by_name')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-3 py-2 border border-border rounded-md bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm md:text-base"
+              className="flex-1 px-2 text-xs"
               id="search-input"
             />
             <div className="flex flex-col gap-2 md:flex-row md:gap-2">
-              <button
+              <Button
                 onClick={handleSearch}
                 type="button"
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-all duration-200 text-sm md:text-base"
+                variant="primary"
+                size="sm"
+                className="px-3 text-xs"
                 id="search-button"
               >
                 {t('search')}
-              </button>
-              <button
-                className="px-4 py-2 bg-success text-white rounded-md hover:opacity-90 transition-all duration-200 text-sm md:text-base"
+              </Button>
+              <Button
+                className="px-3 text-xs bg-success hover:bg-success/90 text-white"
                 onClick={handleAddFamily}
+                variant="primary"
+                size="sm"
                 id="add-family-button"
               >
                 {t('add_family')}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -341,22 +336,26 @@ const FamilyList: React.FC = () => {
             />
           </div>
           <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="form-modal-actions">
-            <button
+            <Button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 border border-border rounded-md text-foreground hover:bg-muted"
+              variant="secondary"
+              size="sm"
+              className="w-full md:flex-1 px-3 text-xs"
               id="form-cancel-button"
             >
               {t('cancel')}
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              disabled={submitting}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+              variant="primary"
+              size="sm"
+              loading={submitting}
+              className="w-full md:flex-1 px-3 text-xs"
               id="form-submit-button"
             >
               {submitting ? (editingFamily ? t('updating') : t('adding')) : (editingFamily ? t('update_family') : t('add_family'))}
-            </button>
+            </Button>
           </div>
         </form>
       </Modal>
@@ -373,22 +372,26 @@ const FamilyList: React.FC = () => {
             {t('confirm_delete_family')}
           </p>
           <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="delete-modal-actions">
-            <button
+            <Button
               type="button"
               onClick={() => setIsDeleteModalOpen(false)}
-              className="px-4 py-2 border border-border rounded-md text-foreground hover:bg-muted"
+              variant="outline"
+              size="sm"
+              className="w-full md:flex-1 px-3 text-xs"
               id="delete-cancel-button"
             >
               {t('cancel')}
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleConfirmDelete}
-              disabled={deleting}
-              className="px-4 py-2 bg-destructive text-white rounded-md hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+              variant="destructive"
+              size="sm"
+              loading={deleting}
+              className="w-full md:flex-1 px-3 text-xs"
               id="delete-confirm-button"
             >
               {deleting ? t('deleting') : t('delete')}
-            </button>
+            </Button>
           </div>
         </div>
       </Modal>
@@ -462,13 +465,15 @@ const FamilyList: React.FC = () => {
           )}
 
           <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="view-modal-actions">
-            <button
+            <Button
               onClick={() => setIsViewModalOpen(false)}
-              className="px-4 py-2 border border-border rounded-md text-foreground hover:bg-muted"
+              variant="outline"
+              size="sm"
+              className="px-3 text-xs"
               id="view-close-button"
             >
               {t('close')}
-            </button>
+            </Button>
           </div>
         </div>
       </Modal>

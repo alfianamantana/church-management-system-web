@@ -33,7 +33,7 @@ const Table: React.FC<TableProps> = ({ id, heads, data, currentPage = 1, pageSiz
         <thead>
           <tr>
             {showIndex && (
-              <th className="px-4 py-2 border-b border-border text-left bg-muted text-muted-foreground font-semibold">
+              <th className="px-4 py-2 border-b border-border text-left bg-muted text-muted-foreground font-semibold text-xs">
                 No
               </th>
             )}
@@ -41,15 +41,17 @@ const Table: React.FC<TableProps> = ({ id, heads, data, currentPage = 1, pageSiz
               <th
                 key={idx}
                 className={
-                  head.thClass + ' px-4 py-2 border-b border-border text-left bg-muted text-muted-foreground font-semibold'
+                  'px-4 py-2 border-b border-border text-left bg-muted text-muted-foreground font-semibold text-xs'
                 }
               >
-                {head.label}
+                <div className={head.thClass}>
+                  {head.label}
+                </div>
               </th>
             ))}
             {
               action && (canEdit || canDelete || canView) && (
-                <th className="px-4 py-2 border-b border-border text-left bg-muted text-muted-foreground font-semibold">
+                <th className="px-4 py-2 border-b border-border text-left bg-muted text-muted-foreground font-semibold text-xs">
                   Action
                 </th>
               )
@@ -59,7 +61,7 @@ const Table: React.FC<TableProps> = ({ id, heads, data, currentPage = 1, pageSiz
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan={heads.length + (showIndex ? 1 : 0) + ((canEdit || canDelete || canView) ? 1 : 0)} className="px-4 py-3 text-center text-muted-foreground">
+              <td colSpan={heads.length + (showIndex ? 1 : 0) + ((canEdit || canDelete || canView) ? 1 : 0)} className="px-4 py-3 text-center text-muted-foreground text-xs">
                 No data available
               </td>
             </tr>
@@ -67,18 +69,18 @@ const Table: React.FC<TableProps> = ({ id, heads, data, currentPage = 1, pageSiz
             data.map((row, i) => (
               <tr key={i} className="hover:bg-muted transition-all duration-200">
                 {showIndex && (
-                  <td className="px-4 py-2 border-b border-border text-foreground">
+                  <td className="px-4 py-2 border-b border-border text-foreground text-xs ">
                     {(currentPage - 1) * pageSize + i + 1}
                   </td>
                 )}
                 {heads.map((head, j) => (
-                  <td key={j} className="px-4 py-2 border-b border-border text-foreground">
+                  <td key={j} className="px-4 py-2 border-b border-border text-foreground text-xs ">
                     {head.render ? head.render(row[head.key], row, i) : (row[head.key] ? row[head.key] : 'No data')}
                   </td>
                 ))}
                 {
                   (canEdit || canDelete || canView) && (
-                    <td className="px-4 py-2 border-b border-border text-foreground">
+                    <td className="px-4 py-2 border-b border-border text-foreground text-xs ">
                       <div className="flex gap-1">
                         {canEdit && callbackEdit && (
                           <button

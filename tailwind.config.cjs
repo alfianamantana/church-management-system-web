@@ -7,6 +7,9 @@ module.exports = {
             center: true,
         },
         extend: {
+            fontSize: {
+                base: '14px',
+            },
             colors: {
                 background: 'hsl(var(--background) / <alpha-value>)',
                 foreground: 'hsl(var(--foreground) / <alpha-value>)',
@@ -38,7 +41,7 @@ module.exports = {
                 dark: 'hsl(217 33% 17% / <alpha-value>)',
             },
             fontFamily: {
-                nunito: ['Nunito', 'sans-serif'],
+                sans: ['Nunito', 'sans-serif'],
             },
             spacing: {
                 4.5: '18px',

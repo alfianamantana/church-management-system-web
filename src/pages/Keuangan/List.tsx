@@ -3,6 +3,7 @@ import Card from '../../components/Card';
 import Table from '../../components/Table';
 import Pagination from '../../components/Pagination';
 import Modal from '../../components/Modal';
+import InputText from '../../components/InputText';
 import api from '@/services/api';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
@@ -13,6 +14,8 @@ import Dropdown from '../../components/Dropdowns';
 import { DayPicker } from "react-day-picker";
 import { useTranslation } from 'react-i18next';
 import TextArea from '../../components/TextArea';
+import Button from '../../components/Button';
+import DatePicker from '../../components/DayPicker';
 
 interface ITransactionResponse extends IBasicResponse {
   data: ITransaction[];
@@ -260,30 +263,33 @@ const KeuanganList: React.FC = () => {
       <Card title="Keuangan List" id="keuangan-list-card">
         <div className="mb-4 px-2 md:px-0" id="search-section">
           <div className="flex flex-col gap-3 md:flex-row md:gap-2" id="search-controls">
-            <input
+            <InputText
+              id="search-input"
               type="text"
-              placeholder={t('search_placeholder')}
+              placeholder={t("search_placeholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
-              id="search-input"
+              className="flex-1 px-2 text-xs"
             />
             <div className="flex flex-col gap-2 md:flex-row md:gap-2">
-              <button
+              <Button
+                id="search-button"
+                variant="primary"
+                size="sm"
                 onClick={handleSearch}
                 type="button"
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200 text-sm md:text-base"
-                id="search-button"
               >
                 {t('search')}
-              </button>
-              <button
-                className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200 text-sm md:text-base'
+              </Button>
+              <Button
                 onClick={handleAddTransaction}
                 id="add-transaction-button"
+                variant="primary"
+                size="sm"
+                className="bg-success"
               >
                 {t('add_transaction')}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -327,27 +333,14 @@ const KeuanganList: React.FC = () => {
         size="md"
       >
         <div className="space-y-4" id="form-modal-content">
-          <div id="date-field">
-            <Dropdown
-              required={true}
-              position="bottom"
-              label={t('date')}
-              trigger={
-                <button className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left" id="date-picker-button">
-                  {formData.date ? dayjs(formData.date).format('DD/MM/YYYY') : t('select_date')}
-                </button>
-              }
-            >
-              <div className="p-4" id="date-picker-content">
-                <DayPicker
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  id="day-picker"
-                />
-              </div>
-            </Dropdown>
-          </div>
+          <DatePicker
+            label={t('date')}
+            selectedDate={selectedDate}
+            onSelect={setSelectedDate}
+            id="transaction-date"
+            position="bottom-left"
+            disabled={{ after: new Date() }}
+          />
           <div id="category-field">
             <Dropdown
               required={true}
@@ -374,24 +367,17 @@ const KeuanganList: React.FC = () => {
             </Dropdown>
           </div>
           <div id="amount-field">
-            <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              {t('amount')} <span className="text-red-500">*</span>
-            </label>
-            <div className="relative mt-1" id="amount-input-container">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" id="currency-symbol">
-                <span className="text-gray-500 dark:text-gray-400 font-medium">Rp</span>
-              </div>
-              <input
-                type="text"
-                id="amount"
-                name="amount"
-                value={formData.amount}
-                onChange={handleInputChange}
-                placeholder={t('amount_placeholder')}
-                className="pl-12 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </div>
+            <InputText
+              label={t('amount')}
+              type="text"
+              id="amount"
+              name="amount"
+              value={formData.amount}
+              onChange={handleInputChange}
+              placeholder={t('amount_placeholder')}
+              required
+              leftIcon={<span className="text-gray-500 dark:text-gray-400 font-medium">Rp</span>}
+            />
           </div>
           <TextArea
             label={t('note')}
@@ -402,23 +388,25 @@ const KeuanganList: React.FC = () => {
             rows={3}
           />
           <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="form-modal-actions">
-            <button
+            <Button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
+              variant="secondary"
+              size="md"
               id="form-cancel-button"
             >
               {t('cancel')}
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleFormSubmit}
               type="submit"
-              disabled={submitting}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              variant="primary"
+              size="md"
+              loading={submitting}
               id="form-submit-button"
             >
               {submitting ? (editingTransaction ? t('updating') : t('adding')) : (editingTransaction ? t('update_transaction') : t('add_transaction'))}
-            </button>
+            </Button>
           </div>
         </div>
       </Modal>
@@ -435,22 +423,24 @@ const KeuanganList: React.FC = () => {
             {t('confirm_delete_transaction')}
           </p>
           <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="delete-modal-actions">
-            <button
+            <Button
               type="button"
               onClick={() => setIsDeleteModalOpen(false)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
+              variant="outline"
+              size="md"
               id="delete-cancel-button"
             >
               {t('cancel')}
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleConfirmDelete}
-              disabled={deleting}
-              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              variant="destructive"
+              size="md"
+              loading={deleting}
               id="delete-confirm-button"
             >
               {deleting ? t('deleting') : t('delete')}
-            </button>
+            </Button>
           </div>
         </div>
       </Modal>

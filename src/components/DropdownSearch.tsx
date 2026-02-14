@@ -134,7 +134,7 @@ const DropdownSearch: React.FC<DropdownSearchProps> = ({
             // Multi-select or no selection: show chips (if any) and input
             <div className=" w-full flex-wrap items-center gap-2 rounded-xl bg-popover dark:bg-popover dark:border-border" id={id ? `${id}-input-wrapper` : undefined}>
               {selected.length > 0 && (
-                <div className="flex flex-wrap gap-2" id={id ? `${id}-chips` : undefined}>
+                <div className="flex flex-wrap gap-2 mb-2" id={id ? `${id}-chips` : undefined}>
                   {selected.map((s) => (
                     <span key={s.id} className="inline-flex items-center px-2 py-1 bg-muted rounded-full text-sm text-foreground dark:bg-muted dark:text-foreground" id={id ? `${id}-chip-${s.id}` : undefined}>
                       <span className="mr-2">{s.label}</span>

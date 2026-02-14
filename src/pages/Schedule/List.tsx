@@ -3,6 +3,7 @@ import Card from '../../components/Card';
 import Table from '../../components/Table';
 import Pagination from '../../components/Pagination';
 import Modal from '../../components/Modal';
+import InputText from '../../components/InputText';
 import Dropdown from '../../components/Dropdowns';
 import { DayPicker } from "react-day-picker";
 import api from '@/services/api';
@@ -189,29 +190,25 @@ const ScheduleList: React.FC = () => {
       <Card title="Schedule List" id="schedule-list-card">
         <div className="mb-4 px-2 md:px-0" id="search-section">
           <div className="flex flex-col gap-3 md:flex-row md:gap-2" id="search-controls">
-            <input
+            <InputText
+              id="search-input"
               type="text"
-              placeholder="Search by service name..."
+              placeholder={t("search_by_name")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
-              id="search-input"
+              className="flex-1 px-2 text-xs"
             />
             <div className="flex flex-col gap-2 md:flex-row md:gap-2">
               <button
+                id="search-button"
                 onClick={handleSearch}
                 type="button"
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200 text-sm md:text-base"
-                id="search-button"
+                className="px-3 bg-primary text-primary-foreground rounded-md hover:bg-primary transition-all duration-200 text-xs"
               >
-                Search
+                {t('search')}
               </button>
-              <button
-                className='px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-200 text-sm md:text-base'
-                onClick={() => navigate('/schedule/create')}
-                id="add-schedule-button"
-              >
-                Add Schedule
+              <button onClick={() => navigate('/schedule/create')} id="add-schedule-button" className='px-3 bg-success text-white rounded-md hover:opacity-90 transition-all duration-200 text-xs'>
+                {t("add_schedule")}
               </button>
             </div>
           </div>
@@ -380,19 +377,19 @@ const ScheduleList: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
+              className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-all duration-200"
               id="form-cancel-button"
             >
-              Cancel
+              {t('cancel')}
             </button>
             <button
               onClick={handleFormSubmit}
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               id="form-submit-button"
             >
-              {submitting ? (editingSchedule ? 'Updating...' : 'Adding...') : (editingSchedule ? 'Update Schedule' : 'Add Schedule')}
+              {submitting ? (editingSchedule ? t('updating') : t('adding')) : (editingSchedule ? t('update_schedule') : t('add_schedule'))}
             </button>
           </div>
         </div>

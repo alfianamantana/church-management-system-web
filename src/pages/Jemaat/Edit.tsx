@@ -43,11 +43,15 @@ const EditJemaat: React.FC = () => {
               gender: jemaat.gender || 'male',
               dad: jemaat.dad || null,
               mom: jemaat.mom || null,
+              couple_id: jemaat.couple_id ? jemaat.couple_id.toString() : '',
+              couple: jemaat.couple || null,
             });
           } else {
             toast.error(t('jemaat_not_found') as string);
           }
         } else {
+          console.log(response, '?asdas');
+
           toast.error(getMessage(response.message));
           navigate('/jemaat');
           return;

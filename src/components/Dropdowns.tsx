@@ -14,6 +14,7 @@ interface DropdownProps {
   fullWidth?: boolean;
   id?: string;
   onOpenChange?: (isOpen: boolean) => void;
+  isNested?: boolean;
 }
 
 const Dropdown = forwardRef<DropdownRef, DropdownProps>(({
@@ -25,6 +26,7 @@ const Dropdown = forwardRef<DropdownRef, DropdownProps>(({
   position = 'bottom',
   required = false,
   onOpenChange,
+  isNested = false,
 }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
@@ -52,8 +54,7 @@ const Dropdown = forwardRef<DropdownRef, DropdownProps>(({
       }
       if (
         dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
-        dropdownContentRef.current && !dropdownContentRef.current.contains(event.target as Node) &&
-        !isInDropdown
+        dropdownContentRef.current && !dropdownContentRef.current.contains(event.target as Node)
       ) {
         closeDropdown();
       }

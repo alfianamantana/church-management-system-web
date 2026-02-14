@@ -9,11 +9,12 @@ import { useDispatch } from 'react-redux';
 import { setPageTitle } from '@/store/themeConfigSlice';
 import dayjs from 'dayjs';
 import Dropdown from '../../components/Dropdowns';
-import { DayPicker } from "react-day-picker";
+import DatePicker from '../../components/DayPicker';
 import { useTranslation } from 'react-i18next';
 import InputText from '../../components/InputText';
 import TextArea from '../../components/TextArea';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import Button from '../../components/Button';
 import { getMessage, IBasicResponse, IAsset, IPagination } from '@/constant';
 
 interface IAssetDisplay {
@@ -50,17 +51,10 @@ const AssetList: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
 
   // Month/Year picker state
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const monthDropdownRef = useRef<{ close: () => void }>(null);
-  const yearDropdownRef = useRef<{ close: () => void }>(null);
   const conditionDropdownRef = useRef<{ close: () => void }>(null);
 
   // Dropdown open states for chevron icons
   const [isConditionDropdownOpen, setIsConditionDropdownOpen] = useState(false);
-  const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
-  const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false);
-  const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
 
   // Condition dropdown state
   const [selectedCondition, setSelectedCondition] = useState<string>('good');
@@ -104,10 +98,15 @@ const AssetList: React.FC = () => {
         ...prev,
         acquisition_date: dayjs(selectedDate).format('YYYY-MM-DD'),
       }));
-      setSelectedYear(selectedDate.getFullYear());
-      setSelectedMonth(selectedDate.getMonth());
     }
   }, [selectedDate]);
+
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      condition: selectedCondition,
+    }));
+  }, [selectedCondition]);
 
   // Reset dropdown states when closed
   useEffect(() => {
@@ -115,9 +114,6 @@ const AssetList: React.FC = () => {
       const target = event.target as Element;
       if (!target.closest('.dropdown-container')) {
         setIsConditionDropdownOpen(false);
-        setIsDateDropdownOpen(false);
-        setIsMonthDropdownOpen(false);
-        setIsYearDropdownOpen(false);
       }
     };
 
@@ -135,7 +131,7 @@ const AssetList: React.FC = () => {
         const resData = response.data.map(asset => ({
           ...asset,
           value: asset.value ? formatRupiah(asset.value.toString()) : '-',
-          acquisition_date: asset.acquisition_date ? dayjs(asset.acquisition_date).format('DD-MM-YYYY') : '-',
+          acquisition_date: asset.acquisition_date ? dayjs(asset.acquisition_date).format('D MMM, YYYY') : '-',
           createdAt: dayjs(asset.createdAt).format('DD-MM-YYYY HH:mm'),
         }));
         setAssets(resData);
@@ -169,8 +165,6 @@ const AssetList: React.FC = () => {
     const today = new Date();
     setSelectedDate(today);
     setSelectedCondition('good');
-    setSelectedYear(today.getFullYear());
-    setSelectedMonth(today.getMonth());
     setFormData({
       name: '',
       description: '',
@@ -189,8 +183,6 @@ const AssetList: React.FC = () => {
     const assetDate = asset.acquisition_date && asset.acquisition_date !== '-' ? new Date(asset.acquisition_date.split('-').reverse().join('-')) : new Date();
     setSelectedDate(assetDate);
     setSelectedCondition(asset.condition);
-    setSelectedYear(assetDate.getFullYear());
-    setSelectedMonth(assetDate.getMonth());
     setFormData({
       name: asset.name,
       description: asset.description || '',
@@ -300,11 +292,11 @@ const AssetList: React.FC = () => {
   ];
 
   const tableHeads = [
-    { label: t('asset_name'), key: 'name' },
-    { label: t('description'), key: 'description' },
-    { label: t('value'), key: 'value', tdClass: 'text-right' },
+    { label: t('asset_name'), key: 'name', thClass: 'w-32' },
+    { label: t('description'), key: 'description', thClass: 'w-72' },
+    { label: t('value'), key: 'value', tdClass: 'text-right', thClass: 'w-32' },
     {
-      label: t('condition'), key: 'condition', render: (value: string) => (
+      label: t('condition'), key: 'condition', thClass: 'w-32', render: (value: string) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${value === 'excellent' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
           value === 'good' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
             value === 'fair' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
@@ -315,9 +307,9 @@ const AssetList: React.FC = () => {
         </span>
       )
     },
-    { label: t('location'), key: 'location' },
-    { label: t('category'), key: 'category' },
-    { label: t('acquisition_date'), key: 'acquisition_date' },
+    { label: t('location'), key: 'location', thClass: 'w-32' },
+    { label: t('category'), key: 'category', thClass: 'w-32' },
+    { label: t('acquisition_date'), key: 'acquisition_date', thClass: 'w-32' },
   ];
 
   const processedAssets = assets.map(asset => ({
@@ -329,65 +321,65 @@ const AssetList: React.FC = () => {
   }));
 
   return (
-    <div>
-      <Card title={t('asset_list')} id="asset-list-card">
-        <div className="mb-4 px-2 md:px-0">
-          <div className="flex flex-col gap-3 md:flex-row md:gap-2">
-            <InputText
-              type="text"
-              placeholder={t('search_placeholder')}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 text-sm md:text-base"
-            />
-            <div className="flex flex-col gap-2 md:flex-row md:gap-2">
-              <button
-                onClick={handleSearch}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
-              >
-                {t('search')}
-              </button>
-              <button
-                onClick={handleAddAsset}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm md:text-base"
-              >
-                {t('add_asset')}
-              </button>
-            </div>
+    <Card title={t('asset_list')} id="asset-list-card clas">
+      <div className="mb-4 px-2 md:px-0">
+        <div className="flex flex-col gap-3 md:flex-row md:gap-2">
+          <InputText
+            type="text"
+            placeholder={t('search_placeholder')}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 px-2 text-xs"
+          />
+          <div className="flex flex-col gap-2 md:flex-row md:gap-2">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleSearch}
+            >
+              {t('search')}
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleAddAsset}
+              className="bg-success"
+            >
+              {t('add_asset')}
+            </Button>
           </div>
         </div>
+      </div>
 
-        {loading ? (
-          <div className="text-center py-4">{t('loading')}...</div>
-        ) : (
-          <>
-            <div className="overflow-x-auto">
-              <Table
-                id="asset-table"
-                heads={tableHeads}
-                data={processedAssets}
-                currentPage={currentPage}
-                pageSize={pageSize}
-                showIndex={true}
-                canEdit={true}
-                callbackEdit={handleEditAsset}
-                canDelete={true}
-                callbackDelete={handleDeleteAsset}
-                action={true}
-              />
-            </div>
-            <Pagination
-              id="asset-pagination"
+      {loading ? (
+        <div className="text-center py-4">{t('loading')}...</div>
+      ) : (
+        <>
+          <div className="overflow-x-auto">
+            <Table
+              id="asset-table"
+              heads={tableHeads}
+              data={processedAssets}
               currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
               pageSize={pageSize}
-              totalItems={total}
+              showIndex={true}
+              canEdit={true}
+              callbackEdit={handleEditAsset}
+              canDelete={true}
+              callbackDelete={handleDeleteAsset}
+              action={true}
             />
-          </>
-        )}
-      </Card>
-
+          </div>
+          <Pagination
+            id="asset-pagination"
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            pageSize={pageSize}
+            totalItems={total}
+          />
+        </>
+      )}
       <Modal
         id="asset-modal"
         isOpen={isModalOpen}
@@ -395,9 +387,10 @@ const AssetList: React.FC = () => {
         title={editingAsset ? t('edit_asset') : t('add_asset')}
         size="lg"
       >
-        <form onSubmit={handleFormSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={handleFormSubmit} className="space-y-4" id="asset-form">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4" id="asset-form-grid-1">
             <InputText
+              id="asset-name-input"
               label={t('asset_name')}
               type="text"
               name="name"
@@ -407,6 +400,7 @@ const AssetList: React.FC = () => {
             />
 
             <InputText
+              id="asset-value-input"
               label={t('value')}
               type="text"
               name="value"
@@ -416,16 +410,18 @@ const AssetList: React.FC = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4" id="asset-form-grid-2">
+            <div id="asset-condition-container">
+              <label id="asset-condition-label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 {t('condition')}
               </label>
               <Dropdown
+                id="asset-condition-dropdown"
                 ref={conditionDropdownRef}
                 onOpenChange={setIsConditionDropdownOpen}
                 trigger={
                   <div
+                    id="asset-condition-trigger"
                     className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 cursor-pointer hover:border-gray-400 dark:hover:border-gray-500 transition-colors text-left flex items-center justify-between"
                   >
                     <span>{conditionOptions.find(option => option.value === selectedCondition)?.label || t('select_condition')}</span>
@@ -438,10 +434,11 @@ const AssetList: React.FC = () => {
                 }
                 position='bottom-right'
               >
-                <div className="max-h-40 overflow-y-auto w-full" onMouseDown={(e) => e.stopPropagation()}>
+                <div id="asset-condition-options" className="max-h-40 overflow-y-auto w-full" onMouseDown={(e) => e.stopPropagation()}>
                   {conditionOptions.map(option => (
                     <div
                       key={option.value}
+                      id={`asset-condition-option-${option.value}`}
                       className="px-4 py-2 w-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -456,109 +453,19 @@ const AssetList: React.FC = () => {
               </Dropdown>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {t('acquisition_date')}
-              </label>
-              <Dropdown
-                trigger={
-                  <div
-                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 cursor-pointer hover:border-gray-400 dark:hover:border-gray-500 transition-colors flex items-center justify-between"
-                  >
-                    <span>{selectedDate ? dayjs(selectedDate).format('DD/MM/YYYY') : t('select_date')}</span>
-                    {isDateDropdownOpen ? (
-                      <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                    )}
-                  </div>
-                }
-                onOpenChange={setIsDateDropdownOpen}
-                position='bottom-left'
-              >
-                <div className="p-4 w-full">
-                  <div className='flex flex-row gap-2 mb-4'>
-                    <Dropdown
-                      fullWidth={true}
-                      ref={monthDropdownRef}
-                      onOpenChange={setIsMonthDropdownOpen}
-                      trigger={
-                        <button
-                          className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left flex items-center justify-between"
-                        >
-                          <span>{new Date(0, selectedMonth).toLocaleString('default', { month: 'long' })}</span>
-                          {isMonthDropdownOpen ? (
-                            <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                          ) : (
-                            <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                          )}
-                        </button>
-                      }
-                    >
-                      <div className="max-h-40 overflow-y-auto w-full" onMouseDown={(e) => e.stopPropagation()}>
-                        {Array.from({ length: 12 }, (_, i) => i).map((month) => (
-                          <div
-                            key={month}
-                            className="px-4 py-2 w-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white cursor-pointer"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedMonth(month);
-                              monthDropdownRef.current?.close();
-                            }}
-                          >
-                            {new Date(0, month).toLocaleString('default', { month: 'long' })}
-                          </div>
-                        ))}
-                      </div>
-                    </Dropdown>
-                    <Dropdown
-                      fullWidth={true}
-                      ref={yearDropdownRef}
-                      onOpenChange={setIsYearDropdownOpen}
-                      trigger={
-                        <button
-                          className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left flex items-center justify-between"
-                        >
-                          <span>{selectedYear}</span>
-                          {isYearDropdownOpen ? (
-                            <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                          ) : (
-                            <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                          )}
-                        </button>
-                      }
-                    >
-                      <div className="max-h-40 overflow-y-auto w-full" onMouseDown={(e) => e.stopPropagation()}>
-                        {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((year) => (
-                          <div
-                            key={year}
-                            className="px-4 py-2 w-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white cursor-pointer"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedYear(year);
-                              yearDropdownRef.current?.close();
-                            }}
-                          >
-                            {year}
-                          </div>
-                        ))}
-                      </div>
-                    </Dropdown>
-                  </div>
-                  <DayPicker
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    month={new Date(selectedYear, selectedMonth)}
-                    className="border-0"
-                  />
-                </div>
-              </Dropdown>
-            </div>
+            <DatePicker
+              label={t('acquisition_date')}
+              selectedDate={selectedDate}
+              onSelect={setSelectedDate}
+              id="asset-acquisition"
+              position="bottom-left"
+              disabled={{ after: new Date() }}
+            />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4" id="asset-form-grid-3">
             <InputText
+              id="asset-location-input"
               label={t('location')}
               type="text"
               name="location"
@@ -567,6 +474,7 @@ const AssetList: React.FC = () => {
             />
 
             <InputText
+              id="asset-category-input"
               label={t('category')}
               type="text"
               name="category"
@@ -575,8 +483,8 @@ const AssetList: React.FC = () => {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <div id="asset-description-container">
+            <label id="asset-description-label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {t('description')}
             </label>
             <TextArea
@@ -588,8 +496,8 @@ const AssetList: React.FC = () => {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <div id="asset-notes-container">
+            <label id="asset-notes-label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {t('notes')}
             </label>
             <TextArea
@@ -601,21 +509,27 @@ const AssetList: React.FC = () => {
             />
           </div>
 
-          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3">
-            <button
-              type="button"
+          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="asset-form-actions">
+            <Button
+              id="asset-cancel-button"
+              variant="secondary"
+              size="md"
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="w-full md:flex-1 py-3 text-xs"
             >
               {t('cancel')}
-            </button>
-            <button
+            </Button>
+            <Button
+              id="asset-submit-button"
+              variant="primary"
+              size="md"
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              loading={submitting}
+              className="w-full md:flex-1 py-3 text-xs"
             >
-              {submitting ? t('saving') : (editingAsset ? t('update') : t('save'))}
-            </button>
+              {editingAsset ? t('update') : t('save')}
+            </Button>
           </div>
         </form>
       </Modal>
@@ -627,28 +541,34 @@ const AssetList: React.FC = () => {
         title={t('confirm') + ' ' + t('delete')}
         size="sm"
       >
-        <div className="space-y-4">
-          <p className="text-gray-700 dark:text-gray-300">
+        <div className="space-y-4" id="delete-modal-content">
+          <p className="text-foreground" id="delete-confirmation-text">
             {t('confirm_delete_asset')} <strong>{deletingAsset?.name}</strong>?
           </p>
-          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3">
-            <button
+          <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-3" id="delete-modal-actions">
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setIsDeleteModalOpen(false)}
-              className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="w-full md:flex-1"
+              id="delete-cancel-button"
             >
               {t('cancel')}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
               onClick={handleConfirmDelete}
-              disabled={deleting}
-              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50"
+              loading={deleting}
+              className="w-full md:flex-1"
+              id="delete-confirm-button"
             >
               {deleting ? t('deleting') : t('delete')}
-            </button>
+            </Button>
           </div>
         </div>
       </Modal>
-    </div>
+    </Card>
   );
 };
 
