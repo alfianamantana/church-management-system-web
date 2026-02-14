@@ -19,6 +19,8 @@ const CurrencySwitcher: React.FC<CurrencySwitcherProps> = ({ onCurrencyChange })
     if (onCurrencyChange) {
       onCurrencyChange(currency);
     }
+    // Dispatch custom event for other components to listen
+    window.dispatchEvent(new CustomEvent('currencyChanged', { detail: currency }));
   };
 
   React.useEffect(() => {
@@ -53,7 +55,7 @@ const CurrencySwitcher: React.FC<CurrencySwitcherProps> = ({ onCurrencyChange })
                 className={`flex w-full items-center hover:text-primary rounded-lg p-2 ${selectedCurrency.code === currency.code ? 'bg-primary/10 text-primary' : ''}`}
                 onClick={() => handleCurrencyChange(currency)}
               >
-                <span className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-sm mr-3 font-semibold">
+                <span className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs mr-3 font-semibold">
                   {currency.symbol}
                 </span>
                 <span className='text-xs'>{currency.name}</span>

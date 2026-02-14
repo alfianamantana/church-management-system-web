@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { DayPicker } from "react-day-picker";
 import Dropdown from './Dropdowns';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 
@@ -123,11 +123,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
             className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 cursor-pointer hover:border-gray-400 dark:hover:border-gray-500 transition-colors flex items-center justify-between"
           >
             <span>{selectedDate ? dayjs(selectedDate).format('D MMM, YYYY') : t('select_date')}</span>
-            {isDateDropdownOpen ? (
-              <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-            ) : (
-              <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-            )}
+            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isDateDropdownOpen ? 'rotate-180' : ''}`} />
           </div>
         }
         onOpenChange={setIsDateDropdownOpen}
@@ -147,11 +143,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
                   className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left flex items-center justify-between"
                 >
                   <span>{new Date(0, selectedMonth).toLocaleString('default', { month: 'long' })}</span>
-                  {isMonthDropdownOpen ? (
-                    <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                  )}
+                  <ChevronDown className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform duration-200 ${isMonthDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
               }
             >
@@ -184,11 +176,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
                   className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left flex items-center justify-between"
                 >
                   <span>{selectedYear}</span>
-                  {isYearDropdownOpen ? (
-                    <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                  )}
+                  <ChevronDown className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform duration-200 ${isYearDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
               }
             >

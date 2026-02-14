@@ -8,14 +8,14 @@ import api from '@/services/api';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '@/store/themeConfigSlice';
-import { ITransaction, IBasicResponse, IPagination, ICategory } from '@/constant';
+import { ITransaction, IBasicResponse, IPagination, ICategory, getCurrency } from '@/constant';
 import dayjs from 'dayjs';
 import Dropdown from '../../components/Dropdowns';
-import { DayPicker } from "react-day-picker";
 import { useTranslation } from 'react-i18next';
 import TextArea from '../../components/TextArea';
 import Button from '../../components/Button';
 import DatePicker from '../../components/DayPicker';
+import { ChevronDown } from 'lucide-react';
 
 interface ITransactionResponse extends IBasicResponse {
   data: ITransaction[];
@@ -38,6 +38,10 @@ const KeuanganList: React.FC = () => {
 
   // Category dropdown state
   const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(null);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState<boolean>(false);
+
+  // Currency symbol state
+  const [currencySymbol, setCurrencySymbol] = useState<string>('Rp');
 
   // Modal and form states
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -79,6 +83,31 @@ const KeuanganList: React.FC = () => {
     }
   }, [selectedCategory]);
 
+  // Load currency symbol from localStorage
+  useEffect(() => {
+    const loadCurrency = () => {
+      const savedCurrency = localStorage.getItem('selected_currency') || 'IDR';
+      const currency = getCurrency(savedCurrency);
+      if (currency) {
+        setCurrencySymbol(currency.symbol);
+      }
+    };
+
+    // Load initial currency
+    loadCurrency();
+
+    // Listen for currency change events
+    const handleCurrencyChange = () => {
+      loadCurrency();
+    };
+
+    window.addEventListener('currencyChanged', handleCurrencyChange);
+
+    return () => {
+      window.removeEventListener('currencyChanged', handleCurrencyChange);
+    };
+  }, []);
+
   const fetchCategories = async () => {
     try {
       const { data } = await api.get('/categories');
@@ -88,7 +117,6 @@ const KeuanganList: React.FC = () => {
         toast.error(String(t('failed_fetch_categories')));
       }
     } catch (error) {
-      console.error('Failed to fetch categories:', error);
       toast.error(String(t('failed_fetch_categories')));
     }
   };
@@ -103,8 +131,8 @@ const KeuanganList: React.FC = () => {
         const resData = response.data.map(transaction => ({
           ...transaction,
           amount: formatRupiah(typeof transaction.amount === 'string' ? transaction.amount : transaction.amount.toString()),
-          date: dayjs(transaction.date).format('DD-MM-YYYY'),
-          createdAt: dayjs(transaction.createdAt).format('DD-MM-YYYY HH:mm'),
+          date: dayjs(transaction.date).format('DD MMM, YYYY'),
+          createdAt: dayjs(transaction.createdAt).format('DD MMM, YYYY'),
         }));
         setTransactions(resData);
         setTotal(response.pagination.total);
@@ -136,6 +164,7 @@ const KeuanganList: React.FC = () => {
     const today = new Date();
     setSelectedDate(today);
     setSelectedCategory(null);
+    setIsCategoryDropdownOpen(false);
     setFormData({ date: dayjs(today).format('YYYY-MM-DD'), category_id: 0, amount: '', note: '' });
     setEditingTransaction(null);
     setIsModalOpen(true);
@@ -146,6 +175,7 @@ const KeuanganList: React.FC = () => {
     setSelectedDate(transactionDate);
     const category = categories.find(cat => cat.id === transaction.category_id) || null;
     setSelectedCategory(category);
+    setIsCategoryDropdownOpen(false);
     setFormData({
       date: transaction.date,
       category_id: transaction.category_id,
@@ -255,7 +285,7 @@ const KeuanganList: React.FC = () => {
   const processedTransactions = transactions.map(t => ({
     ...t,
     category_name: `${t.category?.name || 'Unknown'} (${t.category?.type || 'Unknown'})`,
-    amount: `Rp ${t.amount}`,
+    amount: `${currencySymbol} ${t.amount}`,
   }));
 
   return (
@@ -346,9 +376,11 @@ const KeuanganList: React.FC = () => {
               required={true}
               position="bottom"
               label={t('category')}
+              onOpenChange={(open) => setIsCategoryDropdownOpen(open)}
               trigger={
-                <button className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left" id="category-dropdown-button">
-                  {selectedCategory ? selectedCategory.name : t('select_category')}
+                <button className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-400 bg-white text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:focus:ring-blue-500 text-left flex items-center justify-between" id="category-dropdown-button">
+                  <span>{selectedCategory ? selectedCategory.name : t('select_category')}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
               }
             >
@@ -374,9 +406,9 @@ const KeuanganList: React.FC = () => {
               name="amount"
               value={formData.amount}
               onChange={handleInputChange}
-              placeholder={t('amount_placeholder')}
+              placeholder={`0`}
               required
-              leftIcon={<span className="text-gray-500 dark:text-gray-400 font-medium">Rp</span>}
+              leftIcon={<span className="text-gray-500 dark:text-gray-400 font-medium">{currencySymbol}</span>}
             />
           </div>
           <TextArea
